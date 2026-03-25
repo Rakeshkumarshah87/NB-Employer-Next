@@ -34,7 +34,7 @@ jobs:
           protocol: ftp
           
           local-dir: ./out/
-          server-dir: /public_html/job-admin-next/
+          server-dir: /public_html/nt/
           
           # 👇 YE LINE SABSE IMPORTANT HAI (Force Fresh Upload)
           state-name: .ftp-deploy-sync-state-fresh.json
