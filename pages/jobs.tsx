@@ -1,3 +1,3 @@
 export default function Jobs() {
-  return <h1>JOBS PAGE 🔥</h1>;
+  return <h1>JOBS PAGE 🔥  lay bhariiiiiiiiiii</h1>;
 }
