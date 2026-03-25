@@ -1,0 +1,46 @@
+name: 🚀 Auto Deploy to cPanel
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  web-deploy:
+    name: 🎉 Build & Deploy
+    runs-on: ubuntu-latest
+    steps:
+      - name: 🚚 Get latest code
+        uses: actions/checkout@v4
+
+      - name: ⚙️ Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: 📦 Install Dependencies
+        run: npm ci
+
+      - name: 🏗️ Build Project
+        run: npm run build
+
+      - name: 📂 Sync files via FTP
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: "networkbaba.co"
+          username: "networkbabain"
+          password: "yty869H]en)Zvghkhjk34$987979#$587686~7978uiuyiytf456^585685fjgfj78678*^97jkghfghjvgj^$%3%BGFYGJKGHDH'.,hjkgghjghk776897][65dhgfhjgfj9556"
+          
+          protocol: ftp
+          
+          local-dir: ./out/
+          server-dir: /public_html/job-admin-next/
+          
+          # 👇 YE LINE SABSE IMPORTANT HAI (Force Fresh Upload)
+          state-name: .ftp-deploy-sync-state-fresh.json
+          
+          # Exclude list saaf hai, backend upload hoga
+          exclude: |
+            **/.git*
+            **/node_modules/**
+            .htaccess
