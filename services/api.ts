@@ -3,12 +3,8 @@
  * Handles all HTTP requests to the PHP backend
  */
 
-// Automatically handle base URL without needing .env on GitHub Actions!
-const isLocal = typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname.includes('192.168.'));
-const LIVE_URL = 'https://networkbaba.co/job-employers-api/api/public';
-const LOCAL_URL = 'http://localhost/job-employers-api/api/public';
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://api.networkbaba.co/api/public';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || (isLocal ? LOCAL_URL : LIVE_URL);
 // ── Cookie Helpers ──────────────────────────────────────
 
 /**
@@ -93,6 +89,7 @@ export interface AuthUser {
   contact_person: string;
   company_logo: string;
   city: string;
+  has_jobs?: boolean;
 }
 
 export interface ApiResponse<T = unknown> {
@@ -108,6 +105,7 @@ export interface LoginResponse {
   contact_person: string;
   company_logo: string;
   city: string;
+  has_jobs: boolean;
   token: string;
 }
 

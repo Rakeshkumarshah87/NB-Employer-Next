@@ -77,7 +77,11 @@ export default function LoginPage() {
   // ── Redirect if already logged in ──────────
   useEffect(() => {
     if (!authLoading && user) {
-      router.replace('/post-job');
+      if (user.has_jobs) {
+        router.replace('/all-post-jobs');
+      } else {
+        router.replace('/post-job');
+      }
     }
   }, [authLoading, user, router]);
 
@@ -164,6 +168,9 @@ export default function LoginPage() {
           contact_person: response.data.contact_person || '',
           company_logo: response.data.company_logo || '',
           city: response.data.city || '',
+          email: '',
+          company_number: '',
+          has_jobs: response.data.has_jobs,
         };
 
         // Save auth token and user data in cookies (SameSite=Lax handles persistence)
@@ -172,10 +179,8 @@ export default function LoginPage() {
 
         setSuccess('Verification successful! Redirecting...');
 
-        // Redirect to dashboard
-        setTimeout(() => {
-          router.push('/post-job');
-        }, 800);
+        // No need for a separate setTimeout here; 
+        // the useEffect above will catch the 'user' state change and redirect.
       } else {
         setError(response.message || 'Invalid or expired OTP.');
         triggerShake();
