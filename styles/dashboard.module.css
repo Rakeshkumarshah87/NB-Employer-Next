@@ -7,12 +7,21 @@
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+  background-color: #f8fafc;
 }
 
 .mainContent {
   flex: 1;
-  padding-top: 68px; /* header height + accent */
+  padding-top: 67px; /* Matches header 64px + 3px accent exactly */
   width: 100%;
+}
+
+/* ── Loading State ───────────────────────────── */
+.loadingWrapper {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: #f8fafc;
 }
 
 /* ── Header ──────────────────────────────────── */
@@ -147,7 +156,8 @@
 
 /* ── Desktop User Section ────────────────────── */
 .userSection {
-  display: none;
+  display: flex;
+  align-items: center;
   position: relative;
   margin-left: auto;
 }
@@ -194,6 +204,7 @@
 }
 
 .userDisplayName {
+  display: none; /* Hidden on mobile by default */
   font-size: 0.85rem;
   font-weight: 500;
   color: var(--color-text-primary);
@@ -203,10 +214,23 @@
   white-space: nowrap;
 }
 
+@media (min-width: 769px) {
+  .userDisplayName {
+    display: block;
+  }
+}
+
 .chevron {
+  display: none; /* Hidden on mobile by default */
   transition: transform var(--transition-fast);
   color: var(--color-text-muted);
   flex-shrink: 0;
+}
+
+@media (min-width: 769px) {
+  .chevron {
+    display: block;
+  }
 }
 
 .chevronOpen {
@@ -362,6 +386,30 @@
 }
 
 .ddLogout svg {
+  flex-shrink: 0;
+}
+
+.ddWhatsapp {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 10px 12px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #22c55e;
+  background: rgba(34, 197, 94, 0.05);
+  border-radius: var(--radius-md);
+  text-decoration: none;
+  transition: all var(--transition-fast);
+}
+
+.ddWhatsapp:hover {
+  background: rgba(34, 197, 94, 0.12);
+  transform: translateY(-1px);
+}
+
+.ddWhatsapp svg {
   flex-shrink: 0;
 }
 
@@ -782,13 +830,14 @@
     display: flex;
   }
 
-  .userSection {
-    display: block;
-  }
-
   .hamburger {
     display: none;
   }
+}
+
+/* ── Mobile Bottom Navigation ────────────────── */
+.bottomNav {
+  display: none;
 }
 
 @media (max-width: 768px) {
@@ -797,8 +846,85 @@
     padding: 0 16px;
   }
 
+  .bottomNav {
+    display: flex;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 64px;
+    background: #ffffff;
+    border-top: 1px solid rgba(0, 0, 0, 0.05);
+    z-index: 1000;
+    justify-content: space-around;
+    align-items: center;
+    padding-bottom: env(safe-area-inset-bottom);
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.08);
+  }
+
+  .bottomNavItem {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    flex: 1;
+    height: 100%;
+    color: #475569; /* Slate 600 - High contrast */
+    transition: all var(--transition-fast);
+    padding-top: 6px;
+  }
+
+  .bottomNavItemActive {
+    color: #4f46e5; /* Indigo 600 - Vibrant */
+  }
+
+  .bottomNavIcon {
+    width: 24px;
+    height: 24px;
+    margin-bottom: 4px;
+    transition: transform var(--transition-base);
+  }
+
+  .bottomNavItemActive .bottomNavIcon {
+    transform: translateY(-2px);
+    stroke-width: 2.5px;
+  }
+
+  .bottomNavText {
+    font-size: 0.65rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+  }
+
+  .notificationWrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .notificationBadge {
+    position: absolute;
+    top: -2px;
+    right: -8px;
+    background: #ef4444;
+    color: white;
+    font-size: 0.65rem;
+    font-weight: bold;
+    height: 16px;
+    min-width: 16px;
+    padding: 0 4px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid #ffffff;
+  }
+
   .mainContent {
     padding-top: 60px;
+    padding-bottom: 100px; /* Ensuring content stays above bottom nav */
   }
 
   .brandText {

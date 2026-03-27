@@ -2,17 +2,16 @@ import { useState, useEffect, type FormEvent } from 'react';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
 import { useAuth } from '@/context/AuthContext';
-import { loginApi, saveAuth, type AuthUser } from '@/services/api';
+import { sendOtpApi, loginApi, saveAuth, type AuthUser } from '@/services/api';
 import styles from '@/styles/login.module.css';
 
 /**
- * Employer Login Page
+ * Employer Login Page (OTP Based)
  *
- * Replicates legacy employer-login.php logic:
- *   - Mobile number + password form
- *   - Calls /auth/login API
- *   - On success: saves token in cookie, updates auth context, redirects to /
- *   - On failure: shows error message
+ * 1. User enters 10-digit mobile number -> Requests OTP.
+ * 2. Backend generates OTP, sends SMS, saves to `otp` table.
+ * 3. User enters OTP.
+ * 4. Calls /auth/login with Mobile + OTP. Auto-registers if employer doesn't exist.
  */
 export default function LoginPage() {
   const router = useRouter();
@@ -20,7 +19,10 @@ export default function LoginPage() {
 
   // ── Form State ─────────────────────────────
   const [mobileno, setMobileno] = useState('');
-  const [password, setPassword] = useState('');
+  const [otp, setOtp] = useState('');
+  const [otpSent, setOtpSent] = useState(false);
+  const [timer, setTimer] = useState(0);
+
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [loading, setLoading] = useState(false);
@@ -29,9 +31,18 @@ export default function LoginPage() {
   // ── Redirect if already logged in ──────────
   useEffect(() => {
     if (!authLoading && user) {
-      router.replace('/');
+      router.replace('/post-job');
     }
   }, [authLoading, user, router]);
+
+  // ── OTP Timer ──────────────────────────────
+  useEffect(() => {
+    let interval: NodeJS.Timeout;
+    if (timer > 0) {
+      interval = setInterval(() => setTimer((t) => t - 1), 1000);
+    }
+    return () => clearInterval(interval);
+  }, [timer]);
 
   // ── Trigger shake animation ────────────────
   const triggerShake = () => {
@@ -39,18 +50,56 @@ export default function LoginPage() {
     setTimeout(() => setShakeForm(false), 500);
   };
 
-  // ── Handle Form Submit ─────────────────────
-  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  // ── Handle Send OTP ────────────────────────
+  const handleSendOtp = async (e?: FormEvent) => {
+    e?.preventDefault();
     setError('');
     setSuccess('');
 
-    // Client-side validation
     const trimmedMobile = mobileno.trim();
-    const trimmedPassword = password.trim();
+    if (trimmedMobile.length !== 10 || isNaN(Number(trimmedMobile))) {
+      setError('Please enter a valid 10-digit mobile number');
+      triggerShake();
+      return;
+    }
 
-    if (!trimmedMobile || !trimmedPassword) {
-      setError('Mobile number and password are required');
+    setLoading(true);
+    try {
+      const response = await sendOtpApi(trimmedMobile);
+      if (response.status) {
+        setSuccess('OTP sent successfully!');
+        setOtpSent(true);
+        setTimer(60);
+      } else {
+        setError(response.message || 'Failed to send OTP.');
+        triggerShake();
+      }
+    } catch (err) {
+      console.error('OTP error:', err);
+      setError('Unable to connect to server. Please try again.');
+      triggerShake();
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // ── Handle Verify OTP & Login ──────────────
+  const handleVerifyOtp = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    
+    // If OTP hasn't been sent yet, the form submission acts as "Send OTP"
+    if (!otpSent) {
+      return handleSendOtp(e);
+    }
+
+    setError('');
+    setSuccess('');
+
+    const trimmedMobile = mobileno.trim();
+    const trimmedOtp = otp.trim();
+
+    if (!trimmedOtp || trimmedOtp.length < 4) {
+      setError('Please enter a valid OTP');
       triggerShake();
       return;
     }
@@ -58,33 +107,31 @@ export default function LoginPage() {
     setLoading(true);
 
     try {
-      const response = await loginApi(trimmedMobile, trimmedPassword);
+      // loginApi now takes (mobileno, otp)
+      const response = await loginApi(trimmedMobile, trimmedOtp);
 
       if (response.status && response.data) {
-        // Build user data object
         const userData: AuthUser = {
           employer_id: response.data.employer_id,
           mobileno: response.data.mobileno,
-          company_name: response.data.company_name,
-          contact_person: response.data.contact_person,
+          company_name: response.data.company_name || '',
+          contact_person: response.data.contact_person || '',
           company_logo: response.data.company_logo || '',
           city: response.data.city || '',
         };
 
-        // Save auth token and user data in cookies
+        // Save auth token and user data in cookies (SameSite=Lax handles persistence)
         saveAuth(response.data.token, userData);
-
-        // Update auth context
         setUser(userData);
 
-        setSuccess('Login successful! Redirecting...');
+        setSuccess('Verification successful! Redirecting...');
 
         // Redirect to dashboard
         setTimeout(() => {
-          router.push('/');
+          router.push('/post-job');
         }, 800);
       } else {
-        setError(response.message || 'Login failed. Please try again.');
+        setError(response.message || 'Invalid or expired OTP.');
         triggerShake();
       }
     } catch (err) {
@@ -103,139 +150,124 @@ export default function LoginPage() {
 
   return (
     <>
-      {/* ── SEO Meta Tags ──────────────────── */}
       <Head>
         <title>Employer Login | NetworkBaba - Post Jobs & Hire Talent</title>
-        <meta
-          name="description"
-          content="Login to your NetworkBaba employer account. Post jobs, manage applications, and hire the best talent for your company."
-        />
-        <meta name="robots" content="index, follow" />
-        <meta property="og:title" content="Employer Login | NetworkBaba" />
-        <meta
-          property="og:description"
-          content="Login to your NetworkBaba employer account. Post jobs and hire talent."
-        />
-        <meta property="og:type" content="website" />
-        <meta name="twitter:card" content="summary" />
-        <meta name="twitter:title" content="Employer Login | NetworkBaba" />
+        <meta name="description" content="Login with OTP to your NetworkBaba employer account." />
       </Head>
 
-      {/* ── Page Layout ────────────────────── */}
       <main className={styles.pageWrapper}>
-        {/* Animated Background Orbs */}
         <div className={`${styles.orb} ${styles.orb1}`} aria-hidden="true" />
         <div className={`${styles.orb} ${styles.orb2}`} aria-hidden="true" />
         <div className={`${styles.orb} ${styles.orb3}`} aria-hidden="true" />
 
-        {/* Login Card */}
         <div className={`${styles.loginCard} ${shakeForm ? styles.shake : ''}`}>
-          {/* Branding */}
           <div className={styles.brandSection}>
             <div className={styles.brandLogo}>
-              <span className={styles.brandIcon} role="img" aria-label="NetworkBaba">
-                🏢
-              </span>
+              <span className={styles.brandIcon} role="img" aria-label="NetworkBaba">🏢</span>
             </div>
             <h1 className={styles.brandTitle}>Employer Login</h1>
             <p className={styles.brandSubtitle}>
-              Sign in to manage your job postings
+              {otpSent ? 'Enter the OTP sent to your mobile' : 'Sign in using your mobile number'}
             </p>
           </div>
 
-          {/* Error Message */}
           {error && (
-            <div className={styles.errorBox} role="alert" id="login-error">
+            <div className={styles.errorBox} role="alert">
               <span className={styles.errorIcon} aria-hidden="true">⚠️</span>
               <span className={styles.errorText}>{error}</span>
             </div>
           )}
 
-          {/* Success Message */}
           {success && (
-            <div className={styles.successBox} role="status" id="login-success">
+            <div className={styles.successBox} role="status">
               <span className={styles.successIcon} aria-hidden="true">✅</span>
               <span className={styles.successText}>{success}</span>
             </div>
           )}
 
-          {/* Login Form */}
-          <form onSubmit={handleSubmit} noValidate>
-            {/* Mobile Number */}
+          <form onSubmit={handleVerifyOtp} noValidate>
+            {/* Mobile Number Field */}
             <div className={styles.formGroup}>
-              <label htmlFor="mobileno" className={styles.label}>
-                Mobile Number
-              </label>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <label htmlFor="mobileno" className={styles.label}>Mobile Number</label>
+                {otpSent && (
+                  <button 
+                    type="button" 
+                    onClick={() => { setOtpSent(false); setOtp(''); }}
+                    style={{ background: 'none', border: 'none', color: '#0070f3', cursor: 'pointer', fontSize: '12px' }}
+                  >
+                    Change Number
+                  </button>
+                )}
+              </div>
               <div className={styles.inputWrapper}>
                 <span className={styles.inputIcon} aria-hidden="true">📱</span>
                 <input
                   id="mobileno"
                   name="mobileno"
                   type="tel"
+                  maxLength={10}
                   className={styles.input}
-                  placeholder="Enter your mobile number"
+                  placeholder="Enter 10-digit mobile number"
                   value={mobileno}
-                  onChange={(e) => setMobileno(e.target.value)}
-                  autoComplete="tel"
+                  onChange={(e) => setMobileno(e.target.value.replace(/\D/g, ''))}
+                  disabled={loading || otpSent}
                   required
-                  disabled={loading}
                 />
               </div>
             </div>
 
-            {/* Password */}
-            <div className={styles.formGroup}>
-              <label htmlFor="password" className={styles.label}>
-                Password
-              </label>
-              <div className={styles.inputWrapper}>
-                <span className={styles.inputIcon} aria-hidden="true">🔒</span>
-                <input
-                  id="password"
-                  name="password"
-                  type="password"
-                  className={styles.input}
-                  placeholder="Enter your password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  autoComplete="current-password"
-                  required
-                  disabled={loading}
-                />
+            {/* OTP Field (Visible only after sending OTP) */}
+            {otpSent && (
+              <div className={styles.formGroup} style={{ animation: 'fadeIn 0.3s ease-in-out' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <label htmlFor="otp" className={styles.label}>One-Time Password</label>
+                  {timer > 0 ? (
+                    <span style={{ fontSize: '12px', color: '#666' }}>Resend in {timer}s</span>
+                  ) : (
+                    <button 
+                      type="button" 
+                      onClick={handleSendOtp}
+                      disabled={loading}
+                      style={{ background: 'none', border: 'none', color: '#0070f3', cursor: 'pointer', fontSize: '12px', fontWeight: 'bold' }}
+                    >
+                      Resend OTP
+                    </button>
+                  )}
+                </div>
+                <div className={styles.inputWrapper}>
+                  <span className={styles.inputIcon} aria-hidden="true">🔒</span>
+                  <input
+                    id="otp"
+                    name="otp"
+                    type="text"
+                    maxLength={6}
+                    className={styles.input}
+                    placeholder="Enter OTP"
+                    value={otp}
+                    onChange={(e) => setOtp(e.target.value.replace(/\D/g, ''))}
+                    disabled={loading}
+                    required
+                    style={{ letterSpacing: '4px', fontWeight: 'bold' }}
+                  />
+                </div>
               </div>
-            </div>
+            )}
 
             {/* Submit Button */}
             <button
-              id="login-submit-btn"
               type="submit"
               className={styles.submitBtn}
-              disabled={loading}
+              disabled={loading || (!otpSent && mobileno.length !== 10)}
+              style={{ marginTop: '24px' }}
             >
               <span className={styles.btnContent}>
                 {loading && <span className={styles.spinner} aria-hidden="true" />}
-                {loading ? 'Signing in...' : 'Sign In'}
+                {!loading && (otpSent ? 'Verify & Sign In' : 'Send OTP')}
               </span>
             </button>
           </form>
 
-          {/* Divider */}
-          <div className={styles.divider}>
-            <div className={styles.dividerLine} />
-            <span className={styles.dividerText}>or</span>
-            <div className={styles.dividerLine} />
-          </div>
-
-          {/* Footer Links */}
-          <div className={styles.footerLinks}>
-            <a href="#" className={styles.footerLink}>
-              Forgot Password?
-            </a>
-            <span className={styles.footerDot}>•</span>
-            <a href="/register" className={styles.footerLink}>
-              Create Account
-            </a>
-          </div>
         </div>
       </main>
     </>

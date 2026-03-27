@@ -1,0 +1,261 @@
+.pageContainer {
+  background-color: #f8f9fc;
+  min-height: calc(100vh - 68px);
+  padding: 15px 20px 40px; /* Restored small gap from header */
+  font-family: 'Segoe UI', sans-serif;
+  width: 100%;
+}
+
+.toggleContainer {
+  text-align: center;
+  margin-bottom: 20px; /* Moderate gap between toggle and banner */
+}
+
+.toggleWrapper {
+  display: inline-flex;
+  background: #fff;
+  border: 1px solid #3b55e6;
+  border-radius: 8px; /* Square-ish modern look */
+  padding: 2px;
+  position: relative;
+}
+
+.toggleBtn {
+  padding: 10px 30px;
+  border-radius: 50px;
+  border: none;
+  background: transparent;
+  font-size: 16px;
+  font-weight: 600;
+  color: #555;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.toggleBtnActive {
+  background-color: #3b55e6;
+  color: #fff;
+  box-shadow: 0 4px 6px rgba(59, 85, 230, 0.3);
+}
+
+.saveBadge {
+  position: absolute;
+  top: -15px;
+  right: 0px;
+  background: #ff9800;
+  color: white;
+  font-size: 10px;
+  font-weight: bold;
+  padding: 2px 8px;
+  border-radius: 10px;
+}
+
+.bannerContainer {
+  max-width: 100%; /* Widened banner container */
+  margin: 0 auto 15px;
+}
+
+.offerBanner {
+  background: linear-gradient(135deg, #6d28d9 0%, #9333ea 100%);
+  color: white;
+  text-align: center;
+  padding: 20px 15px;
+  border-radius: 16px;
+  box-shadow: 0 10px 25px rgba(109, 40, 217, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  position: relative;
+  overflow: hidden;
+}
+
+.offerBanner::before {
+  content: "";
+  position: absolute;
+  top: 0; left: -100%;
+  width: 50%; height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+  transition: 0.5s;
+}
+
+.offerBanner:hover::before {
+  left: 150%;
+  transition: 0.8s;
+}
+
+.offerBanner h4 {
+  margin: 0 0 5px;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.offerBanner p {
+  margin: 0;
+  font-size: 16px;
+}
+
+.plansGrid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 20px;
+  max-width: 1400px; /* Significantly widened plans grid */
+  margin: 0 auto;
+}
+
+.pricingCard {
+  background: #fff;
+  border: 1px solid #eaecf0;
+  border-radius: 20px;
+  padding: 30px;
+  width: 100%;
+  max-width: 350px; /* Reduced width to ensure 3 per row as requested */
+  position: relative;
+  transition: all 0.3s ease-in-out;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+}
+
+.pricingCard:hover {
+  transform: translateY(-10px) scale(1.02);
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
+  border-color: #3b55e6;
+}
+
+.specialBadge {
+  background: linear-gradient(135deg, #7c3aed 0%, #a855f7 100%);
+  color: #fff;
+  text-align: center;
+  font-size: 13px;
+  font-weight: 700;
+  padding: 10px;
+  border-radius: 12px;
+  margin-bottom: 15px;
+  box-shadow: 0 4px 12px rgba(124, 58, 237, 0.25);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Pulse removed to fix blurriness */
+
+.bestPill {
+  float: right;
+  background-color: #ecfdf3;
+  color: #027a48;
+  font-weight: 700;
+  font-size: 12px;
+  padding: 4px 12px;
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.discountPill {
+  float: right;
+  background-color: #fff4e5;
+  color: #b96b00;
+  font-weight: 700;
+  font-size: 12px;
+  padding: 4px 12px;
+  border-radius: 20px;
+}
+
+.planTitle {
+  font-size: 20px;
+  font-weight: 700;
+  color: #101828;
+  margin-top: 10px;
+  margin-bottom: 5px;
+}
+
+.planSubtitle {
+  font-size: 14px;
+  color: #667085;
+  margin-bottom: 20px;
+}
+
+.priceWrapper {
+  margin-bottom: 10px;
+}
+
+.currentPrice {
+  font-size: 36px;
+  font-weight: 800;
+  color: #101828;
+}
+
+.perMonth {
+  font-size: 16px;
+  color: #667085;
+  font-weight: 400;
+}
+
+.justPayText {
+  font-size: 15px;
+  color: #344054;
+  font-weight: 500;
+  margin-bottom: 25px;
+}
+
+.strikePrice {
+  color: #98a2b3;
+  text-decoration: line-through;
+  font-weight: 400;
+  margin-left: 5px;
+  font-size: 18px;
+}
+
+.btnBuy {
+  width: 100%;
+  padding: 12px;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  border: none;
+  transition: background 0.2s;
+  margin-bottom: 25px;
+  cursor: pointer;
+  color: #fff;
+}
+
+.btnBlue { background-color: #3b55e6; }
+.btnBlue:hover { background-color: #2a41c2; }
+
+.btnGreen { background-color: #12b76a; }
+.btnGreen:hover { background-color: #0e9656; }
+
+.featuresList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  flex-grow: 1;
+}
+
+.featuresList li {
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: 12px;
+  font-size: 14px;
+  color: #344054;
+  line-height: 1.5;
+  gap: 10px;
+}
+
+.iconBlue { color: #3b55e6; font-weight: bold; }
+.iconGreen { color: #12b76a; font-weight: bold; }
+
+.spinner {
+  border: 4px solid rgba(0, 0, 0, 0.1);
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border-left-color: #007bff;
+  animation: spin 1s linear infinite;
+  margin: 50px auto;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
