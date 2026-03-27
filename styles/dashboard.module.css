@@ -8,12 +8,21 @@
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+  background-color: #f8fafc;
 }
 
 .mainContent {
   flex: 1;
-  padding-top: 68px; /* header height + accent */
+  padding-top: 67px; /* Matches header 64px + 3px accent exactly */
   width: 100%;
+}
+
+/* ── Loading State ───────────────────────────── */
+.loadingWrapper {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: #f8fafc;
 }
 
 /* ── Header ──────────────────────────────────── */

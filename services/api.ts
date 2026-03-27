@@ -83,6 +83,8 @@ export function isAuthenticated(): boolean {
 export interface AuthUser {
   employer_id: number;
   mobileno: string;
+  email: string;
+  company_number: string;
   company_name: string;
   contact_person: string;
   company_logo: string;
@@ -293,5 +295,83 @@ export async function saveCandidateRequirementsApi(
   return apiRequest<{ job_id: number }>('/save-requirements', {
     method: 'POST',
     body: JSON.stringify(payload),
+  });
+}
+
+// ── All Post Jobs APIs ──────────────────────────────────
+
+/**
+ * GET /all-jobs
+ * Fetch all employer jobs (active + expired)
+ */
+export async function getAllJobsApi(): Promise<ApiResponse<any>> {
+  return apiRequest<any>('/all-jobs', { method: 'GET' });
+}
+
+/**
+ * GET /plan-info
+ * Fetch employer's plan status, limits, and offers
+ */
+export async function getPlanInfoApi(): Promise<ApiResponse<any>> {
+  return apiRequest<any>('/plan-info', { method: 'GET' });
+}
+
+/**
+ * POST /update-job-status
+ * Activate or expire a job
+ */
+export async function updateJobStatusApi(postId: number, status: number): Promise<ApiResponse<any>> {
+  return apiRequest<any>('/update-job-status', {
+    method: 'POST',
+    body: JSON.stringify({ post_id: postId, status }),
+  });
+}
+
+/**
+ * GET /job-detail?post_id=X
+ * Fetch job details + candidate counts
+ */
+export async function getJobDetailApi(postId: number): Promise<ApiResponse<any>> {
+  return apiRequest<any>(`/job-detail?post_id=${postId}`, { method: 'GET' });
+}
+
+// All Post Jobs - Candidates Applied
+export const getCandidatesApplied = async (postId: number, offset: number = 0, limit: number = 10, statusType: string = 'All') => {
+  return await apiRequest<any>(
+    `/candidates-applied?post_id=${postId}&offset=${offset}&limit=${limit}&status_type=${encodeURIComponent(statusType)}`,
+    {
+      method: "GET",
+    }
+  );
+};
+
+// All Post Jobs - Candidates Recommended
+export const getCandidatesRecommended = async (postId: number, offset: number = 0, limit: number = 10) => {
+  return await apiRequest<any>(
+    `/candidates-recommended?post_id=${postId}&offset=${offset}&limit=${limit}`,
+    {
+      method: "GET",
+    }
+  );
+};
+
+// Packages
+export async function getPackagesApi(): Promise<ApiResponse<any>> {
+  return apiRequest<any>('/packages', { method: 'GET' });
+}
+
+// Payment - Create Order
+export async function createOrderApi(packageId: number, amount: number): Promise<ApiResponse<any>> {
+  return apiRequest<any>('/create-order', {
+    method: 'POST',
+    body: JSON.stringify({ package_id: packageId, amount }),
+  });
+}
+
+// Payment - Update Status
+export async function updatePaymentStatusApi(dbId: number, paymentId: string): Promise<ApiResponse<any>> {
+  return apiRequest<any>('/update-payment-status', {
+    method: 'POST',
+    body: JSON.stringify({ db_id: dbId, payment_id: paymentId }),
   });
 }

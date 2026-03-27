@@ -25,7 +25,7 @@ export default function EmployerCompanyInfoPage() {
 
   // ── State ───────────────────────────────────────
   const [googleKey, setGoogleKey] = useState('');
-  
+
   const [companyName, setCompanyName] = useState('');
   const [contactName, setContactName] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
@@ -107,7 +107,6 @@ export default function EmployerCompanyInfoPage() {
 
   // ── Init Google Maps ────────────────────────────
   useEffect(() => {
-    // If google is already loaded and DOM is ready, initialize
     if (!loadingData && window.google && window.google.maps && window.google.maps.places) {
       initAutocomplete();
     }
@@ -121,7 +120,7 @@ export default function EmployerCompanyInfoPage() {
       const location = place.geometry?.location;
       const lat = location ? location.lat().toString() : '';
       const lng = location ? location.lng().toString() : '';
-      let pincode='', country='', state='', city='', area='';
+      let pincode = '', country = '', state = '', city = '', area = '';
 
       place.address_components?.forEach((c: any) => {
         const type = c.types[0];
@@ -136,8 +135,7 @@ export default function EmployerCompanyInfoPage() {
         setInterFullAdd(place.formatted_address || '');
         setInterLat(lat); setInterLng(lng);
         setInterPincode(pincode); setInterCountry(country); setInterState(state); setInterCity(city);
-        
-        // If sameAddress is active, auto-fill Job as well
+
         if (sameAddress) {
           setJobFullAdd(place.formatted_address || '');
           setJobLat(lat); setJobLng(lng);
@@ -151,14 +149,8 @@ export default function EmployerCompanyInfoPage() {
     };
 
     if (interInputRef.current) {
-      // Prevent multiple initializations safely
-      // google maps doesn't have a dataset check natively, but we can safely call it multiple times 
-      // or try to keep track. We will attach the listener only once by clearing it if needed.
       const autocompleteInter = new window.google.maps.places.Autocomplete(interInputRef.current, options);
-      
-      // Cleanup previous listener if any by mapping it safely
       window.google.maps.event.clearInstanceListeners(interInputRef.current);
-      
       autocompleteInter.addListener('place_changed', () => parsePlace(autocompleteInter.getPlace(), 'inter'));
     }
 
@@ -169,7 +161,6 @@ export default function EmployerCompanyInfoPage() {
     }
   };
 
-  // Keep job fields synced if same_address checking changes
   useEffect(() => {
     if (sameAddress) {
       setJobAddress(interAddress);
@@ -183,7 +174,6 @@ export default function EmployerCompanyInfoPage() {
     }
   }, [sameAddress, interAddress, interFullAdd, interPincode, interCountry, interState, interCity, interLat, interLng]);
 
-  // ── Validation & Submit ─────────────────────────
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     if (phoneNumber.length !== 10) {
@@ -208,7 +198,6 @@ export default function EmployerCompanyInfoPage() {
         contact_person_name: contactName,
         phone_number: phoneNumber,
         email_id: emailId,
-        
         inter_flat_bulding: interAddress,
         inter_full_add: interFullAdd,
         inter_pincode: interPincode,
@@ -217,11 +206,8 @@ export default function EmployerCompanyInfoPage() {
         inter_city: interCity,
         inter_lat: interLat,
         inter_lng: interLng,
-
         recive_application_from: receiveAppFrom,
-
         same_address: sameAddress ? 1 : 0,
-
         job_flat_bulding: jobAddress,
         job_full_add: jobFullAdd,
         job_pincode: jobPincode,
@@ -234,7 +220,6 @@ export default function EmployerCompanyInfoPage() {
 
       const res = await saveEmployerInfoApi(payload);
       if (res.status) {
-        // Nav to next page depending on legacy
         router.push(`/employer-job-reviews/${jobId}`);
       } else {
         setError(res.message || 'Error saving data.');
@@ -246,7 +231,7 @@ export default function EmployerCompanyInfoPage() {
     }
   };
 
-  if(!user || loadingData) return <div style={{padding: 40, textAlign: 'center'}}>Loading...</div>;
+  if (!user || loadingData) return null; // Removed 'Loading...' text fallback
 
   return (
     <>
@@ -255,7 +240,7 @@ export default function EmployerCompanyInfoPage() {
       </Head>
 
       {googleKey && (
-        <Script 
+        <Script
           src={`https://maps.googleapis.com/maps/api/js?v=3.exp&libraries=places&key=${googleKey}`}
           strategy="afterInteractive"
           onLoad={initAutocomplete}
@@ -274,7 +259,7 @@ export default function EmployerCompanyInfoPage() {
               <div className={styles.formGrid}>
                 <div className={styles.formGroup}>
                   <label className={styles.formLabel + ' ' + styles.required}>Company Name</label>
-                  <input type="text" className={styles.formInput} value={companyName} onChange={e => setCompanyName(e.target.value)} required style={{textTransform: 'uppercase'}} readOnly={!!companyName} />
+                  <input type="text" className={styles.formInput} value={companyName} onChange={e => setCompanyName(e.target.value)} required style={{ textTransform: 'uppercase' }} readOnly={!!companyName} />
                 </div>
                 <div className={styles.formGroup}>
                   <label className={styles.formLabel + ' ' + styles.required}>Contact Person Name</label>
@@ -284,7 +269,7 @@ export default function EmployerCompanyInfoPage() {
                   <label className={styles.formLabel + ' ' + styles.required}>Contact Number</label>
                   <div>
                     <input type="number" className={styles.formInput} value={phoneNumber} onChange={e => setPhoneNumber(e.target.value)} placeholder="Contact Number" required />
-                    <span className={styles.hintText}>Note: Contact Number on which candidate will call and Whatapp. <img src="https://d138gcvw180u03.cloudfront.net/images/icon/whatsapp-button.png" style={{height: 18}} alt="WhatsApp" /></span>
+                    <span className={styles.hintText}>Note: Contact Number on which candidate will call and Whatapp. <img src="/nt/images/icon/whatsapp-button.png" style={{ height: 18 }} alt="WhatsApp" /></span>
                   </div>
                 </div>
                 <div className={styles.formGroup}>
@@ -353,7 +338,7 @@ export default function EmployerCompanyInfoPage() {
 
             <div className={styles.submitArea}>
               {error && <span className={styles.errorMsg}>{error}</span>}
-              {success && <span style={{color: '#10b981', fontWeight: 600}}>{success}</span>}
+              {success && <span style={{ color: '#10b981', fontWeight: 600 }}>{success}</span>}
               <button type="submit" className={styles.btnSubmit} disabled={saving}>
                 Save & Continue ➔
               </button>

@@ -1,0 +1,770 @@
+/* ============================================
+   All Post Jobs Page
+   ============================================ */
+
+.pageWrapper {
+  display: flex;
+  gap: 0;
+  min-height: calc(100vh - 68px);
+  background: #f4f6f9;
+  font-family: 'Segoe UI', -apple-system, sans-serif;
+}
+
+/* ── Left Sidebar ────────────────────────────── */
+.sidebar {
+  width: 370px;
+  min-width: 370px;
+  padding: 20px;
+  overflow-y: auto;
+  max-height: calc(100vh - 68px);
+  position: sticky;
+  top: 68px;
+}
+
+.postJobContainer {
+  background: #fff;
+  padding: 20px;
+  border-radius: 12px;
+  border: 1px dashed #ced4da;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.btnPostJob {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  color: #fff;
+  background-color: #007bff;
+  border: none;
+  border-radius: 6px;
+  padding: 10px 30px;
+  cursor: pointer;
+  width: 100%;
+  max-width: 300px;
+  justify-content: center;
+  transition: background 0.2s;
+}
+.btnPostJob:hover { background-color: #0069d9; }
+
+.postJobMsg {
+  color: #dc3545;
+  font-weight: bold;
+  margin-top: 10px;
+  font-size: 14px;
+  min-height: 20px;
+}
+
+/* Plan Status Card */
+.planCard {
+  background: #ffffff;
+  border: 1px dashed #ced4da;
+  border-radius: 12px;
+  padding: 15px 20px;
+  margin-bottom: 20px;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+.planRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 14px;
+  margin-bottom: 5px;
+  padding-bottom: 5px;
+  border-bottom: 1px solid #f0f0f0;
+}
+.planRow:last-child {
+  border-bottom: none;
+  margin-bottom: 0;
+  padding-bottom: 0;
+}
+
+.planLabel {
+  color: #6c757d;
+  font-weight: 600;
+}
+
+.planName {
+  color: #2c3e50;
+  font-weight: 700;
+  text-transform: capitalize;
+}
+
+.planDate {
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 13px;
+}
+
+.planDateActive {
+  color: #e67e22;
+  background: #fff6ea;
+}
+
+.planDateExpired {
+  color: #dc3545;
+  background: #ffeaea;
+}
+
+.btnUpgradePlan {
+  display: block;
+  width: 100%;
+  text-align: center;
+  color: #fff;
+  background: #dc3545;
+  border: none;
+  border-radius: 20px;
+  padding: 8px 16px;
+  font-weight: bold;
+  font-size: 14px;
+  cursor: pointer;
+  margin-top: 10px;
+}
+
+.upgradeLink {
+  color: #6f42c1;
+  font-weight: 700;
+  font-size: 13px;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.limitErrorBox {
+  background-color: #fff5f5;
+  border: 1px solid #fc8181;
+  color: #c53030;
+  padding: 12px;
+  border-radius: 8px;
+  margin-top: 15px;
+  font-size: 13px;
+  text-align: center;
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+/* Rejected box */
+.rejectedBox {
+  padding: 15px;
+  margin-top: 15px;
+  border-left: 5px solid #dc3545;
+  background: #fff;
+  border-radius: 4px;
+}
+
+/* ── Job Cards ───────────────────────────────── */
+.jobCard {
+  background: #ffffff;
+  border: 1px solid #e1e4e8;
+  border-radius: 12px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
+  margin-bottom: 20px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  overflow: hidden;
+  cursor: pointer;
+}
+.jobCard:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+  border-color: #d1d5da;
+}
+.jobCardSelected {
+  border-color: #007bff !important;
+  box-shadow: 0 4px 16px rgba(0, 123, 255, 0.15) !important;
+}
+
+/* Candidate Card Styles */
+.candidateCard {
+  background: #fff;
+  border: 1px solid #e1e4e8;
+  border-radius: 8px;
+  padding: 15px;
+  margin-bottom: 15px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+  position: relative;
+  overflow: hidden;
+}
+
+.candidateHeader {
+  display: flex;
+  gap: 15px;
+}
+
+.candidateAvatar {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.candidateAvatarFallback {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: #3c8dbc;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  font-weight: bold;
+}
+
+.candidateNameRow {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 5px;
+}
+
+.candidateName {
+  margin: 0;
+  font-size: 18px;
+  color: #333;
+}
+
+.newCandidateBadge {
+  background: #e3f2fd;
+  color: #1976d2;
+  padding: 2px 10px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.newCandidatePill {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  background: #e3f2fd;
+  color: #1976d2;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.candidateLocation {
+  font-size: 13px;
+  color: #666;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.recommendedBadge {
+  background: #f8f6fd;
+  color: #6f42c1;
+  padding: 2px 6px;
+  border-radius: 4px;
+  border: 1px solid #e1d6f5;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.candidateMeta {
+  display: flex;
+  gap: 20px;
+  font-size: 13px;
+  color: #444;
+  flex-wrap: wrap;
+}
+
+.candidateActions {
+  margin-top: 15px;
+  padding-top: 15px;
+  border-top: 1px solid #f0f0f0;
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.candidateSelect {
+  margin-top: 15px;
+  width: 100%;
+  padding: 8px 10px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+  font-size: 14px;
+  color: #333;
+  background-color: #f8f9fa;
+  cursor: pointer;
+  outline: none;
+}
+.candidateSelect:focus {
+  border-color: #007bff;
+  box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25);
+}
+
+.candidateReviewBanner {
+  background: #f8dedf;
+  color: #7b2a30;
+  padding: 12px;
+  text-align: center;
+  font-size: 16px;
+  font-weight: bold;
+  border-radius: 0 0 8px 8px;
+  margin: 15px -15px -15px -15px;
+  border-top: 1px solid #f5c6cb;
+}
+
+.jobCardHeader {
+  background-color: #ffffff;
+  padding: 15px 20px;
+  border-bottom: 1px solid #f0f0f0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+}
+
+.jobTitleWrapper { flex: 1; }
+
+.jobTitle {
+  font-size: 18px;
+  font-weight: 700;
+  color: #2c3e50;
+  margin: 0 0 3px 0;
+  line-height: 1.3;
+}
+
+.jobDate {
+  font-size: 13px;
+  color: #95a5a6;
+  font-weight: 500;
+}
+
+/* Status Badges */
+.statusBadge {
+  font-size: 12px;
+  font-weight: 600;
+  padding: 5px 12px;
+  border-radius: 50px;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+.statusBadge img {
+  width: 14px;
+  height: 14px;
+}
+.badgeExpired { color: #dc3545; background-color: #ffeaea; }
+.badgeActive { color: #28a745; background-color: #eafaf1; }
+.badgeReview { color: #e67e22; background-color: #fff6ea; }
+
+/* Job Meta */
+.jobMeta {
+  font-size: 13px;
+  color: #555;
+  padding: 8px 20px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+}
+.jobMeta img {
+  width: 16px;
+  opacity: 0.7;
+  margin-right: 4px;
+  vertical-align: middle;
+}
+
+.highlightInfo {
+  background-color: #f8f9fa;
+  padding: 6px 10px;
+  border-radius: 6px;
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid #eee;
+  font-size: 13px;
+  color: #444;
+  gap: 4px;
+}
+.highlightInfo img {
+  width: 16px;
+  opacity: 0.7;
+}
+
+/* Job Description Preview */
+.jobDescPreview {
+  color: #666;
+  font-size: 14px;
+  line-height: 1.5;
+  padding: 5px 20px 10px;
+}
+.moreLink {
+  color: #007bff;
+  font-weight: 600;
+  cursor: pointer;
+  font-size: 13px;
+  border: none;
+  background: none;
+  padding: 0;
+}
+
+/* Job Footer Actions */
+.jobFooter {
+  background-color: #fff;
+  padding: 10px 15px;
+  border-top: 1px solid #f0f0f0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.btnReactivate {
+  background-color: #28a745;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 7px 14px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.btnExpire {
+  background-color: #dc3545;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 7px 14px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.btnCandidateDetail {
+  background: #4a5dc7;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 7px 14px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  box-shadow: 0 4px 6px rgba(50, 50, 93, 0.11);
+}
+
+.rejectedRemark {
+  color: #dc3545;
+  font-size: 13px;
+  font-weight: bold;
+}
+
+.listHeader {
+  background: white;
+  border: 1px solid #e1e4e8;
+  border-radius: 8px;
+  padding: 12px 20px;
+  margin-top: 30px;
+  margin-bottom: 20px;
+  font-size: 15px;
+  color: #333;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+}
+.listHeader strong {
+  color: #007bff;
+}
+
+/* ── Right Detail Panel ──────────────────────── */
+.detailPanel {
+  flex: 1;
+  padding: 20px;
+  position: sticky;
+  top: 68px;
+  max-height: calc(100vh - 68px);
+  overflow-y: auto;
+}
+
+.detailContainer {
+  background: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  margin-bottom: 20px;
+}
+
+.detailHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  margin-bottom: 15px;
+  border-bottom: 1px solid #e9ecef;
+  padding-bottom: 15px;
+}
+
+.detailJobTitle {
+  margin: 0;
+  font-size: 24px;
+  color: #2c3e50;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.detailActions {
+  display: flex;
+  gap: 10px;
+}
+
+.btnAction {
+  padding: 6px 15px;
+  font-size: 13px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  color: #fff;
+  background-color: #007bff;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-weight: 500;
+  transition: background 0.2s;
+}
+.btnAction:hover { background-color: #0056b3; }
+.btnDuplicate { background-color: #17a2b8; }
+.btnDuplicate:hover { background-color: #138496; }
+
+/* Meta Grid */
+.detailMetaGrid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  margin-bottom: 20px;
+  color: #555;
+  font-size: 14px;
+  align-items: center;
+}
+
+.metaItem {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+}
+.metaItem img {
+  width: 18px;
+  height: 18px;
+  object-fit: contain;
+  opacity: 0.8;
+}
+
+/* Toggle Group */
+.toggleGroup {
+  display: flex;
+  gap: 15px;
+  margin-bottom: 20px;
+}
+
+.btnToggle {
+  padding: 10px 25px;
+  border-radius: 5px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: all 0.3s ease;
+  text-align: center;
+  min-width: 140px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+}
+
+.btnApplied {
+  background-color: #e8f5e9;
+  color: #2e7d32;
+  border: 1px solid #c8e6c9;
+}
+.btnApplied:hover { background-color: #dcedc8; }
+
+.btnRecommended {
+  background-color: #f3e5f5;
+  color: #7b1fa2;
+  border: 1px solid #e1bee7;
+}
+.btnRecommended:hover { background-color: #e1bee7; color: #4a148c; }
+
+@keyframes pulse {
+  0% { box-shadow: 0 0 0 0 rgba(123, 31, 162, 0.4); }
+  70% { box-shadow: 0 0 0 10px rgba(123, 31, 162, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(123, 31, 162, 0); }
+}
+.btnAnim {
+  animation: pulse 2s infinite;
+}
+
+/* Spinner Loader */
+.spinner {
+  border: 4px solid rgba(0, 0, 0, 0.1);
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border-left-color: #007bff;
+  animation: spin 1s linear infinite;
+  margin: 0 auto;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Stats Dashboard */
+.statsDashboard {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 8px;
+}
+
+.statCard {
+  background: #fff;
+  border-radius: 6px;
+  overflow: hidden;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+  cursor: pointer;
+  transition: transform 0.2s;
+  border: 1px solid #eee;
+  display: flex;
+  flex-direction: column;
+}
+.statCard:hover { transform: translateY(-1px); }
+
+.statHeader {
+  padding: 6px 2px;
+  font-size: 10px;
+  font-weight: 700;
+  text-align: center;
+  color: #fff;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  flex-grow: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1.2;
+  min-height: 35px;
+}
+
+.statBody {
+  padding: 5px;
+  text-align: center;
+  font-size: 18px;
+  font-weight: bold;
+  color: #333;
+  background: #fff;
+}
+
+.bgAll { background-color: #337ab7; }
+.bgNew { background-color: #9c27b0; }
+.bgInterview { background-color: #bfd200; }
+.bgShortlisted { background-color: #4285f4; }
+.bgHired { background-color: #00a65a; }
+.bgRejected { background-color: #dd4b39; }
+.bgAbsent { background-color: #f39c12; }
+
+/* Empty / Placeholder State */
+.emptyState {
+  text-align: center;
+  padding: 60px 20px;
+  color: #999;
+  font-size: 16px;
+}
+
+.emptyState svg {
+  margin-bottom: 15px;
+  opacity: 0.4;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-5px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Responsive ──────────────────────────────── */
+@media (max-width: 1024px) {
+  .pageWrapper {
+    flex-direction: column;
+  }
+  .sidebar {
+    width: 100%;
+    min-width: 100%;
+    max-height: none;
+    position: static;
+  }
+  .detailPanel {
+    position: static;
+    max-height: none;
+  }
+  .statsDashboard {
+    grid-template-columns: repeat(4, 1fr);
+  }
+  
+  .mobileHidden {
+    display: none !important;
+  }
+  
+  .btnBackMobile {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    background: #f8f9fa;
+    color: #333;
+    border: 1px solid #ddd;
+    padding: 8px 12px;
+    border-radius: 4px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    margin-bottom: 15px;
+    width: fit-content;
+  }
+}
+
+@media (min-width: 1025px) {
+  .btnBackMobile {
+    display: none !important;
+  }
+}
+
+@media (max-width: 600px) {
+  .pageWrapper { padding: 5px; }
+  .sidebar { padding: 5px; }
+  .detailPanel { padding: 5px; }
+  .detailContainer { padding: 15px; border-radius: 8px; margin-bottom: 10px; }
+  .jobCard { margin-bottom: 12px; border-radius: 8px; }
+  .planCard { border-radius: 8px; margin-bottom: 15px; padding: 15px; }
+  .postJobContainer { padding: 15px; border-radius: 8px; margin-bottom: 15px; }
+  
+  .statsDashboard {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .jobCardHeader { padding: 10px 15px; }
+  .jobMeta { padding: 5px 15px; }
+  .jobTitle { font-size: 16px; }
+  .toggleGroup { flex-direction: row; gap: 8px; }
+  .btnToggle { min-width: 0; flex: 1; padding: 10px 5px; font-size: 13px; }
+  .listHeader { padding: 10px 15px; font-size: 14px; margin-top: 20px; }
+}

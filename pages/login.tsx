@@ -132,7 +132,7 @@ export default function LoginPage() {
   // ── Handle Verify OTP & Login ──────────────
   const handleVerifyOtp = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    
+
     // If OTP hasn't been sent yet, the form submission acts as "Send OTP"
     if (!otpSent) {
       return handleSendOtp(e);
@@ -258,8 +258,8 @@ export default function LoginPage() {
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <label htmlFor="mobileno" className={styles.label}>Mobile Number</label>
                 {otpSent && (
-                  <button 
-                    type="button" 
+                  <button
+                    type="button"
                     onClick={() => { setOtpSent(false); setOtp(''); }}
                     style={{ background: 'none', border: 'none', color: '#0070f3', cursor: 'pointer', fontSize: '12px' }}
                   >
@@ -292,8 +292,8 @@ export default function LoginPage() {
                   {timer > 0 ? (
                     <span style={{ fontSize: '12px', color: '#666' }}>Resend in {timer}s</span>
                   ) : (
-                    <button 
-                      type="button" 
+                    <button
+                      type="button"
                       onClick={handleSendOtp}
                       disabled={loading}
                       style={{ background: 'none', border: 'none', color: '#2d6eb5', cursor: 'pointer', fontSize: '12px', fontWeight: 'bold' }}

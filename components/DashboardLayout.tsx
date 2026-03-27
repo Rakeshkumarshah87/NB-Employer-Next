@@ -26,23 +26,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 
   // ── Loading State ─────────────────────────────
   if (loading) {
-    return (
-      <div className={styles.loadingWrapper}>
-        <div className={styles.loadingHeader}>
-          <div className={styles.loadingHeaderInner}>
-            <div className={styles.loadingBrand} />
-            <div className={styles.loadingNavItems}>
-              <div className={styles.loadingNavItem} />
-              <div className={styles.loadingNavItem} />
-            </div>
-            <div className={styles.loadingUserBtn} />
-          </div>
-        </div>
-        <div className={styles.loadingContent}>
-          <div className={styles.loadingSpinner} />
-        </div>
-      </div>
-    );
+    return <div className={styles.loadingWrapper} />;
   }
 
   // Not authenticated — will redirect (show nothing to avoid flash)
