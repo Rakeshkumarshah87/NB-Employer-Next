@@ -38,11 +38,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         if (res.status && res.data) {
           setUser(res.data);
         } else {
-          clearAuth();
-          setUser(null);
+          // Instead of clearing auth immediately on local API failure/401,
+          // fallback to the cached user cookie so the app remains usable.
+          const cachedUser = getAuthUser();
+          if (cachedUser) {
+            setUser(cachedUser);
+          } else {
+            clearAuth();
+            setUser(null);
+          }
         }
-      } catch {
-        // If API is unreachable, try cached user data
+      } catch (err) {
+        console.error("Auth check failed:", err);
+        // Fallback to cached user
         const cachedUser = getAuthUser();
         if (cachedUser) {
           setUser(cachedUser);

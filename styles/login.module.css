@@ -1,17 +1,77 @@
 /* ============================================
-   Login Page - Premium Design
+   Login Page - Blue Gradient Light Theme
    ============================================ */
+
+/* ── Login Page Header ────────────────────── */
+.loginHeader {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  background: linear-gradient(135deg, #1e3a5f 0%, #2d6eb5 50%, #4a90d9 100%);
+  box-shadow: 0 2px 16px rgba(30, 58, 95, 0.25);
+}
+
+.loginHeaderInner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 60px;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+.loginHeaderBrand {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+}
+
+.loginHeaderLogo {
+  height: 40px;
+  background: #fff;
+  padding: 2px 6px;
+  border-radius: 4px;
+  object-fit: contain;
+}
+
+.loginHeaderBtn {
+  display: inline-flex;
+  align-items: center;
+  padding: 8px 20px;
+  background: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 30px;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  letter-spacing: 0.3px;
+}
+
+.loginHeaderBtn:hover {
+  background: rgba(255, 255, 255, 0.28);
+  color: #fff;
+  box-shadow: 0 0 15px rgba(255, 255, 255, 0.1);
+  transform: translateY(-1px);
+}
 
 /* ── Animated Background ──────────────────── */
 .pageWrapper {
   position: relative;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  min-height: 100vh;
+  min-height: 100dvh;
   padding: var(--space-4);
-  overflow: hidden;
-  background: var(--color-bg-primary);
+  padding-top: 76px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  background: linear-gradient(145deg, #e8f0fe 0%, #f0f4f8 40%, #dbeafe 100%);
 }
 
 .pageWrapper::before {
@@ -22,9 +82,9 @@
   width: 200%;
   height: 200%;
   background:
-    radial-gradient(ellipse at 20% 50%, rgba(99, 102, 241, 0.12) 0%, transparent 50%),
-    radial-gradient(ellipse at 80% 20%, rgba(139, 92, 246, 0.1) 0%, transparent 50%),
-    radial-gradient(ellipse at 50% 80%, rgba(34, 211, 238, 0.06) 0%, transparent 50%);
+    radial-gradient(ellipse at 20% 50%, rgba(45, 110, 181, 0.08) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 20%, rgba(30, 58, 95, 0.06) 0%, transparent 50%),
+    radial-gradient(ellipse at 50% 80%, rgba(74, 144, 217, 0.05) 0%, transparent 50%);
   animation: bgPulse 15s ease-in-out infinite;
   z-index: 0;
 }
@@ -40,7 +100,7 @@
   position: absolute;
   border-radius: 50%;
   filter: blur(80px);
-  opacity: 0.4;
+  opacity: 0.35;
   z-index: 0;
   animation: orbFloat 20s ease-in-out infinite;
 }
@@ -48,7 +108,7 @@
 .orb1 {
   width: 400px;
   height: 400px;
-  background: rgba(99, 102, 241, 0.2);
+  background: rgba(45, 110, 181, 0.12);
   top: -10%;
   right: -5%;
   animation-delay: 0s;
@@ -57,7 +117,7 @@
 .orb2 {
   width: 300px;
   height: 300px;
-  background: rgba(139, 92, 246, 0.15);
+  background: rgba(30, 58, 95, 0.1);
   bottom: -5%;
   left: -5%;
   animation-delay: -7s;
@@ -66,7 +126,7 @@
 .orb3 {
   width: 200px;
   height: 200px;
-  background: rgba(34, 211, 238, 0.12);
+  background: rgba(74, 144, 217, 0.08);
   top: 40%;
   left: 60%;
   animation-delay: -13s;
@@ -86,15 +146,12 @@
   width: 100%;
   max-width: 440px;
   padding: var(--space-10);
-  background: var(--color-bg-card);
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
-  border: 1px solid var(--color-border);
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
   border-radius: var(--radius-2xl);
   box-shadow:
-    var(--shadow-xl),
-    var(--shadow-glow),
-    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+    0 20px 60px rgba(30, 58, 95, 0.1),
+    0 4px 16px rgba(0, 0, 0, 0.04);
   animation: cardSlideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
@@ -115,34 +172,26 @@
   margin-bottom: var(--space-8);
 }
 
-.brandLogo {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 56px;
-  height: 56px;
-  background: var(--color-accent-gradient);
-  border-radius: var(--radius-xl);
+.brandLogoImg {
+  height: 110px;
+  width: auto;
+  max-width: 100%;
+  object-fit: contain;
   margin-bottom: var(--space-5);
-  box-shadow: 0 8px 24px rgba(99, 102, 241, 0.3);
-}
-
-.brandIcon {
-  font-size: 28px;
-  line-height: 1;
+  margin-top: var(--space-4);
 }
 
 .brandTitle {
   font-size: var(--font-size-2xl);
   font-weight: 700;
-  color: var(--color-text-primary);
+  color: #1e293b;
   margin-bottom: var(--space-2);
   letter-spacing: -0.02em;
 }
 
 .brandSubtitle {
   font-size: var(--font-size-sm);
-  color: var(--color-text-secondary);
+  color: #64748b;
   font-weight: 400;
 }
 
@@ -155,7 +204,7 @@
   display: block;
   font-size: var(--font-size-sm);
   font-weight: 500;
-  color: var(--color-text-secondary);
+  color: #475569;
   margin-bottom: var(--space-2);
 }
 
@@ -169,7 +218,7 @@
   position: absolute;
   left: var(--space-4);
   font-size: var(--font-size-lg);
-  color: var(--color-text-muted);
+  color: #94a3b8;
   transition: color var(--transition-fast);
   pointer-events: none;
   user-select: none;
@@ -179,10 +228,10 @@
 .input {
   width: 100%;
   padding: var(--space-3) var(--space-4) var(--space-3) 48px;
-  background: var(--color-bg-input);
-  border: 1px solid var(--color-border);
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
   border-radius: var(--radius-lg);
-  color: var(--color-text-primary);
+  color: #1e293b;
   font-size: var(--font-size-base);
   outline: none;
   transition:
@@ -192,18 +241,18 @@
 }
 
 .input::placeholder {
-  color: var(--color-text-placeholder);
+  color: #94a3b8;
 }
 
 .input:focus {
-  background: var(--color-bg-input-focus);
-  border-color: var(--color-border-focus);
-  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+  background: #ffffff;
+  border-color: #2d6eb5;
+  box-shadow: 0 0 0 3px rgba(45, 110, 181, 0.1);
 }
 
 .input:focus ~ .inputIcon,
 .inputWrapper:focus-within .inputIcon {
-  color: var(--color-accent-primary);
+  color: #2d6eb5;
 }
 
 /* ── Submit Button ────────────────────────── */
@@ -223,7 +272,7 @@
     transform var(--transition-fast),
     box-shadow var(--transition-fast),
     opacity var(--transition-fast);
-  box-shadow: 0 4px 16px rgba(99, 102, 241, 0.3);
+  box-shadow: 0 4px 16px rgba(30, 58, 95, 0.25);
 }
 
 .submitBtn::before {
@@ -240,7 +289,7 @@
 
 .submitBtn:hover:not(:disabled) {
   transform: translateY(-1px);
-  box-shadow: 0 6px 24px rgba(99, 102, 241, 0.4);
+  box-shadow: 0 6px 24px rgba(30, 58, 95, 0.35);
 }
 
 .submitBtn:hover:not(:disabled)::before {
@@ -284,8 +333,8 @@
   align-items: center;
   gap: var(--space-3);
   padding: var(--space-3) var(--space-4);
-  background: var(--color-error-bg);
-  border: 1px solid var(--color-error-border);
+  background: rgba(239, 68, 68, 0.06);
+  border: 1px solid rgba(239, 68, 68, 0.2);
   border-radius: var(--radius-md);
   margin-bottom: var(--space-5);
   animation: errorSlideIn 0.3s ease;
@@ -298,7 +347,7 @@
 
 .errorText {
   font-size: var(--font-size-sm);
-  color: var(--color-error);
+  color: #ef4444;
   font-weight: 500;
 }
 
@@ -337,12 +386,12 @@
 .dividerLine {
   flex: 1;
   height: 1px;
-  background: var(--color-border);
+  background: #e2e8f0;
 }
 
 .dividerText {
   font-size: var(--font-size-xs);
-  color: var(--color-text-muted);
+  color: #94a3b8;
   text-transform: uppercase;
   letter-spacing: 0.1em;
   font-weight: 500;
@@ -357,18 +406,18 @@
 .footerLink {
   display: inline-block;
   font-size: var(--font-size-sm);
-  color: var(--color-text-muted);
+  color: #64748b;
   transition: color var(--transition-fast);
 }
 
 .footerLink:hover {
-  color: var(--color-accent-primary);
+  color: #2d6eb5;
 }
 
 .footerDot {
   display: inline-block;
   margin: 0 var(--space-3);
-  color: var(--color-text-muted);
+  color: #cbd5e1;
   font-size: var(--font-size-xs);
 }
 
@@ -378,8 +427,8 @@
   align-items: center;
   gap: var(--space-3);
   padding: var(--space-3) var(--space-4);
-  background: var(--color-success-bg);
-  border: 1px solid rgba(34, 197, 94, 0.3);
+  background: rgba(22, 163, 74, 0.06);
+  border: 1px solid rgba(22, 163, 74, 0.2);
   border-radius: var(--radius-md);
   margin-bottom: var(--space-5);
   animation: errorSlideIn 0.3s ease;
@@ -392,27 +441,132 @@
 
 .successText {
   font-size: var(--font-size-sm);
-  color: var(--color-success);
+  color: #16a34a;
   font-weight: 500;
+}
+
+/* ── OTP Boxes ────────────────────────────── */
+.otpBoxesWrapper {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+}
+
+.otpBox {
+  width: 52px;
+  height: 56px;
+  text-align: center;
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: #1e293b;
+  background: #f8fafc;
+  border: 2px solid #e2e8f0;
+  border-radius: var(--radius-lg);
+  outline: none;
+  transition:
+    border-color var(--transition-fast),
+    box-shadow var(--transition-fast),
+    background var(--transition-fast);
+  caret-color: #2d6eb5;
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+
+.otpBox::-webkit-outer-spin-button,
+.otpBox::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.otpBox:focus {
+  background: #ffffff;
+  border-color: #2d6eb5;
+  box-shadow: 0 0 0 3px rgba(45, 110, 181, 0.12);
+}
+
+.otpBox:not(:placeholder-shown) {
+  border-color: #2d6eb5;
+  background: #ffffff;
 }
 
 /* ── Responsive ───────────────────────────── */
 @media (max-width: 480px) {
+  .loginHeader {
+    box-shadow: 0 1px 8px rgba(30, 58, 95, 0.2);
+  }
+
+  .loginHeaderInner {
+    height: 52px;
+    padding: 0 12px;
+  }
+
+  .loginHeaderLogo {
+    height: 32px;
+  }
+
+  .loginHeaderBtn {
+    padding: 6px 14px;
+    font-size: 12px;
+  }
+
+  .pageWrapper {
+    padding: 16px;
+    padding-top: 76px; /* Balance with bottom to center perfectly */
+    padding-bottom: 76px;
+    justify-content: center; /* Bring it back to center */
+  }
+
   .loginCard {
-    padding: var(--space-6);
+    padding: 24px 20px;
     border-radius: var(--radius-xl);
+    width: 90%;
+    max-width: 360px;
+    max-height: calc(100vh - 80px); /* Leave room for header */
+    overflow-y: auto; /* In case of small screen and keyboard */
   }
 
-  .brandLogo {
-    width: 48px;
-    height: 48px;
-  }
-
-  .brandIcon {
-    font-size: 24px;
+  .brandLogoImg {
+    height: 70px;
+    margin-top: var(--space-2);
+    margin-bottom: var(--space-3);
   }
 
   .brandTitle {
-    font-size: var(--font-size-xl);
+    font-size: 1.25rem;
+  }
+
+  .brandSubtitle {
+    font-size: 0.8rem;
+  }
+
+  .otpBoxesWrapper {
+    gap: 8px;
+  }
+
+  .otpBox {
+    width: 44px;
+    height: 48px;
+    font-size: 1.2rem;
+  }
+
+  .submitBtn {
+    font-size: 0.9rem;
+    padding: 10px 20px;
+  }
+}
+
+@media (max-width: 360px) {
+  .loginCard {
+    padding: 24px 18px;
+  }
+
+  .otpBox {
+    width: 40px;
+    height: 44px;
+    font-size: 1.1rem;
+  }
+
+  .otpBoxesWrapper {
+    gap: 6px;
   }
 }

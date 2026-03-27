@@ -1,5 +1,6 @@
 /* ============================================
-   Dashboard Layout - Premium Responsive Design
+   Dashboard Layout - Blue Gradient Light Theme
+   Premium Responsive Design
    ============================================ */
 
 /* ── Layout Wrapper ──────────────────────────── */
@@ -22,16 +23,14 @@
   left: 0;
   right: 0;
   z-index: 1000;
-  background: rgba(10, 10, 26, 0.88);
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  background: linear-gradient(135deg, #1e3a5f 0%, #2d6eb5 50%, #4a90d9 100%);
+  box-shadow: 0 2px 16px rgba(30, 58, 95, 0.25);
 }
 
 .headerAccent {
   height: 3px;
-  background: var(--color-accent-gradient);
-  opacity: 0.85;
+  background: linear-gradient(90deg, #4a90d9, #6cb4e8, #4a90d9);
+  opacity: 0.6;
 }
 
 .headerInner {
@@ -58,30 +57,12 @@
   opacity: 0.85;
 }
 
-.brandIconBox {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 36px;
-  height: 36px;
-  background: var(--color-accent-gradient);
-  border-radius: var(--radius-md);
-  color: #fff;
-  box-shadow: 0 4px 14px rgba(99, 102, 241, 0.35);
-}
-
-.brandText {
-  font-size: 1.2rem;
-  font-weight: 700;
-  color: var(--color-text-primary);
-  letter-spacing: -0.02em;
-}
-
-.brandHighlight {
-  background: var(--color-accent-gradient);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+.brandLogoImg {
+  height: 35px;
+  background: #fff;
+  padding: 2px 4px;
+  border-radius: 4px;
+  object-fit: contain;
 }
 
 /* ── Desktop Navigation ──────────────────────── */
@@ -99,24 +80,24 @@
   padding: 8px 16px;
   font-size: 0.9rem;
   font-weight: 500;
-  color: var(--color-text-secondary);
+  color: rgba(255, 255, 255, 0.8);
   text-decoration: none;
   border-radius: var(--radius-md);
   transition: all var(--transition-fast);
 }
 
 .navLink:hover {
-  color: var(--color-text-primary);
-  background: rgba(255, 255, 255, 0.05);
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.12);
 }
 
 .navLinkActive {
-  color: var(--color-text-primary);
-  background: rgba(99, 102, 241, 0.12);
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.18);
 }
 
 .navLinkActive svg {
-  color: var(--color-accent-primary);
+  color: #fbbf24;
 }
 
 .postJobBtn {
@@ -127,18 +108,19 @@
   margin-left: 4px;
   font-size: 0.85rem;
   font-weight: 600;
-  color: #fff;
+  color: #1e3a5f;
   text-decoration: none;
-  background: var(--color-accent-gradient);
+  background: #ffffff;
   border-radius: var(--radius-lg);
-  box-shadow: 0 4px 14px rgba(99, 102, 241, 0.3);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15);
   transition: all var(--transition-fast);
 }
 
 .postJobBtn:hover {
   transform: translateY(-1px);
-  box-shadow: 0 6px 20px rgba(99, 102, 241, 0.4);
-  color: #fff;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+  color: #1e3a5f;
+  background: #f0f7ff;
 }
 
 .postJobBtn:active {
@@ -147,7 +129,8 @@
 
 /* ── Desktop User Section ────────────────────── */
 .userSection {
-  display: none;
+  display: flex;
+  align-items: center;
   position: relative;
   margin-left: auto;
 }
@@ -157,18 +140,18 @@
   align-items: center;
   gap: 8px;
   padding: 5px 12px 5px 5px;
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  background: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 50px;
   cursor: pointer;
   transition: all var(--transition-fast);
-  color: var(--color-text-primary);
+  color: #ffffff;
 }
 
 .userBtn:hover,
 .userBtnActive {
-  background: rgba(255, 255, 255, 0.08);
-  border-color: rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.25);
+  border-color: rgba(255, 255, 255, 0.3);
 }
 
 .userAvatar {
@@ -176,14 +159,14 @@
   height: 32px;
   border-radius: 50%;
   object-fit: cover;
-  border: 2px solid rgba(99, 102, 241, 0.3);
+  border: 2px solid rgba(255, 255, 255, 0.4);
 }
 
 .avatarFallback {
   width: 32px;
   height: 32px;
   border-radius: 50%;
-  background: var(--color-accent-gradient);
+  background: rgba(255, 255, 255, 0.25);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -194,19 +177,33 @@
 }
 
 .userDisplayName {
+  display: none; /* Hidden on mobile by default */
   font-size: 0.85rem;
   font-weight: 500;
-  color: var(--color-text-primary);
+  color: #ffffff;
   max-width: 120px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
+@media (min-width: 769px) {
+  .userDisplayName {
+    display: block;
+  }
+}
+
 .chevron {
+  display: none; /* Hidden on mobile by default */
   transition: transform var(--transition-fast);
-  color: var(--color-text-muted);
+  color: rgba(255, 255, 255, 0.7);
   flex-shrink: 0;
+}
+
+@media (min-width: 769px) {
+  .chevron {
+    display: block;
+  }
 }
 
 .chevronOpen {
@@ -219,15 +216,12 @@
   top: calc(100% + 8px);
   right: 0;
   width: 280px;
-  background: rgba(18, 18, 42, 0.97);
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
   border-radius: var(--radius-xl);
   box-shadow:
-    0 20px 50px rgba(0, 0, 0, 0.5),
-    0 0 30px rgba(99, 102, 241, 0.08),
-    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+    0 20px 50px rgba(0, 0, 0, 0.12),
+    0 0 30px rgba(45, 110, 181, 0.06);
   padding: 6px;
   animation: ddSlideIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
   overflow: hidden;
@@ -250,7 +244,7 @@
   gap: 12px;
   padding: 14px 12px;
   border-radius: var(--radius-lg);
-  background: rgba(99, 102, 241, 0.06);
+  background: #f0f7ff;
 }
 
 .ddAvatar {
@@ -258,7 +252,7 @@
   height: 44px;
   border-radius: 50%;
   object-fit: cover;
-  border: 2px solid rgba(99, 102, 241, 0.3);
+  border: 2px solid rgba(45, 110, 181, 0.25);
   flex-shrink: 0;
 }
 
@@ -284,7 +278,7 @@
 .ddCompany {
   font-size: 0.82rem;
   font-weight: 700;
-  color: var(--color-text-primary);
+  color: #1e293b;
   letter-spacing: 0.03em;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -293,7 +287,7 @@
 
 .ddPerson {
   font-size: 0.78rem;
-  color: var(--color-text-secondary);
+  color: #475569;
   margin-top: 2px;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -302,14 +296,14 @@
 
 .ddPhone {
   font-size: 0.72rem;
-  color: var(--color-text-muted);
+  color: #64748b;
   margin-top: 1px;
   font-variant-numeric: tabular-nums;
 }
 
 .ddSep {
   height: 1px;
-  background: rgba(255, 255, 255, 0.06);
+  background: #e2e8f0;
   margin: 4px 0;
 }
 
@@ -320,25 +314,25 @@
   padding: 10px 12px;
   font-size: 0.85rem;
   font-weight: 500;
-  color: var(--color-text-secondary);
+  color: #475569;
   text-decoration: none;
   border-radius: var(--radius-md);
   transition: all var(--transition-fast);
 }
 
 .ddItem:hover {
-  background: rgba(255, 255, 255, 0.06);
-  color: var(--color-text-primary);
+  background: #f1f5f9;
+  color: #1e293b;
 }
 
 .ddItem svg {
-  color: var(--color-text-muted);
+  color: #64748b;
   flex-shrink: 0;
   transition: color var(--transition-fast);
 }
 
 .ddItem:hover svg {
-  color: var(--color-accent-primary);
+  color: #2d6eb5;
 }
 
 .ddLogout {
@@ -358,10 +352,34 @@
 }
 
 .ddLogout:hover {
-  background: rgba(239, 68, 68, 0.08);
+  background: rgba(239, 68, 68, 0.06);
 }
 
 .ddLogout svg {
+  flex-shrink: 0;
+}
+
+.ddWhatsapp {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 10px 12px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #16a34a;
+  background: rgba(22, 163, 74, 0.04);
+  border-radius: var(--radius-md);
+  text-decoration: none;
+  transition: all var(--transition-fast);
+}
+
+.ddWhatsapp:hover {
+  background: rgba(22, 163, 74, 0.1);
+  transform: translateY(-1px);
+}
+
+.ddWhatsapp svg {
   flex-shrink: 0;
 }
 
@@ -383,14 +401,14 @@
 }
 
 .hamburger:hover {
-  background: rgba(255, 255, 255, 0.06);
+  background: rgba(255, 255, 255, 0.12);
 }
 
 .hamburger span {
   display: block;
   height: 2px;
   width: 100%;
-  background: var(--color-text-primary);
+  background: #ffffff;
   border-radius: 2px;
   transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
   transform-origin: center;
@@ -420,7 +438,7 @@
 }
 
 .mobileOverlayOpen {
-  background: rgba(0, 0, 0, 0.55);
+  background: rgba(0, 0, 0, 0.35);
   backdrop-filter: blur(4px);
   -webkit-backdrop-filter: blur(4px);
   pointer-events: auto;
@@ -434,16 +452,15 @@
   width: 300px;
   max-width: 85vw;
   height: 100%;
-  background: rgba(14, 14, 34, 0.98);
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
-  border-left: 1px solid rgba(255, 255, 255, 0.06);
+  background: #ffffff;
+  border-left: 1px solid #e2e8f0;
   transform: translateX(100%);
   transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
   display: flex;
   flex-direction: column;
   padding: 20px;
   overflow-y: auto;
+  box-shadow: -8px 0 30px rgba(0, 0, 0, 0.1);
 }
 
 .mobilePanelOpen {
@@ -459,17 +476,17 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(255, 255, 255, 0.06);
+  background: #f1f5f9;
   border: none;
   border-radius: 50%;
-  color: var(--color-text-secondary);
+  color: #475569;
   cursor: pointer;
   transition: all var(--transition-fast);
 }
 
 .mobileClose:hover {
-  background: rgba(255, 255, 255, 0.1);
-  color: var(--color-text-primary);
+  background: #e2e8f0;
+  color: #1e293b;
 }
 
 /* ── Mobile User Section ─────────────────────── */
@@ -486,7 +503,7 @@
   height: 50px;
   border-radius: 50%;
   object-fit: cover;
-  border: 2px solid rgba(99, 102, 241, 0.4);
+  border: 2px solid rgba(45, 110, 181, 0.3);
   flex-shrink: 0;
 }
 
@@ -507,27 +524,27 @@
 .mobileCompany {
   font-size: 0.88rem;
   font-weight: 700;
-  color: var(--color-text-primary);
+  color: #1e293b;
   letter-spacing: 0.03em;
   line-height: 1.2;
 }
 
 .mobilePerson {
   font-size: 0.8rem;
-  color: var(--color-text-secondary);
+  color: #475569;
   margin-top: 3px;
 }
 
 .mobilePhone {
   font-size: 0.72rem;
-  color: var(--color-text-muted);
+  color: #64748b;
   margin-top: 2px;
   font-variant-numeric: tabular-nums;
 }
 
 .mobileSep {
   height: 1px;
-  background: rgba(255, 255, 255, 0.06);
+  background: #e2e8f0;
   margin: 4px 0;
 }
 
@@ -546,34 +563,34 @@
   padding: 14px 12px;
   font-size: 0.95rem;
   font-weight: 500;
-  color: var(--color-text-secondary);
+  color: #475569;
   text-decoration: none;
   border-radius: var(--radius-lg);
   transition: all var(--transition-fast);
 }
 
 .mobileNavLink:hover {
-  background: rgba(255, 255, 255, 0.05);
-  color: var(--color-text-primary);
+  background: #f1f5f9;
+  color: #1e293b;
 }
 
 .mobileNavLink svg {
-  color: var(--color-text-muted);
+  color: #64748b;
   flex-shrink: 0;
   transition: color var(--transition-fast);
 }
 
 .mobileNavLink:hover svg {
-  color: var(--color-accent-primary);
+  color: #2d6eb5;
 }
 
 .mobileNavLinkActive {
-  background: rgba(99, 102, 241, 0.1);
-  color: var(--color-text-primary);
+  background: #f0f7ff;
+  color: #1e293b;
 }
 
 .mobileNavLinkActive svg {
-  color: var(--color-accent-primary);
+  color: #2d6eb5;
 }
 
 .mobileLogoutBtn {
@@ -594,7 +611,7 @@
 }
 
 .mobileLogoutBtn:hover {
-  background: rgba(239, 68, 68, 0.08);
+  background: rgba(239, 68, 68, 0.06);
 }
 
 .mobileLogoutBtn svg {
@@ -611,8 +628,7 @@
 
 .loadingHeader {
   height: 67px;
-  background: rgba(255, 255, 255, 0.02);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+  background: linear-gradient(135deg, #1e3a5f 0%, #2d6eb5 50%, #4a90d9 100%);
 }
 
 .loadingHeaderInner {
@@ -628,7 +644,7 @@
 .loadingBrand {
   width: 140px;
   height: 28px;
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(255, 255, 255, 0.2);
   border-radius: var(--radius-md);
   animation: pulse 1.5s ease-in-out infinite;
 }
@@ -642,7 +658,7 @@
 .loadingNavItem {
   width: 70px;
   height: 28px;
-  background: rgba(255, 255, 255, 0.04);
+  background: rgba(255, 255, 255, 0.12);
   border-radius: var(--radius-md);
   animation: pulse 1.5s ease-in-out infinite;
   animation-delay: 0.2s;
@@ -651,7 +667,7 @@
 .loadingUserBtn {
   width: 120px;
   height: 36px;
-  background: rgba(255, 255, 255, 0.04);
+  background: rgba(255, 255, 255, 0.12);
   border-radius: 50px;
   margin-left: auto;
   animation: pulse 1.5s ease-in-out infinite;
@@ -668,8 +684,8 @@
 .loadingSpinner {
   width: 36px;
   height: 36px;
-  border: 3px solid rgba(99, 102, 241, 0.15);
-  border-top-color: var(--color-accent-primary);
+  border: 3px solid #e2e8f0;
+  border-top-color: #2d6eb5;
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
 }
@@ -697,14 +713,14 @@
 .welcomeTitle {
   font-size: 1.75rem;
   font-weight: 700;
-  color: var(--color-text-primary);
+  color: #1e293b;
   letter-spacing: -0.02em;
   margin-bottom: 6px;
 }
 
 .welcomeSub {
   font-size: 0.95rem;
-  color: var(--color-text-secondary);
+  color: #475569;
   font-weight: 400;
 }
 
@@ -719,19 +735,20 @@
   align-items: center;
   gap: 16px;
   padding: 24px;
-  background: var(--color-bg-card);
-  border: 1px solid var(--color-border);
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
   border-radius: var(--radius-xl);
   text-decoration: none;
   transition: all var(--transition-base);
   cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
 }
 
 .actionCard:hover {
-  background: var(--color-bg-card-hover);
-  border-color: rgba(99, 102, 241, 0.2);
+  background: #f8fafc;
+  border-color: rgba(45, 110, 181, 0.25);
   transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3), 0 0 20px rgba(99, 102, 241, 0.06);
+  box-shadow: 0 8px 24px rgba(30, 58, 95, 0.1), 0 0 20px rgba(45, 110, 181, 0.04);
 }
 
 .actionIcon {
@@ -745,18 +762,18 @@
 }
 
 .actionIconBlue {
-  background: rgba(99, 102, 241, 0.12);
-  color: #818cf8;
+  background: rgba(45, 110, 181, 0.1);
+  color: #2d6eb5;
 }
 
 .actionIconGreen {
-  background: rgba(34, 197, 94, 0.12);
-  color: #4ade80;
+  background: rgba(22, 163, 74, 0.1);
+  color: #16a34a;
 }
 
 .actionIconPurple {
-  background: rgba(168, 85, 247, 0.12);
-  color: #c084fc;
+  background: rgba(124, 58, 237, 0.1);
+  color: #7c3aed;
 }
 
 .actionCardContent {
@@ -766,13 +783,13 @@
 .actionTitle {
   font-size: 0.95rem;
   font-weight: 600;
-  color: var(--color-text-primary);
+  color: #1e293b;
   margin-bottom: 3px;
 }
 
 .actionDesc {
   font-size: 0.8rem;
-  color: var(--color-text-muted);
+  color: #64748b;
   line-height: 1.4;
 }
 
@@ -782,13 +799,14 @@
     display: flex;
   }
 
-  .userSection {
-    display: block;
-  }
-
   .hamburger {
     display: none;
   }
+}
+
+/* ── Mobile Bottom Navigation ────────────────── */
+.bottomNav {
+  display: none;
 }
 
 @media (max-width: 768px) {
@@ -797,22 +815,89 @@
     padding: 0 16px;
   }
 
+  .bottomNav {
+    display: flex;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 64px;
+    background: #ffffff;
+    border-top: 1px solid rgba(0, 0, 0, 0.05);
+    z-index: 1000;
+    justify-content: space-around;
+    align-items: center;
+    padding-bottom: env(safe-area-inset-bottom);
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.08);
+  }
+
+  .bottomNavItem {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    flex: 1;
+    height: 100%;
+    color: #475569; /* Slate 600 - High contrast */
+    transition: all var(--transition-fast);
+    padding-top: 6px;
+  }
+
+  .bottomNavItemActive {
+    color: #2d6eb5; /* Theme blue */
+  }
+
+  .bottomNavIcon {
+    width: 24px;
+    height: 24px;
+    margin-bottom: 4px;
+    transition: transform var(--transition-base);
+  }
+
+  .bottomNavItemActive .bottomNavIcon {
+    transform: translateY(-2px);
+    stroke-width: 2.5px;
+  }
+
+  .bottomNavText {
+    font-size: 0.65rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+  }
+
+  .notificationWrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .notificationBadge {
+    position: absolute;
+    top: -2px;
+    right: -8px;
+    background: #ef4444;
+    color: white;
+    font-size: 0.65rem;
+    font-weight: bold;
+    height: 16px;
+    min-width: 16px;
+    padding: 0 4px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid #ffffff;
+  }
+
   .mainContent {
     padding-top: 60px;
+    padding-bottom: 100px; /* Ensuring content stays above bottom nav */
   }
 
-  .brandText {
-    font-size: 1.05rem;
-  }
-
-  .brandIconBox {
-    width: 32px;
-    height: 32px;
-  }
-
-  .brandIconBox svg {
-    width: 16px;
-    height: 16px;
+  .brandLogoImg {
+    height: 28px;
   }
 
   .dashboardPage {
@@ -829,8 +914,8 @@
 }
 
 @media (max-width: 400px) {
-  .brandText {
-    font-size: 0.95rem;
+  .brandLogoImg {
+    height: 24px;
   }
 
   .mobilePanel {
