@@ -418,7 +418,7 @@ interface Job {
   job_info_full: string;
   has_more: boolean;
   verification_remark: string;
-  skills: string[];
+  skills: string | string[];
 }
 
 interface PlanInfo {
@@ -687,8 +687,8 @@ export default function AllPostJobsPage() {
               {job.skills && (
                 <div className={styles.skillsContainer}>
                   <span className={styles.skillLabel}>Skills:</span>
-                  {(Array.isArray(job.skills) ? job.skills : typeof job.skills === 'string' ? job.skills.split(',') : []).map((skill: string, idx: number) => {
-                    const cleanSkill = skill.trim();
+                  {(Array.isArray(job.skills) ? job.skills : (typeof job.skills === 'string' ? (job.skills as string).split(',') : [])).map((skill: any, idx: number) => {
+                    const cleanSkill = typeof skill === 'string' ? skill.trim() : '';
                     if (!cleanSkill) return null;
                     return <span key={idx} className={styles.skillTag}>{cleanSkill}</span>;
                   })}
