@@ -1,18 +1,31 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable react/no-unescaped-entities */
+/* eslint-disable @next/next/no-img-element */
 import { useState, useEffect, useCallback, useRef } from 'react';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
 import { useAuth } from '@/context/AuthContext';
-import { getAllJobsApi, getPlanInfoApi, updateJobStatusApi, getJobDetailApi, getCandidatesApplied, getCandidatesRecommended } from '@/services/api';
+import { getAllJobsApi, getPlanInfoApi, updateJobStatusApi, getJobDetailApi, getCandidatesApplied, getCandidatesRecommended, updateCandidateStatusApi } from '@/services/api';
 import styles from '@/styles/allPostJobs.module.css';
 
 const IMG = '/nt/images/icon';
 
 // --- CANDIDATE LIST VIEW COMPONENT ---
-const CandidateListView = ({ postId, viewMode, statusFilter, isPlanActive, jobStatus }: { postId: number, viewMode: 'applied'|'recommended', statusFilter: string, isPlanActive: boolean, jobStatus?: number }) => {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const CandidateListView = ({ postId, viewMode, statusFilter, isPlanActive, jobStatus, onLoadingChange }: { postId: number, viewMode: 'applied'|'recommended', statusFilter: string, isPlanActive: boolean, jobStatus?: number, onLoadingChange?: (loading: boolean) => void }) => {
+  const LIVE_BASE = 'https://networkbaba.co';
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [candidates, setCandidates] = useState<any[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [offset, setOffset] = useState<number>(0);
   const [hasMore, setHasMore] = useState<boolean>(false);
+  
+  // State for Status Update Form
+  const [activeUpdateId, setActiveUpdateId] = useState<number | null>(null);
+  const [updateStatus, setUpdateStatus] = useState<string>('');
+  const [updateRating, setUpdateRating] = useState<number>(0);
+  const [updateRemark, setUpdateRemark] = useState<string>('');
+  const [isUpdating, setIsUpdating] = useState<boolean>(false);
   const [error, setError] = useState<string>('');
 
   const loadCandidates = useCallback(async (reset: boolean = false) => {
@@ -21,6 +34,7 @@ const CandidateListView = ({ postId, viewMode, statusFilter, isPlanActive, jobSt
       if (reset) {
         setLoading(true);
         setError('');
+        setCandidates([]);
       }
       
       let res;
@@ -37,7 +51,8 @@ const CandidateListView = ({ postId, viewMode, statusFilter, isPlanActive, jobSt
       } else {
         setError(res?.message || 'Failed to load candidates');
       }
-    } catch (e: any) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (e: unknown) {
       setError('Error loading candidates. Please try again.');
     } finally {
       setLoading(false);
@@ -51,6 +66,12 @@ const CandidateListView = ({ postId, viewMode, statusFilter, isPlanActive, jobSt
     loadCandidates(true);
   }, [postId, viewMode, statusFilter]);
 
+  useEffect(() => {
+    if (onLoadingChange) {
+      onLoadingChange(loading && offset === 0);
+    }
+  }, [loading, offset, onLoadingChange]);
+
   if (loading && offset === 0) {
     return <div style={{ textAlign: 'center', padding: 60 }}><div className={styles.spinner}></div></div>;
   }
@@ -61,11 +82,67 @@ const CandidateListView = ({ postId, viewMode, statusFilter, isPlanActive, jobSt
     return <div style={{ textAlign: 'center', padding: 40, color: '#666', background: '#f8f9fa', borderRadius: 8 }}>No candidates found for this selection.</div>;
   }
 
+  const handleStatusChange = (userId: number, value: string) => {
+    if (value) {
+      setActiveUpdateId(userId);
+      setUpdateStatus(value);
+    } else {
+      setActiveUpdateId(null);
+      setUpdateStatus('');
+    }
+  };
+
+  const submitStatusUpdate = async (userId: number, applyId: number) => {
+    if (!updateStatus) {
+      alert('Please select a status first.');
+      return;
+    }
+    setIsUpdating(true);
+    try {
+      const payload = {
+        post_id: postId,
+        user_id: userId,
+        apply_id: applyId || 0,
+        status: updateStatus,
+        review: updateRating,
+        remark: updateRemark
+      };
+      const res = await updateCandidateStatusApi(payload);
+      if (res.status !== false) {
+        // Optimistically update the candidate in the list
+        setCandidates(prev => prev.map(c => {
+          if (c.user_id === userId) {
+            return {
+              ...c,
+              status: updateStatus,
+              review: updateRating.toString(),
+              remark: updateRemark
+            };
+          }
+          return c;
+        }));
+        // Reset form
+        setActiveUpdateId(null);
+        setUpdateStatus('');
+        setUpdateRating(0);
+        setUpdateRemark('');
+        alert('Status updated successfully!');
+      } else {
+        alert(res.message || 'Failed to update status.');
+      }
+    } catch (e) {
+      alert('Error updating status.');
+      console.error(e);
+    } finally {
+      setIsUpdating(false);
+    }
+  };
+
   return (
     <div style={{ marginTop: 20 }}>
       {candidates.map((c, idx) => (
         <div key={idx} className={styles.candidateCard}>
-          {viewMode === 'applied' && <span className={styles.newCandidatePill}>New Candidate</span>}
+          {viewMode === 'applied' && c.status_badge && <span className={styles.newCandidatePill}>{c.status_badge}</span>}
           <div className={styles.candidateHeader}>
             {c.profile_pic ? (
              <img src={c.profile_pic} alt="" className={styles.candidateAvatar} />
@@ -80,11 +157,11 @@ const CandidateListView = ({ postId, viewMode, statusFilter, isPlanActive, jobSt
                 {c.status_badge && <span className={styles.newCandidateBadge}>{c.status_badge}</span>}
               </div>
               <div className={styles.candidateLocation}>
-                📍 {c.location} {c.recommended_status === 1 && <span className={styles.recommendedBadge}>Recommended</span>}
+                📍 {c.location} {(viewMode === 'recommended' || c.recommended_status === 1) && <span className={styles.recommendedBadge}>Recommended</span>}
               </div>
               <div className={styles.candidateMeta}>
-                <div><strong>Experience:</strong><br/>{c.experience}</div>
-                <div><strong>Education:</strong><br/>{c.qualification}</div>
+                <div><strong>Experience:</strong><br/>{c.experience} Years</div>
+                <div><strong>Education:</strong><br/>{c.qualification} {c.degree_name ? <><br/><small style={{color:'#888'}}>({c.degree_name})</small></> : ''}</div>
                 {viewMode === 'applied' && <div><strong>Applied On:</strong><br/>{c.apply_date}</div>}
               </div>
             </div>
@@ -99,33 +176,79 @@ const CandidateListView = ({ postId, viewMode, statusFilter, isPlanActive, jobSt
               <div className={styles.candidateActions}>
                 {isPlanActive ? (
                   <>
-                    <button onClick={() => alert('Mobile: ' + c.contact_number)} style={{ background: '#007bff', color: '#fff', border: 'none', padding: '8px 15px', borderRadius: 4, cursor: 'pointer', fontSize: 13, fontWeight: 600 }}>📞 Show Number</button>
+                    <button onClick={() => alert('Mobile: ' + c.contact_number)} className={styles.btnShowNumber}>📞 Show Number</button>
                     <a href={`https://wa.me/91${(c.contact_number || '').slice(-10)}`} target="_blank" style={{ textDecoration: 'none' }}>
-                      <button style={{ background: '#28a745', color: '#fff', border: 'none', padding: '8px 15px', borderRadius: 4, cursor: 'pointer', fontSize: 13, fontWeight: 600 }}>💬 WhatsApp</button>
+                      <button className={styles.btnWhatsApp}>💬 WhatsApp</button>
                     </a>
-                    <button style={{ background: '#fff', color: '#007bff', border: '1px solid #007bff', padding: '8px 15px', borderRadius: 4, cursor: 'pointer', fontSize: 13, fontWeight: 600 }}>View Profile</button>
+                    <button onClick={() => { const profileUrl = c.share_url || ''; if(profileUrl) { window.open(`${LIVE_BASE}/${profileUrl}`, '_blank'); } else { alert('Profile not available'); } }} className={styles.btnViewProfile}>👤 View Profile</button>
                   </>
                 ) : (
                   <>
-                    <button onClick={() => router.push('/employer-upgrade-plan')} style={{ background: '#007bff', color: '#fff', border: 'none', padding: '8px 15px', borderRadius: 4, cursor: 'pointer', fontSize: 13, fontWeight: 600 }}>🔒 Show Number</button>
-                    <button onClick={() => router.push('/employer-upgrade-plan')} style={{ background: '#28a745', color: '#fff', border: 'none', padding: '8px 15px', borderRadius: 4, cursor: 'pointer', fontSize: 13, fontWeight: 600 }}>🔒 WhatsApp</button>
+                    <button onClick={() => router.push('/employer-upgrade-plan')} className={styles.btnShowNumber}>🔒 Show Number</button>
+                    <button onClick={() => router.push('/employer-upgrade-plan')} className={styles.btnWhatsApp}>🔒 WhatsApp</button>
+                    <button onClick={() => router.push('/employer-upgrade-plan')} className={styles.btnViewProfileLocked}>🔒 View Profile</button>
                   </>
                 )}
               </div>
-              
-              <select className={styles.candidateSelect}>
-                <option value="">Update Status</option>
-                <option value="Interview Fixed">Interview Fixed</option>
-                <option value="Shortlisted">Shortlisted</option>
-                <option value="Hired">Hired</option>
-                <option value="Rejected">Rejected</option>
-                <option value="Absent for Interview">Absent for Interview</option>
-              </select>
+              {viewMode === 'applied' && (
+                <div style={{ marginTop: 15 }}>
+                  <select 
+                    className={styles.candidateSelect}
+                    value={activeUpdateId === c.user_id ? updateStatus : ''}
+                    onChange={(e) => handleStatusChange(c.user_id, e.target.value)}
+                  >
+                    <option value="">Update Status</option>
+                    <option value="Interview Fixed">Interview Fixed</option>
+                    <option value="Shortlisted">Shortlisted</option>
+                    <option value="Hired">Hired</option>
+                    <option value="Rejected">Rejected</option>
+                    <option value="Absent for Interview">Absent for Interview</option>
+                  </select>
+
+                  {/* Show Review Form logic  */}
+                  {activeUpdateId === c.user_id && updateStatus && (
+                    <div className={styles.statusUpdateBox}>
+                      <div className={styles.ratingRow}>
+                        <label><b>Rating:</b></label>
+                        <div className={styles.starRating}>
+                          {[5,4,3,2,1].map(num => (
+                            <span key={num} style={{ display: 'inline-flex', flexDirection: 'row-reverse' }}>
+                              <input 
+                                type="radio" 
+                                id={`star${num}-${c.user_id}`} 
+                                name={`rating-${c.user_id}`} 
+                                value={num}
+                                checked={updateRating === num}
+                                onChange={() => setUpdateRating(num)}
+                                style={{ display: 'none' }}
+                              />
+                              <label htmlFor={`star${num}-${c.user_id}`} className={styles.starLabel}>☆</label>
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                      <textarea 
+                        className={styles.remarkBox} 
+                        placeholder="Add a remark..."
+                        value={updateRemark}
+                        onChange={(e) => setUpdateRemark(e.target.value)}
+                      />
+                      <button 
+                        onClick={() => submitStatusUpdate(c.user_id, c.apply_id)} 
+                        className={styles.btnStatusUpdate}
+                        disabled={isUpdating}
+                      >
+                        {isUpdating ? 'Updating...' : 'Update Status'}
+                      </button>
+                    </div>
+                  )}
+                </div>
+              )}
             </>
           )}
 
-          {viewMode === 'applied' && c.status && (
-            <div style={{ marginTop: 15, background: '#fffdfd', border: '1px solid #e1cdcd', padding: '8px', borderRadius: 4, fontSize: 13 }}>
+          {viewMode === 'applied' && c.status && activeUpdateId !== c.user_id && (
+            <div className={styles.statusBoxDisplay}>
               <b style={{ color: '#ff7600' }}>{c.review} ★</b> | <strong>{c.status}</strong> | <i>{c.remark}</i>
             </div>
           )}
@@ -198,20 +321,32 @@ export default function AllPostJobsPage() {
   const router = useRouter();
   const { user } = useAuth();
 
-  const [activeJobs, setActiveJobs] = useState<Job[]>([]);
-  const [expiredJobs, setExpiredJobs] = useState<Job[]>([]);
-  const [planInfo, setPlanInfo] = useState<PlanInfo | null>(null);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const [jobs, setJobs] = useState<any[]>([]);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const [activeJobs, setActiveJobs] = useState<any[]>([]);
+  const [expiredJobs, setExpiredJobs] = useState<any[]>([]);
+  const [planInfo, setPlanInfo] = useState<any>(null);
+  const [loading, setLoading] = useState<boolean>(true);
   const [selectedJobId, setSelectedJobId] = useState<number | null>(null);
-  const [jobDetail, setJobDetail] = useState<JobDetail | null>(null);
   const [expandedJobs, setExpandedJobs] = useState<Record<number, boolean>>({});
-  const [loading, setLoading] = useState(true);
+  const [statusFilter, setStatusFilter] = useState<string>('All');
+  
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const [jobDetail, setJobDetail] = useState<any>(null);
+  const [loadingDetail, setLoadingDetail] = useState<boolean>(false);
+  const [candidateView, setCandidateView] = useState<'applied'|'recommended'>('applied');
+  const [candidateListLoading, setCandidateListLoading] = useState<boolean>(true);
+  const [isMobileDetailOpen, setIsMobileDetailOpen] = useState<boolean>(false);
+  // State for Status Update Form
+  const [activeUpdateId, setActiveUpdateId] = useState<number | null>(null);
+  const [updateStatus, setUpdateStatus] = useState<string>('');
+  const [updateRating, setUpdateRating] = useState<number>(0);
+  const [updateRemark, setUpdateRemark] = useState<string>('');
   const [limitError, setLimitError] = useState('');
   const [postJobMsg, setPostJobMsg] = useState('');
   const [activeJobCount, setActiveJobCount] = useState(0);
-  const [candidateView, setCandidateView] = useState<'applied' | 'recommended'>('applied');
-  const [statusFilter, setStatusFilter] = useState<string>('All');
   const [pageError, setPageError] = useState<string | null>(null);
-  const [isMobileDetailOpen, setIsMobileDetailOpen] = useState(false);
 
   // ── Fetch data on mount ──
   useEffect(() => {
@@ -223,12 +358,16 @@ export default function AllPostJobsPage() {
           getPlanInfoApi(),
         ]);
         if (jobsRes.status && jobsRes.data) {
+          // Keep legacy states for UI rendering
           setActiveJobs(jobsRes.data.active_jobs || []);
           setExpiredJobs(jobsRes.data.expired_jobs || []);
+
+          // Combine active and expired jobs for a single list
+          const allJobs = [...(jobsRes.data.active_jobs || []), ...(jobsRes.data.expired_jobs || [])];
+          setJobs(allJobs);
           setActiveJobCount(jobsRes.data.active_job_count || 0);
 
           // Auto-select first active job
-          const allJobs = jobsRes.data.active_jobs || [];
           if (allJobs.length > 0) {
             setSelectedJobId(allJobs[0].id);
             loadJobDetail(allJobs[0].id);
@@ -249,6 +388,7 @@ export default function AllPostJobsPage() {
 
   const loadJobDetail = useCallback(async (postId: number) => {
     setSelectedJobId(postId);
+    setLoadingDetail(true);
     try {
       const res = await getJobDetailApi(postId);
       if (res.status && res.data) {
@@ -256,11 +396,13 @@ export default function AllPostJobsPage() {
       }
     } catch (e) {
       console.error('Failed to load job detail', e);
+    } finally {
+      setLoadingDetail(false);
     }
   }, []);
 
   // ── Update job status ──
-  const handleUpdateStatus = async (postId: number, newStatus: number) => {
+  const handleUpdateStatus = async (jobId: number, newStatus: number) => {
     // If activating, check plan limits
     if (newStatus === 1 && planInfo && planInfo.can_post_job === 0) {
       setLimitError('⚠️ Limit Reached! Cannot reactivate. You have hit your active job limit. Expire a job or upgrade.');
@@ -269,27 +411,29 @@ export default function AllPostJobsPage() {
     }
 
     try {
-      const res = await updateJobStatusApi(postId, newStatus);
+      const res = await updateJobStatusApi(jobId, newStatus);
       if (res.status) {
         // Update local state
+        setJobs(prev => prev.map((j: any) => j.id === jobId ? { ...j, active_status: newStatus } : j));
+        
         if (newStatus === 0) {
           // Move from active to expired
-          const job = activeJobs.find(j => j.id === postId);
+          const job = activeJobs.find(j => j.id === jobId);
           if (job) {
-            setActiveJobs(prev => prev.map(j => j.id === postId ? { ...j, active_status: 0 } : j));
+            setActiveJobs(prev => prev.filter(j => j.id !== jobId));
             setExpiredJobs(prev => [{ ...job, active_status: 0 }, ...prev]);
             setActiveJobCount(prev => prev - 1);
           }
         } else {
           // Reactivate
-          const job = expiredJobs.find(j => j.id === postId);
+          const job = expiredJobs.find(j => j.id === jobId);
           if (job) {
-            setExpiredJobs(prev => prev.filter(j => j.id !== postId));
+            setExpiredJobs(prev => prev.filter(j => j.id !== jobId));
             setActiveJobs(prev => [{ ...job, active_status: 1 }, ...prev]);
             setActiveJobCount(prev => prev + 1);
           } else {
             // Was in active list but status 0
-            setActiveJobs(prev => prev.map(j => j.id === postId ? { ...j, active_status: 1 } : j));
+            setActiveJobs(prev => prev.map(j => j.id === jobId ? { ...j, active_status: 1 } : j));
             setActiveJobCount(prev => prev + 1);
           }
         }
@@ -413,10 +557,11 @@ export default function AllPostJobsPage() {
               ✕ Expire Job
             </button>
           )}
-          {job.active_status === 4 && job.verification_remark && (
-            <span className={styles.rejectedRemark}>
-              Rejected: {job.verification_remark.toUpperCase()}
-            </span>
+          {job.active_status === 4 && (
+            <div className={styles.rejectedJobMessage}>
+              <span className={styles.rejectedJobText}>This job post has Rejected Due to</span>
+              {job.verification_remark && <span className={styles.rejectedJobReason}>{job.verification_remark.toUpperCase()}</span>}
+            </div>
           )}
           <button className={styles.btnCandidateDetail} onClick={() => { 
             loadJobDetail(job.id); 
@@ -536,11 +681,14 @@ export default function AllPostJobsPage() {
               {/* Header */}
               <div className={styles.detailHeader}>
                 <div>
-                  <h1 className={styles.detailJobTitle}>{jobDetail.job.job_role_name}</h1>
+                  <h1 className={styles.detailJobTitle}>
+                    <span style={{ marginRight: '10px' }}>💼</span>
+                    {jobDetail.job.job_role_name}
+                  </h1>
                 </div>
                 <div className={styles.detailActions}>
-                  <button className={styles.btnAction}>✏️ Edit</button>
-                  <button className={`${styles.btnAction} ${styles.btnDuplicate}`}>📋 Duplicate</button>
+                  <button onClick={() => window.open(`https://networkbaba.co/post-free-jobs/edit/${jobDetail.job.id}`, '_blank')} className={styles.btnAction}>✏️ Edit</button>
+                  <button onClick={() => window.open(`https://networkbaba.co/post-free-jobs/duplicate/${jobDetail.job.id}`, '_blank')} className={`${styles.btnAction} ${styles.btnDuplicate}`}>📋 Duplicate</button>
                 </div>
               </div>
 
@@ -630,8 +778,9 @@ export default function AllPostJobsPage() {
               <div style={{ marginTop: '10px' }}>
                 <div className={styles.listHeader}>
                   <span style={{ fontSize: '18px' }}>👥</span>
-                  <span>
-                    Showing <strong>{candidateView === 'applied' ? (statusFilter !== 'All' ? `${statusFilter} Applied` : 'Applied') : 'Recommended'}</strong> candidates...
+                  <span style={{ display: 'flex', alignItems: 'center' }}>
+                    Showing <strong>&nbsp;{candidateView === 'applied' ? (statusFilter !== 'All' ? `${statusFilter} Applied` : 'Applied') : 'Recommended'}</strong>&nbsp;candidates...
+                    {candidateListLoading && <div className={styles.inlineSpinner} style={{ marginLeft: 10 }}></div>}
                   </span>
                 </div>
                 
@@ -641,6 +790,7 @@ export default function AllPostJobsPage() {
                   statusFilter={statusFilter}
                   isPlanActive={planInfo ? (planInfo.has_active_plan && !planInfo.is_expired && planInfo.approval_status === 'Accept') : false} 
                   jobStatus={jobDetail.job.active_status}
+                  onLoadingChange={setCandidateListLoading}
                 />
               </div>
 

@@ -114,6 +114,8 @@ export default function LoginPage() {
         const userData: AuthUser = {
           employer_id: response.data.employer_id,
           mobileno: response.data.mobileno,
+          email: '',
+          company_number: response.data.mobileno || '',
           company_name: response.data.company_name || '',
           contact_person: response.data.contact_person || '',
           company_logo: response.data.company_logo || '',

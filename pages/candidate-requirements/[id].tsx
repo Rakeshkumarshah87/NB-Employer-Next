@@ -89,6 +89,7 @@ export default function CandidateRequirementsPage() {
     if (window.CKEDITOR && el && !window.CKEDITOR.instances.job_info_editor) {
       const editor = window.CKEDITOR.replace('job_info_editor', {
         height: 250,
+        versionCheck: false,
         removePlugins: 'elementspath,resize',
         toolbar: [
           { name: 'basicstyles', items: [ 'Bold', 'Italic', 'Underline', 'Strike', 'Subscript', 'Superscript', '-', 'RemoveFormat' ] },

@@ -282,11 +282,11 @@ export default function EmployerCompanyInfoPage() {
             <div className={styles.card}>
               <div className={styles.cardTitle + ' ' + styles.required}>Address</div>
               <div className={styles.formGrid}>
-                <div className={styles.formGroup}>
+                <div className={styles.formGroup + ' ' + styles.formGroupFull}>
                   <label className={styles.formLabel + ' ' + styles.required}>Interview Address</label>
                   <input type="text" className={styles.formInput} value={interAddress} onChange={e => setInterAddress(e.target.value)} placeholder="Flat No / Plot No /Building Name *" required />
                 </div>
-                <div className={styles.formGroup}>
+                <div className={styles.formGroup + ' ' + styles.formGroupFull}>
                   <label className={styles.formLabel + ' ' + styles.required}>City, State, Country</label>
                   <div className={styles.autocompleteContainer}>
                     <input type="text" className={styles.formInput} ref={interInputRef} value={interFullAdd} onChange={e => setInterFullAdd(e.target.value)} required />
@@ -294,15 +294,14 @@ export default function EmployerCompanyInfoPage() {
                   </div>
                 </div>
 
-                <div className={styles.formGroup}>
-                  <div></div>
+                <div className={styles.formGroup + ' ' + styles.formGroupFull}>
                   <label className={styles.checkboxContainer}>
                     <input type="checkbox" className={styles.checkbox} checked={sameAddress} onChange={e => setSameAddress(e.target.checked)} />
                     <span className={styles.checkboxLabel}>Use Same Address for job</span>
                   </label>
                 </div>
 
-                <div className={styles.formGroup}>
+                <div className={styles.formGroup + ' ' + styles.formGroupFull}>
                   <label className={styles.formLabel + ' ' + styles.required}>Receive Applications From</label>
                   <div className={styles.chipContainer}>
                     {['Within 10km', 'Within 25km', 'Entire City', 'Entire Country', 'Entire World'].map(opt => (
@@ -320,11 +319,11 @@ export default function EmployerCompanyInfoPage() {
 
                 {!sameAddress && (
                   <>
-                    <div className={styles.formGroup}>
+                    <div className={styles.formGroup + ' ' + styles.formGroupFull}>
                       <label className={styles.formLabel + ' ' + styles.required}>Job Address</label>
                       <input type="text" className={styles.formInput} value={jobAddress} onChange={e => setJobAddress(e.target.value)} placeholder="Flat No / Plot No /Building Name *" required={!sameAddress} />
                     </div>
-                    <div className={styles.formGroup}>
+                    <div className={styles.formGroup + ' ' + styles.formGroupFull}>
                       <label className={styles.formLabel + ' ' + styles.required}>City, State, Country</label>
                       <div className={styles.autocompleteContainer}>
                         <input type="text" className={styles.formInput} ref={jobInputRef} value={jobFullAdd} onChange={e => setJobFullAdd(e.target.value)} required={!sameAddress} />

@@ -1,22 +1,21 @@
 .pageContainer {
-  background-color: #f8f9fc;
+  background-color: #f4f6f9;
   min-height: calc(100vh - 68px);
-  padding: 15px 20px 40px; /* Restored small gap from header */
+  padding: 0px 20px 40px;
   font-family: 'Segoe UI', sans-serif;
   width: 100%;
 }
 
 .toggleContainer {
   text-align: center;
-  margin-bottom: 20px; /* Moderate gap between toggle and banner */
+  margin-top: -15px;
+  margin-bottom: 15px;
 }
 
 .toggleWrapper {
   display: inline-flex;
-  background: #fff;
-  border: 1px solid #3b55e6;
-  border-radius: 8px; /* Square-ish modern look */
-  padding: 2px;
+  background: transparent;
+  padding: 0;
   position: relative;
 }
 
@@ -56,13 +55,13 @@
 }
 
 .offerBanner {
-  background: linear-gradient(135deg, #6d28d9 0%, #9333ea 100%);
+  background: #8e44ad;
   color: white;
   text-align: center;
-  padding: 20px 15px;
-  border-radius: 16px;
-  box-shadow: 0 10px 25px rgba(109, 40, 217, 0.2);
-  border: 1px solid rgba(255, 255, 255, 0.15);
+  padding: 15px 15px;
+  border-radius: 4px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  border: none;
   position: relative;
   overflow: hidden;
 }
@@ -82,14 +81,15 @@
 }
 
 .offerBanner h4 {
-  margin: 0 0 5px;
-  font-size: 18px;
+  margin: 0 0 8px;
+  font-size: 16px;
   font-weight: 700;
 }
 
 .offerBanner p {
   margin: 0;
-  font-size: 16px;
+  font-size: 14px;
+  font-weight: 600;
 }
 
 .plansGrid {
@@ -104,36 +104,34 @@
 .pricingCard {
   background: #fff;
   border: 1px solid #eaecf0;
-  border-radius: 20px;
-  padding: 30px;
+  border-radius: 8px;
+  padding: 25px 20px;
   width: 100%;
-  max-width: 350px; /* Reduced width to ensure 3 per row as requested */
+  max-width: 330px;
   position: relative;
   transition: all 0.3s ease-in-out;
   display: flex;
   flex-direction: column;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
 }
 
 .pricingCard:hover {
-  transform: translateY(-10px) scale(1.02);
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
+  transform: translateY(-5px);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.08);
   border-color: #3b55e6;
 }
 
 .specialBadge {
-  background: linear-gradient(135deg, #7c3aed 0%, #a855f7 100%);
+  background: #9d50bb;
   color: #fff;
   text-align: center;
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 700;
-  padding: 10px;
-  border-radius: 12px;
-  margin-bottom: 15px;
-  box-shadow: 0 4px 12px rgba(124, 58, 237, 0.25);
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 8px;
+  border-radius: 4px;
+  margin-bottom: 20px;
+  box-shadow: none;
+  border: none;
 }
 
 /* Pulse removed to fix blurriness */
@@ -208,8 +206,8 @@
 
 .btnBuy {
   width: 100%;
-  padding: 12px;
-  border-radius: 8px;
+  padding: 10px;
+  border-radius: 6px;
   font-size: 16px;
   font-weight: 600;
   border: none;
@@ -234,9 +232,9 @@
 
 .featuresList li {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   margin-bottom: 12px;
-  font-size: 14px;
+  font-size: 13px;
   color: #344054;
   line-height: 1.5;
   gap: 10px;

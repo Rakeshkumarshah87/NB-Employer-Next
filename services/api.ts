@@ -375,3 +375,83 @@ export async function updatePaymentStatusApi(dbId: number, paymentId: string): P
     body: JSON.stringify({ db_id: dbId, payment_id: paymentId }),
   });
 }
+
+// Update Candidate Interview Status
+export async function updateCandidateStatusApi(payload: {
+  post_id: number;
+  user_id: number;
+  apply_id: number;
+  status: string;
+  review: number;
+  remark: string;
+}): Promise<ApiResponse<any>> {
+  return apiRequest<any>('/update-candidate-status', {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  });
+}
+
+// ── Employer Profile ────────────────────────────────────
+
+export interface EmployerProfileData {
+  company: {
+    company_name: string;
+    company_logo: string;
+    gst_no: string;
+    year_of_establish: string;
+    no_of_employee: string;
+    company_website: string;
+    linkedin: string;
+    email_id: string;
+    contact_person_name: string;
+    contact_person_number: string;
+    address: string;
+  };
+  subscription: {
+    has_active_plan: boolean;
+    package_name: string;
+    activated_on: string;
+    validity: string;
+  };
+}
+
+/**
+ * GET /employer-profile
+ * Fetch full employer profile data
+ */
+export async function getEmployerProfileApi(): Promise<ApiResponse<EmployerProfileData>> {
+  return apiRequest<EmployerProfileData>('/employer-profile', { method: 'GET' });
+}
+
+/**
+ * POST /upload-logo
+ * Upload company logo (multipart form data)
+ */
+export async function uploadLogoApi(file: File): Promise<ApiResponse<{ logo: string }>> {
+  const token = getAuthToken();
+  const formData = new FormData();
+  formData.append('file', file);
+
+  const headers: Record<string, string> = {};
+  if (token) {
+    headers['Authorization'] = `Bearer ${token}`;
+    headers['X-Authorization'] = `Bearer ${token}`;
+  }
+
+  const response = await fetch(`${API_BASE_URL}/upload-logo`, {
+    method: 'POST',
+    headers,
+    body: formData,
+  });
+
+  return response.json();
+}
+
+/**
+ * POST /remove-logo
+ * Remove company logo
+ */
+export async function removeLogoApi(): Promise<ApiResponse<any>> {
+  return apiRequest<any>('/remove-logo', { method: 'POST' });
+}
+
