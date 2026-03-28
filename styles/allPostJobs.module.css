@@ -496,6 +496,16 @@
   opacity: 0.7;
 }
 
+.jobDescriptionContent p {
+  margin: 0;
+  padding: 0;
+}
+.jobDescriptionContent {
+  font-size: 14px;
+  color: #666;
+  line-height: 1.5;
+}
+
 /* Job Description Preview */
 .jobDescPreview {
   color: #666;
@@ -980,4 +990,239 @@
   .toggleGroup { flex-direction: row; gap: 8px; }
   .btnToggle { min-width: 0; flex: 1; padding: 10px 5px; font-size: 13px; }
   .listHeader { padding: 10px 15px; font-size: 14px; margin-top: 20px; }
+}
+
+.profileModalOverlay {
+  position: fixed;
+  top: 68px;
+  left: 0;
+  width: 100vw;
+  height: calc(100vh - 68px);
+  background: rgba(0,0,0,0.6);
+  z-index: 1000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  backdrop-filter: blur(4px);
+  padding: 20px;
+}
+
+.profileModalContentNative {
+  background: #fff;
+  width: 100%;
+  max-width: 700px;
+  max-height: 90vh;
+  border-radius: 12px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+  animation: modalScale 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  display: flex;
+  flex-direction: column;
+}
+
+.profileModalHeader {
+  padding: 15px 20px;
+  border-bottom: 1px solid #edf2f7;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #f8f9fa;
+}
+
+.profileModalTitle {
+  margin: 0;
+  font-size: 18px;
+  color: #2c3e50;
+  font-weight: 700;
+}
+
+.profileModalNativeClose {
+  width: 32px;
+  height: 32px;
+  background: #e9ecef;
+  border: none;
+  border-radius: 50%;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #495057;
+  transition: all 0.2s;
+}
+
+.profileModalNativeClose:hover {
+  background: #ff4757;
+  color: #fff;
+  transform: scale(1.1);
+}
+
+.profileModalBody {
+  padding: 25px 30px;
+  overflow-y: auto;
+  flex: 1;
+  background: #fff;
+}
+
+.profileHeaderBox {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+  margin-bottom: 30px;
+}
+
+.profileModalAvatar {
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 4px solid #f8f9fa;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+}
+
+.profileModalAvatarFallback {
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #007bff, #0056b3);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 40px;
+  font-weight: bold;
+  box-shadow: 0 4px 10px rgba(0,123,255,0.2);
+}
+
+.profileModalInfo h2 {
+  margin: 0 0 10px 0;
+  color: #24292e;
+  font-size: 26px;
+}
+
+.profileModalTags {
+  display: flex;
+  gap: 15px;
+  color: #586069;
+  font-size: 15px;
+  font-weight: 500;
+}
+
+.profileModalSection {
+  margin-bottom: 30px;
+}
+
+.profileModalSection h4 {
+  margin: 0 0 15px 0;
+  color: #495057;
+  font-size: 16px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding-bottom: 8px;
+  border-bottom: 2px solid #f1f3f5;
+}
+
+.skillsTagBox {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.skillTag {
+  background: #eef2f5;
+  border: 1px solid #dae1e7;
+  border-radius: 20px;
+  padding: 6px 14px;
+  font-size: 13px;
+  color: #343a40;
+  font-weight: 500;
+}
+
+.noData {
+  color: #868e96;
+  font-style: italic;
+  font-size: 14px;
+}
+
+.detailText {
+  font-size: 15px;
+  color: #343a40;
+}
+
+.subDetailText {
+  color: #6c757d;
+  margin-top: 5px;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.personalInfoGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.infoCol {
+  background: #f8f9fa;
+  padding: 12px 15px;
+  border-radius: 8px;
+  border: 1px solid #f1f3f5;
+}
+
+.infoLabel {
+  display: block;
+  font-size: 12px;
+  color: #8c98a4;
+  text-transform: uppercase;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.infoValue {
+  display: block;
+  color: #2c3e50;
+  font-size: 15px;
+}
+
+.profileModalFooter {
+  padding: 15px 25px;
+  background: #f8f9fa;
+  border-top: 1px solid #edf2f7;
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+/* Loader Spinner Component */
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid #e1e4e8;
+  border-top: 4px solid #007bff;
+  border-radius: 50%;
+  animation: spin 1s infinite linear;
+  margin: 0 auto;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes modalScale {
+  from { transform: scale(0.95); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+@media (max-width: 768px) {
+  .profileModalOverlay { padding: 0; }
+  .profileModalContentNative { height: auto; max-height: calc(100vh - 68px); border-radius: 0; }
+  .profileHeaderBox { flex-direction: column; text-align: center; }
+  .profileModalTags { justify-content: center; }
+  .personalInfoGrid { grid-template-columns: 1fr; }
+  .profileModalFooter { justify-content: stretch; }
+  .profileModalFooter > a { flex: 1; }
+  .profileModalFooter button { width: 100%; justify-content: center; }
 }

@@ -20,6 +20,10 @@ const CandidateListView = ({ postId, viewMode, statusFilter, isPlanActive, jobSt
   const [offset, setOffset] = useState<number>(0);
   const [hasMore, setHasMore] = useState<boolean>(false);
   
+  // States for displaying contact number and profile modal
+  const [revealedNumbers, setRevealedNumbers] = useState<Record<number, boolean>>({});
+  const [modalCandidate, setModalCandidate] = useState<any | null>(null);
+  
   // State for Status Update Form
   const [activeUpdateId, setActiveUpdateId] = useState<number | null>(null);
   const [updateStatus, setUpdateStatus] = useState<string>('');
@@ -65,6 +69,28 @@ const CandidateListView = ({ postId, viewMode, statusFilter, isPlanActive, jobSt
   useEffect(() => {
     loadCandidates(true);
   }, [postId, viewMode, statusFilter]);
+
+  const observerTarget = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      entries => {
+        if (entries[0].isIntersecting && hasMore && !loading) {
+          loadCandidates(false);
+        }
+      },
+      { threshold: 0.1, rootMargin: '100px' }
+    );
+    
+    const currentTarget = observerTarget.current;
+    if (currentTarget) {
+      observer.observe(currentTarget);
+    }
+    
+    return () => {
+      if (currentTarget) observer.unobserve(currentTarget);
+    };
+  }, [hasMore, loading, loadCandidates]);
 
   useEffect(() => {
     if (onLoadingChange) {
@@ -140,7 +166,10 @@ const CandidateListView = ({ postId, viewMode, statusFilter, isPlanActive, jobSt
 
   return (
     <div style={{ marginTop: 20 }}>
-      {candidates.map((c, idx) => (
+      {candidates.map((c, idx) => {
+        const isCandidateUnlocked = isPlanActive || (viewMode === 'recommended' && idx < 10);
+        
+        return (
         <div key={idx} className={styles.candidateCard}>
           {viewMode === 'applied' && c.status_badge && <span className={styles.newCandidatePill}>{c.status_badge}</span>}
           <div className={styles.candidateHeader}>
@@ -174,13 +203,23 @@ const CandidateListView = ({ postId, viewMode, statusFilter, isPlanActive, jobSt
           ) : (
             <>
               <div className={styles.candidateActions}>
-                {isPlanActive ? (
+                {isCandidateUnlocked ? (
                   <>
-                    <button onClick={() => alert('Mobile: ' + c.contact_number)} className={styles.btnShowNumber}>📞 Show Number</button>
+                    {revealedNumbers[idx] ? (
+                      <button className={styles.btnShowNumber} style={{ cursor: 'text', background: '#f8f9fa', color: '#333', border: '1px solid #ced4da', boxShadow: 'none' }}>
+                        📞 {c.contact_number}
+                      </button>
+                    ) : (
+                      <button onClick={() => setRevealedNumbers({...revealedNumbers, [idx]: true})} className={styles.btnShowNumber}>
+                        📞 Show Number
+                      </button>
+                    )}
                     <a href={`https://wa.me/91${(c.contact_number || '').slice(-10)}`} target="_blank" style={{ textDecoration: 'none' }}>
                       <button className={styles.btnWhatsApp}>💬 WhatsApp</button>
                     </a>
-                    <button onClick={() => { const profileUrl = c.share_url || ''; if(profileUrl) { window.open(`${LIVE_BASE}/${profileUrl}`, '_blank'); } else { alert('Profile not available'); } }} className={styles.btnViewProfile}>👤 View Profile</button>
+                    <button onClick={() => setModalCandidate(c)} className={styles.btnViewProfile}>
+                      👤 View Profile
+                    </button>
                   </>
                 ) : (
                   <>
@@ -253,13 +292,105 @@ const CandidateListView = ({ postId, viewMode, statusFilter, isPlanActive, jobSt
             </div>
           )}
         </div>
-      ))}
+      );
+    })}
       
-      {hasMore && (
-        <div style={{ textAlign: 'center', marginTop: 15 }}>
-          <button onClick={() => loadCandidates(false)} disabled={loading} style={{ padding: '8px 20px', background: '#343a40', color: '#fff', border: 'none', borderRadius: 4, cursor: 'pointer' }}>
-            {loading ? 'Loading...' : 'Load More Candidates'}
-          </button>
+      {/* Infinite Scroll Target & Loader */}
+      {(hasMore || loading) ? (
+        <div ref={observerTarget} style={{ display: 'flex', justifyContent: 'center', margin: '20px 0', padding: '10px' }}>
+          {loading && <div className={styles.spinner}></div>}
+        </div>
+      ) : offset > 0 ? (
+        <div style={{ textAlign: 'center', margin: '20px 0', color: '#8c98a4', fontStyle: 'italic', fontSize: '13px' }}>
+          -- End of candidates list --
+        </div>
+      ) : null}
+
+      {/* Profile Modal */}
+      {modalCandidate && (
+        <div className={styles.profileModalOverlay} onClick={() => setModalCandidate(null)}>
+          <div className={styles.profileModalContentNative} onClick={e => e.stopPropagation()}>
+            <div className={styles.profileModalHeader}>
+              <h3 className={styles.profileModalTitle}>Candidate Profile</h3>
+              <button className={styles.profileModalNativeClose} onClick={() => setModalCandidate(null)}>✕</button>
+            </div>
+            
+            <div className={styles.profileModalBody}>
+              <div className={styles.profileHeaderBox}>
+                {modalCandidate.profile_pic ? (
+                  <img src={modalCandidate.profile_pic} alt="" className={styles.profileModalAvatar} />
+                ) : (
+                  <div className={styles.profileModalAvatarFallback}>
+                    {modalCandidate.name.charAt(0).toUpperCase()}
+                  </div>
+                )}
+                <div className={styles.profileModalInfo}>
+                  <h2>{modalCandidate.name}</h2>
+                  <div className={styles.profileModalTags}>
+                    <span>📍 {modalCandidate.location}</span>
+                    <span>📞 {modalCandidate.contact_number}</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className={styles.profileModalSection}>
+                <h4>🧠 Skills</h4>
+                <div className={styles.skillsTagBox}>
+                  {(modalCandidate.skills ? modalCandidate.skills.split(',') : []).map((skill:string, idx:number) => {
+                    const skillName = skill.trim();
+                    if (!skillName) return null;
+                    return <span key={idx} className={styles.skillTag}>{skillName}</span>;
+                  })}
+                  {!modalCandidate.skills && <span className={styles.noData}>No skills specified</span>}
+                </div>
+              </div>
+
+              <div className={styles.profileModalSection}>
+                <h4>🎓 Education & Qualification</h4>
+                <div className={styles.detailText}>
+                  <strong>{modalCandidate.qualification}</strong>
+                  {modalCandidate.degree_name && (
+                    <div className={styles.subDetailText}>{modalCandidate.degree_name}</div>
+                  )}
+                </div>
+              </div>
+
+              <div className={styles.profileModalSection}>
+                <h4>👤 Personal Info</h4>
+                <div className={styles.personalInfoGrid}>
+                  <div className={styles.infoCol}>
+                    <span className={styles.infoLabel}>Email</span>
+                    <strong className={styles.infoValue}>{modalCandidate.email || 'N/A'}</strong>
+                  </div>
+                  <div className={styles.infoCol}>
+                    <span className={styles.infoLabel}>Gender</span>
+                    <strong className={styles.infoValue}>{modalCandidate.gender || 'N/A'}</strong>
+                  </div>
+                  <div className={styles.infoCol}>
+                    <span className={styles.infoLabel}>Date of Birth</span>
+                    <strong className={styles.infoValue}>{(modalCandidate.dob && modalCandidate.dob !== '0000-00-00') ? modalCandidate.dob : 'N/A'}</strong>
+                  </div>
+                  <div className={styles.infoCol}>
+                    <span className={styles.infoLabel}>English Speaking</span>
+                    <strong className={styles.infoValue}>{modalCandidate.english_speaking || 'N/A'}</strong>
+                  </div>
+                  <div className={styles.infoCol}>
+                    <span className={styles.infoLabel}>Experience</span>
+                    <strong className={styles.infoValue}>{modalCandidate.experience} Years</strong>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <div className={styles.profileModalFooter}>
+               <a href={`https://wa.me/91${(modalCandidate.contact_number || '').slice(-10)}`} target="_blank" style={{ textDecoration:'none' }}>
+                  <button className={styles.btnWhatsApp}>💬 WhatsApp</button>
+               </a>
+               <a href={`tel:${modalCandidate.contact_number}`} style={{ textDecoration:'none' }}>
+                  <button className={styles.btnShowNumber}>📞 Call Now</button>
+               </a>
+            </div>
+          </div>
         </div>
       )}
     </div>
@@ -347,6 +478,7 @@ export default function AllPostJobsPage() {
   const [postJobMsg, setPostJobMsg] = useState('');
   const [activeJobCount, setActiveJobCount] = useState(0);
   const [pageError, setPageError] = useState<string | null>(null);
+  const sidebarRef = useRef<HTMLDivElement>(null);
 
   // ── Fetch data on mount ──
   useEffect(() => {
@@ -401,56 +533,48 @@ export default function AllPostJobsPage() {
     }
   }, []);
 
+  // ── Strip HTML tags helper ──
+  const stripHtmlTags = (html: string): string => {
+    if (!html) return '';
+    // Remove HTML tags and decode entities
+    const tmp = document.createElement('DIV');
+    tmp.innerHTML = html;
+    return tmp.textContent || tmp.innerText || '';
+  };
+
   // ── Update job status ──
   const handleUpdateStatus = async (jobId: number, newStatus: number) => {
-    // If activating, check plan limits
-    if (newStatus === 1 && planInfo && planInfo.can_post_job === 0) {
-      setLimitError('⚠️ Limit Reached! Cannot reactivate. You have hit your active job limit. Expire a job or upgrade.');
-      setTimeout(() => setLimitError(''), 5000);
+    // If activating (reactivating), check active job count limit using plan's total_jobs
+    const maxJobs = planInfo?.total_jobs || 3; // fallback to 3 for free tier
+    if (newStatus === 1 && activeJobCount >= maxJobs) {
+      setLimitError(`To active ${maxJobs + 1}th job you need to purchase the plan`);
+      // Scroll sidebar to top so user sees the message
+      if (sidebarRef.current) {
+        sidebarRef.current.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+      setTimeout(() => setLimitError(''), 8000);
       return;
     }
 
     try {
       const res = await updateJobStatusApi(jobId, newStatus);
       if (res.status) {
-        // Update local state
+        // Update status in-place for all lists so immediate toggling works
         setJobs(prev => prev.map((j: any) => j.id === jobId ? { ...j, active_status: newStatus } : j));
+        setActiveJobs(prev => prev.map(j => j.id === jobId ? { ...j, active_status: newStatus } : j));
+        setExpiredJobs(prev => prev.map(j => j.id === jobId ? { ...j, active_status: newStatus } : j));
         
-        if (newStatus === 0) {
-          // Move from active to expired
-          const job = activeJobs.find(j => j.id === jobId);
-          if (job) {
-            setActiveJobs(prev => prev.filter(j => j.id !== jobId));
-            setExpiredJobs(prev => [{ ...job, active_status: 0 }, ...prev]);
-            setActiveJobCount(prev => prev - 1);
-          }
-        } else {
-          // Reactivate
-          const job = expiredJobs.find(j => j.id === jobId);
-          if (job) {
-            setExpiredJobs(prev => prev.filter(j => j.id !== jobId));
-            setActiveJobs(prev => [{ ...job, active_status: 1 }, ...prev]);
-            setActiveJobCount(prev => prev + 1);
-          } else {
-            // Was in active list but status 0
-            setActiveJobs(prev => prev.map(j => j.id === jobId ? { ...j, active_status: 1 } : j));
-            setActiveJobCount(prev => prev + 1);
-          }
-        }
+        // Only adjust count correctly
+        setActiveJobCount(prev => newStatus === 1 ? prev + 1 : prev - 1);
       } else {
-        alert(res.message || 'Failed to update status');
+        console.log('Status update response:', res.message);
       }
     } catch (e) {
-      alert('Network error');
+      console.error('Network error updating status', e);
     }
   };
 
   const goToPostJob = () => {
-    if (planInfo && planInfo.can_post_job === 0) {
-      setLimitError('⚠️ Limit Reached! You have used all active jobs. Please expire a job or upgrade your plan to post more.');
-      setTimeout(() => setLimitError(''), 5000);
-      return;
-    }
     if (activeJobCount > 3) {
       setPostJobMsg('Maximum You can Post 4 Active Jobs');
       return;
@@ -479,18 +603,32 @@ export default function AllPostJobsPage() {
     );
   }
 
+  // ── Check if candidate button should show (mirrors PHP: show for all non-expired jobs) ──
+  const checkJobStatus = (jobStatus: number): boolean => {
+    // PHP code comments out checkJobStatus for Candidate Detail in active section
+    // Only hide for expired (0) jobs
+    return jobStatus !== 0;
+  };
+
   // ── Render a single job card ──
   const renderJobCard = (job: Job, isExpiredSection: boolean = false) => {
     const isSelected = selectedJobId === job.id;
     const isActive = job.active_status === 1;
     const isUnderReview = job.active_status === 2;
     const isExpired = job.active_status === 0;
+    const showCandidateButton = checkJobStatus(job.active_status);
 
     return (
       <div
         key={job.id}
         className={`${styles.jobCard} ${isSelected ? styles.jobCardSelected : ''}`}
-        onClick={() => loadJobDetail(job.id)}
+        onClick={() => {
+          // Load job detail for all non-expired jobs (active, under review, etc.)
+          if (!isExpired) {
+            loadJobDetail(job.id);
+          }
+        }}
+        style={{ cursor: !isExpired ? 'pointer' : 'default' }}
       >
         <div className={styles.jobCardHeader}>
           <div className={styles.jobTitleWrapper}>
@@ -538,7 +676,7 @@ export default function AllPostJobsPage() {
         </div>
 
         <div className={styles.jobDescPreview}>
-          {expandedJobs[job.id] ? job.job_info_full : job.job_info_short}
+          {expandedJobs[job.id] ? stripHtmlTags(job.job_info_full) : stripHtmlTags(job.job_info_short)}
           {job.has_more && (
             <button className={styles.moreLink} onClick={(e) => { e.stopPropagation(); toggleMore(job.id); }}>
               {expandedJobs[job.id] ? '...less' : '...more'}
@@ -552,7 +690,7 @@ export default function AllPostJobsPage() {
               ↻ Reactivate
             </button>
           )}
-          {isActive && (
+          {showCandidateButton && isActive && (
             <button className={styles.btnExpire} onClick={() => handleUpdateStatus(job.id, 0)}>
               ✕ Expire Job
             </button>
@@ -563,14 +701,16 @@ export default function AllPostJobsPage() {
               {job.verification_remark && <span className={styles.rejectedJobReason}>{job.verification_remark.toUpperCase()}</span>}
             </div>
           )}
-          <button className={styles.btnCandidateDetail} onClick={() => { 
-            loadJobDetail(job.id); 
-            setCandidateView('applied'); 
-            setStatusFilter('All');
-            setIsMobileDetailOpen(true); 
-          }}>
-            👥 Candidate Detail
-          </button>
+          {showCandidateButton && (
+            <button className={styles.btnCandidateDetail} onClick={() => { 
+              loadJobDetail(job.id); 
+              setCandidateView('applied'); 
+              setStatusFilter('All');
+              setIsMobileDetailOpen(true); 
+            }}>
+              👥 Candidate Detail
+            </button>
+          )}
         </div>
       </div>
     );
@@ -584,7 +724,7 @@ export default function AllPostJobsPage() {
 
       <div className={styles.pageWrapper}>
         {/* ── Left Sidebar ── */}
-        <div className={`${styles.sidebar} ${isMobileDetailOpen ? styles.mobileHidden : ''}`}>
+        <div className={`${styles.sidebar} ${isMobileDetailOpen ? styles.mobileHidden : ''}`} ref={sidebarRef}>
           {/* Post New Job */}
           <div className={styles.postJobContainer}>
             {planInfo?.approval_status !== 'Reject' && (
@@ -636,11 +776,6 @@ export default function AllPostJobsPage() {
                     💎 Upgrade Your Plan
                   </button>
                 </div>
-                {limitError && (
-                  <div className={styles.limitErrorBox}>
-                    <strong>{limitError}</strong>
-                  </div>
-                )}
               </>
             ) : (
               <>
@@ -651,6 +786,11 @@ export default function AllPostJobsPage() {
                   <button onClick={() => router.push('/employer-upgrade-plan')} style={{ fontSize: 13, fontWeight: 600, color: '#007bff', textDecoration: 'underline', background: 'none', border: 'none', cursor: 'pointer' }}>Upgrade Now</button>
                 </div>
               </>
+            )}
+            {limitError && (
+              <div className={styles.limitErrorBox}>
+                <strong>{limitError}</strong>
+              </div>
             )}
           </div>
 
