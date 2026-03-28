@@ -22,8 +22,7 @@ export default function EmployerJobReviewsPage() {
     }
   }, [authLoading, user, router]);
 
-  const handleSubmit = async (e: FormEvent) => {
-    e.preventDefault();
+  const saveAndNavigate = async (targetStep?: number) => {
     if (!agreed) {
       setErrorMsg('Please confirm the agreement by checking the box.');
       return;
@@ -34,8 +33,11 @@ export default function EmployerJobReviewsPage() {
     try {
       const res = await approveAgreementApi(jobId);
       if (res.status) {
-        // Redirect to all post jobs page after successful agreement
-        router.push('/all-post-jobs');
+        if (targetStep === 1) router.push(`/post-job?edit=${jobId}`);
+        else if (targetStep === 2) router.push(`/candidate-requirements/${jobId}`);
+        else if (targetStep === 3) router.push(`/employer-company-info/${jobId}`);
+        else if (targetStep === 4) router.push(`/employer-job-reviews/${jobId}`);
+        else router.push('/all-post-jobs');
       } else {
         setErrorMsg(res.message || 'Failed to approve. Please try again.');
       }
@@ -44,6 +46,18 @@ export default function EmployerJobReviewsPage() {
     } finally {
       setSubmitting(false);
     }
+  };
+
+  const handleSubmit = (e: FormEvent) => {
+    e.preventDefault();
+    saveAndNavigate();
+  };
+
+  const handleStepClick = (stepId: number) => {
+    if (stepId === 4) return;
+    if (stepId === 1) router.push(`/post-job?edit=${jobId}`);
+    else if (stepId === 2) router.push(`/candidate-requirements/${jobId}`);
+    else if (stepId === 3) router.push(`/employer-company-info/${jobId}`);
   };
 
   const goBack = () => {
@@ -62,7 +76,7 @@ export default function EmployerJobReviewsPage() {
 
 
         <div className={styles.mainContainer}>
-          <JobStepper currentStep={4} />
+          <JobStepper currentStep={4} onStepClick={handleStepClick} />
           <form onSubmit={handleSubmit}>
             <div className={styles.card}>
               <div className={styles.cardHeader}>
@@ -74,20 +88,20 @@ export default function EmployerJobReviewsPage() {
 
                   <div className={styles.guidelineItem}>
                     <div className={styles.iconBox}>
-                      <img src="/nt/images/icon/call.png" alt="Call" />
+                      <img src="/employer/images/icon/call.png" alt="Call" />
                     </div>
                     <div className={styles.contentBox}>
                       <h4 className={styles.contentTitle}>Answer the phone</h4>
                       <p className={styles.contentDesc}>
                         When Candidate will call you and respond in WhatsApp
-                        <img src="/nt/images/icon/whatsapp-button.png" alt="WhatsApp" className={styles.whatsappIcon} />
+                        <img src="/employer/images/icon/whatsapp-button.png" alt="WhatsApp" className={styles.whatsappIcon} />
                       </p>
                     </div>
                   </div>
 
                   <div className={styles.guidelineItem}>
                     <div className={styles.iconBox}>
-                      <img src="/nt/images/icon/right_info.jpg" alt="Info" />
+                      <img src="/employer/images/icon/right_info.jpg" alt="Info" />
                     </div>
                     <div className={styles.contentBox}>
                       <h4 className={styles.contentTitle}>Right Info</h4>
@@ -97,7 +111,7 @@ export default function EmployerJobReviewsPage() {
 
                   <div className={styles.guidelineItem}>
                     <div className={styles.iconBox}>
-                      <img src="/nt/images/icon/polite.jpg" alt="Polite" />
+                      <img src="/employer/images/icon/polite.jpg" alt="Polite" />
                     </div>
                     <div className={styles.contentBox}>
                       <h4 className={styles.contentTitle}>Be Polite and Respectful</h4>
@@ -107,7 +121,7 @@ export default function EmployerJobReviewsPage() {
 
                   <div className={styles.guidelineItem}>
                     <div className={styles.iconBox}>
-                      <img src="/nt/images/icon/deactive_job.png" alt="Deactive" />
+                      <img src="/employer/images/icon/deactive_job.png" alt="Deactive" />
                     </div>
                     <div className={styles.contentBox}>
                       <h4 className={styles.contentTitle}>Deactivate The Job</h4>
@@ -117,7 +131,7 @@ export default function EmployerJobReviewsPage() {
 
                   <div className={styles.guidelineItem}>
                     <div className={styles.iconBox}>
-                      <img src="/nt/images/icon/no_charge.png" alt="Free" />
+                      <img src="/employer/images/icon/no_charge.png" alt="Free" />
                     </div>
                     <div className={styles.contentBox}>
                       <h4 className={styles.contentTitle}>No Charges or Money</h4>

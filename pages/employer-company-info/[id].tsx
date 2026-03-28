@@ -175,8 +175,7 @@ export default function EmployerCompanyInfoPage() {
     }
   }, [sameAddress, interAddress, interFullAdd, interPincode, interCountry, interState, interCity, interLat, interLng]);
 
-  const handleSubmit = async (e: FormEvent) => {
-    e.preventDefault();
+  const saveAndNavigate = async (targetStep?: number) => {
     if (phoneNumber.length !== 10) {
       setError('Invalid mobile number');
       return;
@@ -221,7 +220,11 @@ export default function EmployerCompanyInfoPage() {
 
       const res = await saveEmployerInfoApi(payload);
       if (res.status) {
-        router.push(`/employer-job-reviews/${jobId}`);
+        if (targetStep === 1) router.push(`/post-job?edit=${jobId}`);
+        else if (targetStep === 2) router.push(`/candidate-requirements/${jobId}`);
+        else if (targetStep === 3) router.push(`/employer-company-info/${jobId}`);
+        else if (targetStep === 4) router.push(`/employer-job-reviews/${jobId}`);
+        else router.push(`/employer-job-reviews/${jobId}`);
       } else {
         setError(res.message || 'Error saving data.');
       }
@@ -230,6 +233,16 @@ export default function EmployerCompanyInfoPage() {
     } finally {
       setSaving(false);
     }
+  };
+
+  const handleSubmit = (e: FormEvent) => {
+    e.preventDefault();
+    saveAndNavigate();
+  };
+
+  const handleStepClick = (stepId: number) => {
+    if (stepId === 3) return;
+    saveAndNavigate(stepId);
   };
 
   if (!user) return null;
@@ -252,7 +265,7 @@ export default function EmployerCompanyInfoPage() {
 
 
         <div className={styles.mainContainer}>
-          <JobStepper currentStep={3} />
+          <JobStepper currentStep={3} onStepClick={handleStepClick} />
           
           {loadingData ? (
             <div style={{ display: 'flex', justifyContent: 'center', padding: '50px 0', color: '#64748b' }}>
@@ -276,7 +289,7 @@ export default function EmployerCompanyInfoPage() {
                   <label className={styles.formLabel + ' ' + styles.required}>Contact Number</label>
                   <div>
                     <input type="number" className={styles.formInput} value={phoneNumber} onChange={e => setPhoneNumber(e.target.value)} placeholder="Contact Number" required />
-                    <span className={styles.hintText}>Note: Contact Number on which candidate will call and Whatapp. <img src="/nt/images/icon/whatsapp-button.png" style={{ height: 18 }} alt="WhatsApp" /></span>
+                    <span className={styles.hintText}>Note: Contact Number on which candidate will call and Whatapp. <img src="/employer/images/icon/whatsapp-button.png" style={{ height: 18 }} alt="WhatsApp" /></span>
                   </div>
                 </div>
                 <div className={styles.formGroup}>

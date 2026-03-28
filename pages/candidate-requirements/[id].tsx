@@ -140,8 +140,7 @@ export default function CandidateRequirementsPage() {
   };
 
   // ── Submit ─────────────────────────────────────
-  const handleSubmit = async (e: FormEvent) => {
-    e.preventDefault();
+  const saveAndNavigate = async (targetStep?: number) => {
     if (!pageData) return;
 
     setSubmitting(true);
@@ -169,7 +168,11 @@ export default function CandidateRequirementsPage() {
       });
 
       if (res.status) {
-        router.push(`/employer-company-info/${jobId}`);
+        if (targetStep === 1) router.push(`/post-job?edit=${jobId}`);
+        else if (targetStep === 2) router.push(`/candidate-requirements/${jobId}`);
+        else if (targetStep === 3) router.push(`/employer-company-info/${jobId}`);
+        else if (targetStep === 4) router.push(`/employer-job-reviews/${jobId}`);
+        else router.push(`/employer-company-info/${jobId}`);
       } else {
         setSubmitError(res.message || 'Failed to save. Please try again.');
       }
@@ -178,6 +181,16 @@ export default function CandidateRequirementsPage() {
     } finally {
       setSubmitting(false);
     }
+  };
+
+  const handleSubmit = (e: FormEvent) => {
+    e.preventDefault();
+    saveAndNavigate();
+  };
+
+  const handleStepClick = (stepId: number) => {
+    if (stepId === 2) return;
+    saveAndNavigate(stepId);
   };
 
   const chipClass = (active: boolean) =>
@@ -203,7 +216,7 @@ export default function CandidateRequirementsPage() {
       <div className={styles.pageWrapper}>
         <div className={styles.contentWrapper}>
             <div className={styles.mainContainer}>
-              <JobStepper currentStep={2} />
+              <JobStepper currentStep={2} onStepClick={handleStepClick} />
 
               {loadingData && (
                 <div className={styles.loadingWrapper}>

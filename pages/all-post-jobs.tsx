@@ -8,7 +8,7 @@ import { useAuth } from '@/context/AuthContext';
 import { getAllJobsApi, getPlanInfoApi, updateJobStatusApi, getJobDetailApi, getCandidatesApplied, getCandidatesRecommended, updateCandidateStatusApi } from '@/services/api';
 import styles from '@/styles/allPostJobs.module.css';
 
-const IMG = '/nt/images/icon';
+const IMG = '/employer/images/icon';
 
 // --- CANDIDATE LIST VIEW COMPONENT ---
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -287,6 +287,7 @@ interface Job {
   job_info_full: string;
   has_more: boolean;
   verification_remark: string;
+  skills: string[];
 }
 
 interface PlanInfo {
@@ -538,11 +539,41 @@ export default function AllPostJobsPage() {
         </div>
 
         <div className={styles.jobDescPreview}>
-          {expandedJobs[job.id] ? job.job_info_full : job.job_info_short}
-          {job.has_more && (
-            <button className={styles.moreLink} onClick={(e) => { e.stopPropagation(); toggleMore(job.id); }}>
-              {expandedJobs[job.id] ? '...less' : '...more'}
-            </button>
+          {expandedJobs[job.id] ? (
+            <div className={styles.expandedBox}>
+              <div 
+                dangerouslySetInnerHTML={{ __html: job.job_info_full }} 
+                style={{ whiteSpace: 'pre-wrap' }}
+              />
+              
+              {job.skills && job.skills.length > 0 && (
+                <div className={styles.skillsContainer}>
+                  <span className={styles.skillLabel}>Skills:</span>
+                  {job.skills.map((skill, idx) => (
+                    <span key={idx} className={styles.skillTag}>{skill}</span>
+                  ))}
+                </div>
+              )}
+
+              <button
+                className={styles.moreLink}
+                onClick={(e) => { e.stopPropagation(); toggleMore(job.id); }}
+                style={{ marginTop: '20px', display: 'block', paddingBottom: '5px' }}
+              >
+                ...less
+              </button>
+            </div>
+          ) : (
+            <span>
+              {job.job_info_short}{ job.job_info_short ? ' ' : '' }
+              <button
+                className={styles.moreLink}
+                onClick={(e) => { e.stopPropagation(); toggleMore(job.id); }}
+                style={{ display: 'inline-block' }}
+              >
+                ...more
+              </button>
+            </span>
           )}
         </div>
 
@@ -687,8 +718,8 @@ export default function AllPostJobsPage() {
                   </h1>
                 </div>
                 <div className={styles.detailActions}>
-                  <button onClick={() => window.open(`https://networkbaba.co/post-free-jobs/edit/${jobDetail.job.id}`, '_blank')} className={styles.btnAction}>✏️ Edit</button>
-                  <button onClick={() => window.open(`https://networkbaba.co/post-free-jobs/duplicate/${jobDetail.job.id}`, '_blank')} className={`${styles.btnAction} ${styles.btnDuplicate}`}>📋 Duplicate</button>
+                  <button onClick={() => router.push(`/post-job?edit=${jobDetail.job.id}`)} className={styles.btnAction}>✏️ Edit</button>
+                  <button onClick={() => router.push(`/post-job?duplicate=${jobDetail.job.id}`)} className={`${styles.btnAction} ${styles.btnDuplicate}`}>📋 Duplicate</button>
                 </div>
               </div>
 

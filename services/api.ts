@@ -217,6 +217,17 @@ export async function postJobApi(data: PostJobData): Promise<ApiResponse<{ job_i
 }
 
 /**
+ * POST /update-job
+ * Update an existing job posting
+ */
+export async function updateJobApi(postId: number, data: PostJobData): Promise<ApiResponse<{ job_id: number }>> {
+  return apiRequest<{ job_id: number }>('/update-job', {
+    method: 'POST',
+    body: JSON.stringify({ ...data, post_id: postId }),
+  });
+}
+
+/**
  * GET /job-roles?q=SEARCH
  * Fetch job roles for autocomplete
  */

@@ -71,7 +71,7 @@ export default function Header() {
           {/* Brand */}
           <Link href="/" className={styles.brand}>
             <img
-              src="/nt/images/networkBabaLogoGif.gif"
+              src="/employer/images/networkBabaLogoGif.gif"
               alt="NetworkBaba"
               className={styles.brandLogoImg}
             />

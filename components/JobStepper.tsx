@@ -3,6 +3,7 @@ import styles from '@/styles/JobStepper.module.css';
 
 interface JobStepperProps {
   currentStep: number; // 1 to 4
+  onStepClick?: (stepId: number) => void;
   maxWidth?: string;
 }
 
@@ -13,13 +14,21 @@ const steps = [
   { id: 4, label: 'Review & Guidelines' }
 ];
 
-const JobStepper: React.FC<JobStepperProps> = ({ currentStep }) => {
+const JobStepper: React.FC<JobStepperProps> = ({ currentStep, onStepClick }) => {
   return (
     <div className={styles.stepperWrapper}>
       <div className={styles.stepper}>
         {steps.map((step, index) => (
           <React.Fragment key={step.id}>
-            <div className={`${styles.step} ${currentStep === step.id ? styles.stepActive : ''}`}>
+            <div 
+              className={`${styles.step} ${currentStep === step.id ? styles.stepActive : ''} ${onStepClick ? styles.stepClickable : ''}`}
+              onClick={() => {
+                if (onStepClick && currentStep !== step.id) {
+                  onStepClick(step.id);
+                }
+              }}
+              style={{ cursor: onStepClick ? 'pointer' : 'default' }}
+            >
               <div className={styles.stepCircle}>{step.id}</div>
               {currentStep === step.id && (
                 <span className={styles.stepLabel}>{step.label}</span>

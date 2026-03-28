@@ -32,6 +32,6 @@ jobs:
           password: "yty869H]en)Zvghkhjk34$987979#$587686~7978uiuyiytf456^585685fjgfj78678*^97jkghfghjvgj^$%3%BGFYGJKGHDH'.,hjkgghjghk776897][65dhgfhjgfj9556"
           protocol: ftp
           local-dir: ./out/
-          server-dir: /public_html/nt/
+          server-dir: /public_html/employer/
           # Force fresh upload metadata tracking
           state-name: .ftp-deploy-sync-state-fresh.json

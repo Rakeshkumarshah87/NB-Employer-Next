@@ -1,7 +1,7 @@
 import { useState, useEffect, type FormEvent, useRef } from 'react';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
-import { postJobApi, searchJobRolesApi } from '@/services/api';
+import { postJobApi, searchJobRolesApi, getJobDetailApi, updateJobApi } from '@/services/api';
 import { useAuth } from '@/context/AuthContext';
 import JobStepper from '@/components/JobStepper';
 import styles from '@/styles/postjob.module.css';
@@ -47,8 +47,69 @@ export default function PostJobPage() {
 
   // ── UI State ──────────────────────────────────
   const [loading, setLoading] = useState(false);
+  const [dataFetching, setDataFetching] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+
+  const editId = router.query.edit ? Number(router.query.edit) : null;
+  const duplicateId = router.query.duplicate ? Number(router.query.duplicate) : null;
+  const isEdit = !!editId;
+  const isDuplicate = !!duplicateId;
+
+  // ── Fetch existing job for edit/duplicate ──────
+  useEffect(() => {
+    const jobID = editId || duplicateId;
+    if (jobID && !loading && user) {
+      const fetchJobData = async () => {
+        setDataFetching(true);
+        try {
+          const res = await getJobDetailApi(jobID);
+          if (res.status && res.data && res.data.job) {
+            const j = res.data.job;
+            setJobTitle(j.job_role_name || '');
+            setJobCategoryId(Number(j.job_category_id) || 0);
+            setMonthlyFrom(j.monthly_from?.toString() || '');
+            setMonthlyTo(j.monthly_to?.toString() || '');
+            setNoOfOpenings(j.no_of_openings?.toString() || '');
+            setWorkingDays(j.working_days || 'Monday to Saturday');
+            setOpenTime(j.open_time?.substring(0, 5) || '09:00');
+            setCloseTime(j.close_time?.substring(0, 5) || '18:30');
+            setShift(j.shift || '');
+            setJobType(j.job_type || 'Full Time');
+            setCategoryType(j.category_type || 'Job');
+            // Normalize Boolean Status
+            setWorkFromHome(Number(j.work_from_home_status) === 1);
+            
+            // Normalize Qualification (DB might have "10th Pass or Above")
+            const normalizeChip = (val: string, options: string[]) => {
+              if (!val) return '';
+              const found = options.find(opt => opt.toLowerCase() === val.toLowerCase() || val.toLowerCase().includes(opt.toLowerCase()));
+              return found || val;
+            };
+
+            setQualification(normalizeChip(j.min_qualification, ['Below 10th', '10th Pass', '12th Pass', 'Graduate', 'Master Degree']));
+            setExperience(normalizeChip(j.candi_experience, ['Fresher', 'Experienced']));
+            setGender(normalizeChip(j.gen_preference, ['Both', 'Male', 'Female']));
+            setEnglish(normalizeChip(j.eng_required, ['No English', 'Little English', 'Good English', 'Fluent English']));
+            setShift(normalizeChip(j.shift, ['Days Shift', 'Night Shift', 'Rotation Shift']));
+            setJobType(normalizeChip(j.job_type, ['Full Time', 'Part Time']));
+            setCategoryType(normalizeChip(j.category_type, ['Job', 'Internship']));
+
+            setMinExp(j.min_exp?.toString() || '');
+            setMaxExp(j.max_exp?.toString() || '');
+            setJobDescription(j.job_info || '');
+          } else {
+            setError(res.message || 'Failed to load job details');
+          }
+        } catch (err) {
+          setError('Network error fetching job details');
+        } finally {
+          setDataFetching(false);
+        }
+      };
+      fetchJobData();
+    }
+  }, [editId, duplicateId, user, loading]);
 
 
 
@@ -121,8 +182,7 @@ export default function PostJobPage() {
   };
 
   // ── Submit ────────────────────────────────────
-  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  const saveAndNavigate = async (targetStep?: number) => {
     setError('');
     setSuccess('');
 
@@ -157,24 +217,40 @@ export default function PostJobPage() {
         job_info: jobDescription,
       };
 
-      const response = await postJobApi(payload);
+      const response = isEdit 
+        ? await updateJobApi(editId!, payload)
+        : await postJobApi(payload);
 
       if (response.status) {
         // Redirect to next step: Candidate Requirements
-        const jobId = response.data?.job_id;
+        const jobId = isEdit ? editId : response.data?.job_id;
         if (jobId) {
-          router.push(`/candidate-requirements/${jobId}`);
+          if (targetStep === 1) router.push(`/post-job?edit=${jobId}`);
+          else if (targetStep === 2) router.push(`/candidate-requirements/${jobId}`);
+          else if (targetStep === 3) router.push(`/employer-company-info/${jobId}`);
+          else if (targetStep === 4) router.push(`/employer-job-reviews/${jobId}`);
+          else router.push(`/candidate-requirements/${jobId}`);
         } else {
-          setSuccess('Job posted successfully! 🎉');
+          setSuccess(isEdit ? 'Job updated successfully! 🎉' : 'Job posted successfully! 🎉');
         }
       } else {
-        setError(response.message || 'Failed to post job. Please try again.');
+        setError(response.message || 'Failed to save job. Please try again.');
       }
     } catch {
       setError('Unable to connect to server. Please try again.');
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    saveAndNavigate();
+  };
+
+  const handleStepClick = (stepId: number) => {
+    if (stepId === 1) return;
+    saveAndNavigate(stepId);
   };
 
   // ── Chip helper ───────────────────────────────
@@ -206,12 +282,21 @@ export default function PostJobPage() {
         {/* ═══════════ PAGE TITLE ═══════════ */}
         <div className={styles.pageHeader}>
           <div className={styles.pageHeaderLeft}>
-            <h1 className={styles.pageTitleMain}>Post a new job</h1>
+            <h1 className={styles.pageTitleMain}>
+              {isEdit ? 'Edit job' : isDuplicate ? 'Duplicate job' : 'Post a new job'}
+            </h1>
           </div>
         </div>
 
-        <div className={styles.mainContainer}>
-          <JobStepper currentStep={1} />
+        {dataFetching && (
+          <div className={styles.card} style={{ textAlign: 'center', padding: '40px' }}>
+            <span className={styles.spinner} style={{ borderColor: '#2d6eb5', borderTopColor: 'transparent', width: '30px', height: '30px' }} />
+            <p style={{ marginTop: '10px', color: '#666' }}>Fetching job details...</p>
+          </div>
+        )}
+
+        <div className={`${styles.mainContainer} ${dataFetching ? styles.hidden : ''}`} style={dataFetching ? { display: 'none' } : {}}>
+          <JobStepper currentStep={1} onStepClick={handleStepClick} />
           <form onSubmit={handleSubmit} noValidate>
 
             {/* ── SECTION 1: Basic Job Details ── */}
@@ -608,7 +693,7 @@ export default function PostJobPage() {
                 id="submit-post-job-btn"
               >
                 {loading && <span className={styles.spinner} />}
-                {loading ? 'Posting Job...' : 'Save & Continue →'}
+                {loading ? (isEdit ? 'Updating Job...' : 'Posting Job...') : (isEdit ? 'Update & Continue →' : 'Save & Continue →')}
               </button>
             </div>
           </form>
