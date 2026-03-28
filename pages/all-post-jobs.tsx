@@ -677,13 +677,6 @@ export default function AllPostJobsPage() {
         </div>
 
         <div className={styles.jobDescPreview}>
-<<<<<<< HEAD
-          {expandedJobs[job.id] ? stripHtmlTags(job.job_info_full) : stripHtmlTags(job.job_info_short)}
-          {job.has_more && (
-            <button className={styles.moreLink} onClick={(e) => { e.stopPropagation(); toggleMore(job.id); }}>
-              {expandedJobs[job.id] ? '...less' : '...more'}
-            </button>
-=======
           {expandedJobs[job.id] ? (
             <div className={styles.expandedBox}>
               <div 
@@ -691,12 +684,14 @@ export default function AllPostJobsPage() {
                 style={{ whiteSpace: 'pre-wrap' }}
               />
               
-              {job.skills && job.skills.length > 0 && (
+              {job.skills && (
                 <div className={styles.skillsContainer}>
                   <span className={styles.skillLabel}>Skills:</span>
-                  {job.skills.map((skill, idx) => (
-                    <span key={idx} className={styles.skillTag}>{skill}</span>
-                  ))}
+                  {(Array.isArray(job.skills) ? job.skills : typeof job.skills === 'string' ? job.skills.split(',') : []).map((skill: string, idx: number) => {
+                    const cleanSkill = skill.trim();
+                    if (!cleanSkill) return null;
+                    return <span key={idx} className={styles.skillTag}>{cleanSkill}</span>;
+                  })}
                 </div>
               )}
 
@@ -719,7 +714,6 @@ export default function AllPostJobsPage() {
                 ...more
               </button>
             </span>
->>>>>>> 3aaeff6164831673d07ee2b4bb25096df8216f63
           )}
         </div>
 
