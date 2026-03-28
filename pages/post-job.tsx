@@ -3,6 +3,7 @@ import Head from 'next/head';
 import { useRouter } from 'next/router';
 import { postJobApi, searchJobRolesApi } from '@/services/api';
 import { useAuth } from '@/context/AuthContext';
+import JobStepper from '@/components/JobStepper';
 import styles from '@/styles/postjob.module.css';
 
 /**
@@ -203,13 +204,14 @@ export default function PostJobPage() {
 
 
         {/* ═══════════ PAGE TITLE ═══════════ */}
-        <div className={styles.pageTitle}>
-          <h1>Post Job</h1>
-          <p>Reach thousands of candidates in minutes</p>
+        <div className={styles.pageHeader}>
+          <div className={styles.pageHeaderLeft}>
+            <h1 className={styles.pageTitleMain}>Post a new job</h1>
+          </div>
         </div>
 
-        {/* ═══════════ FORM ═══════════ */}
         <div className={styles.mainContainer}>
+          <JobStepper currentStep={1} />
           <form onSubmit={handleSubmit} noValidate>
 
             {/* ── SECTION 1: Basic Job Details ── */}

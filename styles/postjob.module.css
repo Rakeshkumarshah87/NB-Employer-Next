@@ -28,37 +28,30 @@
 /* Reusing existing header styles from post-job.tsx */
 
 /* ── Page Title ──────────────────────────── */
-.pageTitle {
-  text-align: center;
-  padding: 10px 20px 0px;
+/* ── Page Header ─────────────────────────── */
+.pageHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 20px 5px;
+  max-width: 1200px;
+  margin: 0 auto;
+  width: 100%;
 }
 
-.pageTitle h1 {
-  font-weight: 800;
-  font-size: 32px;
-  color: var(--pj-text);
-  margin: 0 0 4px;
-  letter-spacing: -0.03em;
-}
-
-.pageTitle p {
-  color: var(--pj-text-muted);
-  font-size: 16px;
+.pageTitleMain {
+  font-weight: 700;
+  font-size: 20px;
+  color: #0f172a;
   margin: 0;
-  font-weight: 500;
-  background: #ffffff;
-  display: inline-block;
-  padding: 6px 20px;
-  border-radius: 50px;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
-  border: 1px solid var(--pj-border);
+  letter-spacing: -0.01em;
 }
 
 /* ── Main Container ──────────────────────── */
 .mainContainer {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 10px 20px 80px;
+  padding: 0 20px 80px;
 }
 
 /* ── Form Cards ──────────────────────────── */
@@ -67,22 +60,29 @@
   border: 1px solid #eef2f6;
   border-radius: 16px;
   box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.02);
-  padding: 40px;
-  margin-bottom: 35px;
+  padding: 10px 35px 30px;
+  margin-bottom: 25px;
   animation: cardFadeIn 0.5s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 @keyframes cardFadeIn {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .cardTitle {
-  font-size: 20px;
-  font-weight: 800;
-  border-bottom: 2px solid #f1f5f9;
-  padding-bottom: 20px;
-  margin-bottom: 30px;
+  font-size: 19px;
+  font-weight: 700;
+  border-bottom: 1.5px solid #f1f5f9;
+  padding-bottom: 8px;
+  margin-bottom: 15px;
   color: #0f172a;
   display: flex;
   align-items: center;
@@ -106,6 +106,7 @@
   .formGrid {
     grid-template-columns: repeat(2, 1fr);
   }
+
   .span2 {
     grid-column: span 2;
   }
@@ -179,7 +180,8 @@
   display: flex;
   align-items: center;
   gap: 15px;
-  max-width: 450px; /* Constrain width as requested */
+  max-width: 450px;
+  /* Constrain width as requested */
 }
 
 .inputFlex span {
@@ -201,17 +203,20 @@
 }
 
 .chipBtn {
-  background: #f8fafc;
-  border: 1px solid var(--pj-border);
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
   color: #475569;
-  padding: 12px 24px;
+  padding: 10px 22px;
   border-radius: 50px;
   cursor: pointer;
   font-weight: 600;
   font-size: 14px;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.2s ease;
   outline: none;
   font-family: inherit;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .chipBtn:hover {
@@ -221,10 +226,10 @@
 }
 
 .chipBtnActive {
-  background: var(--pj-primary) !important;
-  color: #fff !important;
-  border-color: var(--pj-primary) !important;
-  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
+  background: #f0f9ff !important;
+  color: #0369a1 !important;
+  border-color: #bae6fd !important;
+  box-shadow: 0 2px 8px rgba(3, 105, 161, 0.08);
 }
 
 /* ── WFH Checkbox ────────────────────────── */
@@ -319,7 +324,9 @@
 }
 
 @keyframes spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 /* ── Status Messages ─────────────────────── */
@@ -349,25 +356,16 @@
 
 /* ── Responsive ──────────────────────────── */
 @media (max-width: 768px) {
-  .pageTitle {
-    padding: 40px 20px 10px;
-  }
-  
-  .pageTitle h1 {
-    font-size: 28px;
-  }
-  
-  .pageTitle p {
-    font-size: 15px;
-    padding: 6px 16px;
+  .pageHeader {
+    padding: 10px 15px 0;
   }
 
   .mainContainer {
-    padding: 15px 15px 50px;
+    padding: 5px 15px 50px;
   }
 
   .card {
-    padding: 25px 20px;
+    padding: 20px 20px;
     border-radius: 0;
     border-left: none;
     border-right: none;
@@ -387,7 +385,8 @@
 
   .inputFlex .formInput {
     flex: 1;
-    min-width: 0; /* Prevent flex items from overflowing */
+    min-width: 0;
+    /* Prevent flex items from overflowing */
   }
 
   .inputFlex span {

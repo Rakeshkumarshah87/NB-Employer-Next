@@ -4,6 +4,7 @@ import { useRouter } from 'next/router';
 import Script from 'next/script';
 import { getEmployerInfoApi, saveEmployerInfoApi } from '@/services/api';
 import { useAuth } from '@/context/AuthContext';
+import JobStepper from '@/components/JobStepper';
 import styles from '@/styles/companyInfo.module.css';
 
 declare global {
@@ -231,7 +232,7 @@ export default function EmployerCompanyInfoPage() {
     }
   };
 
-  if (!user || loadingData) return null; // Removed 'Loading...' text fallback
+  if (!user) return null;
 
   return (
     <>
@@ -248,12 +249,18 @@ export default function EmployerCompanyInfoPage() {
       )}
 
       <div className={styles.pageWrapper}>
-        <div className={styles.headerBadge}>
-          <div className={styles.headerBadgeBtn}>POST JOB</div>
-        </div>
+
 
         <div className={styles.mainContainer}>
-          <form onSubmit={handleSubmit}>
+          <JobStepper currentStep={3} />
+          
+          {loadingData ? (
+            <div style={{ display: 'flex', justifyContent: 'center', padding: '50px 0', color: '#64748b' }}>
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mr-3"></div>
+              Loading...
+            </div>
+          ) : (
+            <form onSubmit={handleSubmit}>
             <div className={styles.card}>
               <div className={styles.cardTitle + ' ' + styles.required}>Interview Information</div>
               <div className={styles.formGrid}>
@@ -343,7 +350,8 @@ export default function EmployerCompanyInfoPage() {
               </button>
             </div>
           </form>
-        </div>
+        )}
+      </div>
       </div>
     </>
   );

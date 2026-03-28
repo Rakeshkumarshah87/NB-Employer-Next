@@ -3,6 +3,7 @@ import Head from 'next/head';
 import Script from 'next/script';
 import { useRouter } from 'next/router';
 import { useAuth } from '@/context/AuthContext';
+import JobStepper from '@/components/JobStepper';
 import {
   getCandidateRequirementsApi,
   saveCandidateRequirementsApi,
@@ -54,39 +55,43 @@ export default function CandidateRequirementsPage() {
 
   // ── Fetch Data ─────────────────────────────────
   useEffect(() => {
-    if (!jobId || authLoading || !user) return;
+    if (!router.isReady || authLoading || !user) return;
+    
+    const idParam = router.query.id;
+    const jId = idParam ? Number(idParam) : 0;
+    
+    if (!jId || isNaN(jId)) return;
 
     const fetchData = async () => {
       setLoadingData(true);
       setLoadError('');
       try {
-        const res = await getCandidateRequirementsApi(jobId);
+        const res = await getCandidateRequirementsApi(jId);
         if (res.status && res.data) {
           setPageData(res.data);
           setSelectedReqs(new Set(res.data.selected_requirements));
           setSelectedSkills(new Set(res.data.selected_skills));
           setJobInfo(res.data.job_info || '');
-          
-          if (window.CKEDITOR && window.CKEDITOR.instances.job_info_editor) {
-            window.CKEDITOR.instances.job_info_editor.setData(res.data.job_info || '');
-          }
         } else {
           setLoadError(res.message || 'Failed to load job requirements.');
         }
-      } catch {
-        setLoadError('Unable to connect to server. Please try again.');
+      } catch (err: any) {
+        setLoadError(`Connection error: ${err.message || 'unknown'}. (ID: ${jId})`);
       } finally {
         setLoadingData(false);
       }
     };
 
     fetchData();
-  }, [jobId, authLoading, user]);
+  }, [router.isReady, router.query.id, authLoading, user]);
 
   // ── CKEditor Initialization ────────────────────
   const initEditor = () => {
     const el = document.getElementById('job_info_editor');
-    if (window.CKEDITOR && el && !window.CKEDITOR.instances.job_info_editor) {
+    if (window.CKEDITOR && el) {
+      if (window.CKEDITOR.instances.job_info_editor) {
+          window.CKEDITOR.instances.job_info_editor.destroy(true);
+      }
       const editor = window.CKEDITOR.replace('job_info_editor', {
         height: 250,
         versionCheck: false,
@@ -197,23 +202,23 @@ export default function CandidateRequirementsPage() {
 
       <div className={styles.pageWrapper}>
         <div className={styles.contentWrapper}>
-          <div className={styles.mainContainer}>
+            <div className={styles.mainContainer}>
+              <JobStepper currentStep={2} />
 
-            {loadingData && (
-              <div className={styles.loadingWrapper}>
-                <div className={styles.loadingSpinner} />
-                Loading job requirements…
-              </div>
-            )}
+              {loadingData && (
+                <div className={styles.loadingWrapper}>
+                  <div className={styles.loadingSpinner} />
+                  Loading job requirements…
+                </div>
+              )}
 
-            {!loadingData && loadError && (
-              <div className={styles.errorMsg}>{loadError}</div>
-            )}
+              {!loadingData && loadError && (
+                <div className={styles.errorMsg}>{loadError}</div>
+              )}
 
-            {!loadingData && !loadError && pageData && (
+              {!loadingData && !loadError && pageData && (
               <form onSubmit={handleSubmit} noValidate>
                 <div className={styles.card}>
-
                   <div className={styles.cardHeader}>
                     <h2 className={styles.mainTitle}>Candidate Requirements</h2>
                     <p className={styles.subTitle}>Select the assets and skills required for this role</p>

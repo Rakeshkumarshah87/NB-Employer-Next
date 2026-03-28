@@ -7,6 +7,25 @@
   flex-direction: column;
 }
 
+/* ── Page Header ─────────────────────────── */
+.pageHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 20px 5px;
+  max-width: 1200px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.pageTitleMain {
+  font-weight: 700;
+  font-size: 20px;
+  color: #0f172a;
+  margin: 0;
+  letter-spacing: -0.01em;
+}
+
 .mainContainer {
   max-width: 900px;
   margin: 0 auto;
@@ -22,7 +41,7 @@
 
 .pageTitle {
   font-size: 32px;
-  font-weight: 800;
+  font-weight: 700;
   color: #1e293b;
   margin: 0 0 15px 0;
   letter-spacing: -0.5px;
@@ -57,19 +76,19 @@
 
 .cardHeader {
   background: #fff;
-  padding: 25px 30px;
+  padding: 10px 30px;
   border-bottom: 1px solid #e2e8f0;
 }
 
 .cardTitle {
-  font-size: 22px;
+  font-size: 20px;
   font-weight: 700;
   margin: 0;
   color: #1e293b;
 }
 
 .cardBody {
-  padding: 30px;
+  padding: 10px 30px 25px;
 }
 
 .guidelineList {

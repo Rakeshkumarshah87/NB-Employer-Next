@@ -170,8 +170,6 @@ export default function LoginPage() {
           contact_person: response.data.contact_person || '',
           company_logo: response.data.company_logo || '',
           city: response.data.city || '',
-          email: '',
-          company_number: '',
           has_jobs: response.data.has_jobs,
         };
 

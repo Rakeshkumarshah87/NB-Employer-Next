@@ -1,0 +1,95 @@
+.stepperWrapper {
+  width: 100%;
+  margin: 8px 0 15px;
+  padding: 0;
+}
+
+.stepper {
+  background: #ffffff;
+  border-radius: 4px;
+  padding: 10px 40px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03), 0 1px 2px rgba(0, 0, 0, 0.05);
+  border: 1px solid #f1f5f9;
+}
+
+.step {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  position: relative;
+  z-index: 2;
+}
+
+.stepCircle {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: #94a3b8;
+  /* Inactive gray */
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 700;
+  transition: all 0.3s ease;
+}
+
+.stepActive .stepCircle {
+  background: #3c366b;
+  /* Dark purple/blue from screenshot */
+  box-shadow: 0 0 0 4px rgba(60, 54, 107, 0.1);
+}
+
+.stepLabel {
+  font-size: 14px;
+  font-weight: 600;
+  color: #334155;
+  white-space: nowrap;
+}
+
+.stepLine {
+  flex: 1;
+  height: 1px;
+  background: #e2e8f0;
+  margin: 0 20px;
+  position: relative;
+}
+
+/* ── Responsive ──────────────────────────── */
+@media (max-width: 768px) {
+  .stepperWrapper {
+    padding: 0 10px;
+    margin: 0 0 20px;
+  }
+
+  .stepper {
+    padding: 15px 10px;
+  }
+
+  .step {
+    gap: 6px;
+  }
+
+  .stepCircle {
+    width: 22px;
+    height: 22px;
+    font-size: 11px;
+  }
+
+  .stepLabel {
+    display: none;
+  }
+
+  .stepActive .stepLabel {
+    display: block;
+    font-size: 12px;
+  }
+
+  .stepLine {
+    margin: 0 8px;
+  }
+}

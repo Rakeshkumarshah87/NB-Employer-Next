@@ -3,6 +3,7 @@ import Head from 'next/head';
 import { useRouter } from 'next/router';
 import { useAuth } from '@/context/AuthContext';
 import { approveAgreementApi } from '@/services/api';
+import JobStepper from '@/components/JobStepper';
 import styles from '@/styles/codeOfConduct.module.css';
 
 export default function EmployerJobReviewsPage() {
@@ -58,15 +59,10 @@ export default function EmployerJobReviewsPage() {
       </Head>
 
       <div className={styles.pageWrapper}>
+
+
         <div className={styles.mainContainer}>
-
-          <div className={styles.headerBadge}>
-            <h1 className={styles.pageTitle}>Code of Conduct</h1>
-            <div className={styles.headerBadgeBtn}>
-              Post Job ID: <span>{jobId || ''}</span>
-            </div>
-          </div>
-
+          <JobStepper currentStep={4} />
           <form onSubmit={handleSubmit}>
             <div className={styles.card}>
               <div className={styles.cardHeader}>

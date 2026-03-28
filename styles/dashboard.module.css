@@ -163,6 +163,34 @@
   border-color: rgba(255, 255, 255, 0.3);
 }
 
+.userBtnInfo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.userBtnActive .userBtnInfo {
+  flex-direction: row-reverse;
+  padding-left: 12px;
+  padding-right: 4px;
+}
+
+.userBtnActive .userAvatar,
+.userBtnActive .avatarFallback {
+  transform: scale(1.1);
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+}
+
+.userBtnActive .userDisplayName {
+  animation: slideLeft 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes slideLeft {
+  from { transform: translateX(20px); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
 .userAvatar {
   width: 32px;
   height: 32px;
