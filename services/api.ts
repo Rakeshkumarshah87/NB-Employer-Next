@@ -457,3 +457,11 @@ export async function removeLogoApi(): Promise<ApiResponse<any>> {
   return apiRequest<any>('/remove-logo', { method: 'POST' });
 }
 
+// Notifications
+export async function getNotificationsCountApi(): Promise<ApiResponse<{ count: number }>> {
+  return apiRequest<{ count: number }>('/notifications/count', { method: 'GET' });
+}
+
+export async function getNotificationsApi(offset: number = 0, limit: number = 15): Promise<ApiResponse<any>> {
+  return apiRequest<any>(`/notifications/list?offset=${offset}&limit=${limit}`, { method: 'GET' });
+}

@@ -230,18 +230,44 @@ export default function LoginPage() {
         <div className={`${styles.orb} ${styles.orb2}`} aria-hidden="true" />
         <div className={`${styles.orb} ${styles.orb3}`} aria-hidden="true" />
 
-        <div className={`${styles.loginCard} ${shakeForm ? styles.shake : ''}`}>
-          <div className={styles.brandSection}>
-            <img
-              src="/nt/images/vertical_baba.png"
-              alt="NetworkBaba Logo"
-              className={styles.brandLogoImg}
-            />
-            <h1 className={styles.brandTitle}>Employer Login</h1>
-            <p className={styles.brandSubtitle}>
-              {otpSent ? 'Enter the OTP sent to your mobile' : 'Sign in using your mobile number'}
+        <div className={styles.splitContainer}>
+          {/* Left Info Section - Desktop Only */}
+          <div className={styles.leftInfoSection}>
+            <h1 className={styles.mainHeadline}>Hire top talent in 48 hours with NetworkBaba.</h1>
+            <p className={styles.subHeadline}>
+              Streamline your recruitment with AI-driven precision. Single solution from Fresher to experienced hiring.
             </p>
+
+            <div className={styles.statsContainer}>
+              <div className={styles.statItem}>
+                <h3 className={styles.statValue}>6 crore+</h3>
+                <p className={styles.statLabel}>Qualified candidates</p>
+              </div>
+              <div className={styles.statItem}>
+                <h3 className={styles.statValue}>7 lakhs+</h3>
+                <p className={styles.statLabel}>Employers use NetworkBaba</p>
+              </div>
+              <div className={styles.statItem}>
+                <h3 className={styles.statValue}>900+</h3>
+                <p className={styles.statLabel}>Available cities</p>
+              </div>
+            </div>
           </div>
+
+          {/* Right Side - Login Card */}
+          <div className={styles.rightLoginSection}>
+            <div className={`${styles.loginCard} ${shakeForm ? styles.shake : ''}`}>
+              <div className={styles.brandSection}>
+                <img
+                  src="/nt/images/vertical_baba.png"
+                  alt="NetworkBaba Logo"
+                  className={styles.brandLogoImg}
+                />
+                <h1 className={styles.brandTitle}>Let&apos;s get started</h1>
+                <p className={styles.brandSubtitle}>
+                  {otpSent ? 'Enter the OTP sent to your mobile' : 'Hire top talent faster with NetworkBaba'}
+                </p>
+              </div>
 
           {error && (
             <div className={styles.errorBox} role="alert">
@@ -344,6 +370,8 @@ export default function LoginPage() {
             </button>
           </form>
 
+            </div>
+          </div>
         </div>
       </main>
     </>
