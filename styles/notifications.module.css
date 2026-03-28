@@ -1,0 +1,173 @@
+.pageContainer {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 40px 20px;
+}
+
+.headerArea {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 30px;
+  background: white;
+  padding: 24px;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+  border-left: 5px solid #2d6eb5;
+}
+
+.pageTitle {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #1e3a5f;
+  margin: 0;
+}
+
+.badge {
+  background: #f0f7ff;
+  color: #2d6eb5;
+  padding: 6px 16px;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.notificationList {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-height: 400px;
+}
+
+.emptyState {
+  text-align: center;
+  padding: 60px 20px;
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+}
+
+.emptyIcon {
+  font-size: 4rem;
+  margin-bottom: 16px;
+  opacity: 0.5;
+}
+
+.emptyState h3 {
+  font-size: 1.4rem;
+  color: #1e3a5f;
+  margin-bottom: 8px;
+}
+
+.emptyState p {
+  color: #64748b;
+  font-size: 1rem;
+}
+
+.notificationCard {
+  display: flex;
+  gap: 20px;
+  background: white;
+  padding: 24px;
+  border-radius: 16px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04);
+  transition: all 0.3s ease;
+  border: 1px solid transparent;
+}
+
+.notificationCard:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+  border-color: #e2e8f0;
+}
+
+.unread {
+  background: #f8fafc;
+  border-left: 4px solid #3b82f6;
+}
+
+.iconBox {
+  width: 48px;
+  height: 48px;
+  background: #f0f7ff;
+  color: #2d6eb5;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.textContent {
+  flex: 1;
+}
+
+.title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #1e293b;
+  margin: 0 0 8px 0;
+  line-height: 1.4;
+}
+
+.message {
+  font-size: 0.95rem;
+  color: #475569;
+  margin: 0 0 12px 0;
+  line-height: 1.6;
+}
+
+.date {
+  font-size: 0.85rem;
+  color: #94a3b8;
+  font-weight: 500;
+}
+
+.loaderArea {
+  padding: 24px;
+  display: flex;
+  justify-content: center;
+}
+
+.spinnerSmall {
+  width: 30px;
+  height: 30px;
+  border: 3px solid #e2e8f0;
+  border-top-color: #2d6eb5;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+.endMessage {
+  text-align: center;
+  padding: 20px;
+  color: #94a3b8;
+  font-size: 0.9rem;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+@media (max-width: 768px) {
+  .pageContainer {
+    padding: 20px 16px;
+  }
+  
+  .headerArea {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+    padding: 20px;
+  }
+  
+  .notificationCard {
+    padding: 20px;
+    gap: 16px;
+  }
+  
+  .iconBox {
+    width: 40px;
+    height: 40px;
+  }
+}

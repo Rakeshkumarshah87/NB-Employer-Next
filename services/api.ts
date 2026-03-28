@@ -377,3 +377,12 @@ export async function updatePaymentStatusApi(dbId: number, paymentId: string): P
     body: JSON.stringify({ db_id: dbId, payment_id: paymentId }),
   });
 }
+
+// Notifications
+export async function getNotificationsCountApi(): Promise<ApiResponse<{ count: number }>> {
+  return apiRequest<{ count: number }>('/notifications/count', { method: 'GET' });
+}
+
+export async function getNotificationsApi(offset: number = 0, limit: number = 15): Promise<ApiResponse<any>> {
+  return apiRequest<any>(`/notifications/list?offset=${offset}&limit=${limit}`, { method: 'GET' });
+}

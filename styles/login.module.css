@@ -139,6 +139,122 @@
   75% { transform: translate(15px, 10px); }
 }
 
+/* ── Split Layout Container ──────────────── */
+.splitContainer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+  gap: 0;
+  z-index: 1;
+  flex: 1; /* Take remaining height */
+}
+
+.leftInfoSection {
+  display: none; /* Hidden on mobile by default */
+  flex: 1;
+  padding: 40px;
+  animation: slideInLeft 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  box-sizing: border-box;
+}
+
+@keyframes slideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.mainHeadline {
+  font-size: 3rem;
+  font-weight: 800;
+  color: #1e3a5f;
+  margin-bottom: 24px;
+  line-height: 1.2;
+}
+
+.subHeadline {
+  font-size: 1.15rem;
+  color: #475569;
+  margin-bottom: 40px;
+  line-height: 1.6;
+  max-width: 500px;
+}
+
+.statsContainer {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  border-top: 1px solid rgba(45, 110, 181, 0.2);
+  padding-top: 30px;
+}
+
+.statItem {
+  flex: 1;
+}
+
+.statValue {
+  font-size: 1.8rem;
+  font-weight: 800;
+  /* Use a nice green-blue gradient instead of plain color to add visual flair */
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: #10b981;
+  margin-bottom: 8px;
+}
+
+.statLabel {
+  font-size: 0.95rem;
+  color: #64748b;
+  line-height: 1.4;
+  font-weight: 500;
+}
+
+.rightLoginSection {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-sizing: border-box;
+}
+
+/* Specific styling to match the requested look on desktop */
+@media (min-width: 1024px) {
+  .leftInfoSection {
+    display: block;
+    padding-left: 5%;
+    padding-right: 5%;
+  }
+
+  .rightLoginSection {
+    padding-left: 5%;
+    padding-right: 5%;
+  }
+  
+  .pageWrapper {
+    /* Exact 50-50 hard split background: left is white, right is light gray */
+    background: linear-gradient(to right, #ffffff 50%, #f4f5f8 50%);
+    height: 100vh; /* Lock height to viewport to remove vertical scroll */
+    min-height: 100vh;
+    overflow: hidden;
+    padding-top: 60px; /* Just account for header */
+    padding-bottom: 0;
+  }
+  
+  /* Redefine bg blobs to match the new lighter background nicely and keep them subdued */
+  .orb1 { background: rgba(56, 189, 248, 0.05); }
+  .orb2 { background: rgba(16, 185, 129, 0.03); }
+  .orb3 { background: rgba(99, 102, 241, 0.04); }
+}
+
 /* ── Login Card ───────────────────────────── */
 .loginCard {
   position: relative;

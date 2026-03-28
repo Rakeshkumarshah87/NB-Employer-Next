@@ -2,6 +2,7 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { useAuth } from '@/context/AuthContext';
+import { getNotificationsCountApi } from '@/services/api';
 import styles from '@/styles/dashboard.module.css';
 
 const LOGO_BASE_URL = 'https://networkbaba.co/images/icon/';
@@ -12,8 +13,22 @@ export default function Header() {
 
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [avatarError, setAvatarError] = useState(false);
+  const [notificationCount, setNotificationCount] = useState<number>(0);
 
   const dropdownRef = useRef<HTMLDivElement>(null);
+
+  // Fetch notifications count
+  useEffect(() => {
+    if (user) {
+      getNotificationsCountApi()
+        .then(res => {
+          if (res.status && res.data) {
+            setNotificationCount(res.data.count);
+          }
+        })
+        .catch(err => console.error('Error fetching notifications count:', err));
+    }
+  }, [user]);
 
   // Avatar URL
   const avatarUrl = user?.company_logo ? `${LOGO_BASE_URL}${user.company_logo}` : null;
@@ -82,6 +97,16 @@ export default function Header() {
 
           {/* Desktop User Section */}
           <div className={styles.userSection} ref={dropdownRef}>
+            <Link href="/employer-notification" className={styles.desktopNotification} aria-label="Notifications">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+                <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+              </svg>
+              {notificationCount > 0 && (
+                <span className={styles.desktopNotificationBadge}>{notificationCount}</span>
+              )}
+            </Link>
+
             <button
               className={`${styles.userBtn} ${dropdownOpen ? styles.userBtnActive : ''}`}
               onClick={toggleDropdown}
@@ -197,13 +222,17 @@ export default function Header() {
                <span className={styles.bottomNavText}>New Job</span>
             </Link>
 
-            <Link href="#" className={styles.bottomNavItem}>
+            <Link href="/employer-notification" className={`${styles.bottomNavItem} ${router.pathname === '/employer-notification' ? styles.bottomNavItemActive : ''}`}>
               <div className={styles.notificationWrapper}>
-                <svg className={styles.bottomNavIcon} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <svg className={styles.bottomNavIcon} viewBox="0 0 24 24" fill={router.pathname === '/employer-notification' ? "currentColor" : "none"} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
                   <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
                 </svg>
-                <span className={styles.notificationBadge}>0</span>
+                {notificationCount > 0 ? (
+                  <span className={styles.notificationBadge}>{notificationCount}</span>
+                ) : (
+                  <span className={styles.notificationBadge}>0</span>
+                )}
               </div>
               <span className={styles.bottomNavText}>Notification</span>
             </Link>

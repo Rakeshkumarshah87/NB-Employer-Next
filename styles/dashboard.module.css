@@ -142,6 +142,49 @@
   align-items: center;
   position: relative;
   margin-left: auto;
+  gap: 16px;
+}
+
+.desktopNotification {
+  display: none;
+  position: relative;
+  color: rgba(255, 255, 255, 0.8);
+  transition: all var(--transition-fast);
+  cursor: pointer;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.desktopNotification:hover {
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.15);
+}
+
+@media (min-width: 769px) {
+  .desktopNotification {
+    display: flex;
+  }
+}
+
+.desktopNotificationBadge {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  background: #ef4444;
+  color: white;
+  font-size: 0.65rem;
+  font-weight: 700;
+  width: 16px;
+  height: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  border: 2px solid #1e3a5f;
 }
 
 .userBtn {
