@@ -1,6 +1,6 @@
 const nextConfig = {
   output: "export",
-  basePath: "/nt",
+  basePath: "/employer",
 };
 
 export default nextConfig;

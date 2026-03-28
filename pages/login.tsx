@@ -211,7 +211,7 @@ export default function LoginPage() {
         <div className={styles.loginHeaderInner}>
           <a href="https://networkbaba.co" className={styles.loginHeaderBrand}>
             <img
-              src="/nt/images/network_stat_logo.jpeg"
+              src="/employer/images/network_stat_logo.jpeg"
               alt="NetworkBaba"
               className={styles.loginHeaderLogo}
             />
@@ -259,7 +259,7 @@ export default function LoginPage() {
             <div className={`${styles.loginCard} ${shakeForm ? styles.shake : ''}`}>
               <div className={styles.brandSection}>
                 <img
-                  src="/nt/images/vertical_baba.png"
+                  src="/employer/images/vertical_baba.png"
                   alt="NetworkBaba Logo"
                   className={styles.brandLogoImg}
                 />

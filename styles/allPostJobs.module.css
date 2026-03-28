@@ -509,18 +509,64 @@
 /* Job Description Preview */
 .jobDescPreview {
   color: #666;
-  font-size: 14px;
-  line-height: 1.5;
-  padding: 5px 20px 10px;
+  font-size: 17px;
+  line-height: 1.6;
+  margin-top: 15px;
+  padding: 0 25px 10px;
 }
 .moreLink {
   color: #007bff;
   font-weight: 600;
   cursor: pointer;
-  font-size: 13px;
+  font-size: 14px;
   border: none;
   background: none;
   padding: 0;
+  text-decoration: none;
+}
+.moreLink:hover {
+  text-decoration: underline;
+}
+
+.expandedBox {
+  border: 1px solid #e1e4e8;
+  background-color: #f8fafc;
+  padding: 16px 20px;
+  border-radius: 10px;
+  margin-top: 14px;
+  font-size: 15px;
+  line-height: 1.6;
+  color: #4a5568;
+}
+
+.skillsContainer {
+  margin-top: 15px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+.skillLabel {
+  font-size: 13px;
+  font-weight: 700;
+  color: #718096;
+  margin-right: 5px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.skillTag {
+  background-color: #e0f7fa;
+  color: #006064;
+  font-weight: 700;
+  font-size: 11px;
+  padding: 4px 10px;
+  border-radius: 4px;
+  border: 1px solid #b2ebf2;
+  display: inline-flex;
+  align-items: center;
+  text-transform: uppercase;
 }
 
 /* Job Footer Actions */
