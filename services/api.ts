@@ -130,9 +130,18 @@ async function apiRequest<T>(
     (headers as Record<string, string>)['X-Authorization'] = `Bearer ${token}`;
   }
 
-  const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+  // Prevent caching for all API calls
+  const url = new URL(`${API_BASE_URL}${endpoint}`);
+  url.searchParams.set('_t', Date.now().toString());
+
+  const response = await fetch(url.toString(), {
     ...options,
-    headers,
+    headers: {
+      ...headers,
+      'Cache-Control': 'no-cache, no-store, must-revalidate',
+      'Pragma': 'no-cache',
+      'Expires': '0'
+    },
   });
 
   // Handle non-JSON or empty responses gracefully
@@ -419,6 +428,14 @@ export interface EmployerProfileData {
     contact_person_name: string;
     contact_person_number: string;
     address: string;
+    flat_bulding: string;
+    city: string;
+    state: string;
+    country: string;
+    pincode: string;
+    lat: string;
+    lng: string;
+    full_add: string;
   };
   subscription: {
     has_active_plan: boolean;
@@ -466,6 +483,17 @@ export async function uploadLogoApi(file: File): Promise<ApiResponse<{ logo: str
  */
 export async function removeLogoApi(): Promise<ApiResponse<any>> {
   return apiRequest<any>('/remove-logo', { method: 'POST' });
+}
+
+/**
+ * POST /update-profile
+ * Update specific section of employer profile
+ */
+export async function updateEmployerProfileApi(type: 'company' | 'address' | 'employer', data: any): Promise<ApiResponse<any>> {
+  return apiRequest<any>('/update-profile', {
+    method: 'POST',
+    body: JSON.stringify({ type, data }),
+  });
 }
 
 // Notifications

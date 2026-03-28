@@ -2,19 +2,86 @@ import { useState, useEffect, useRef } from 'react';
 import Head from 'next/head';
 import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
-import { getEmployerProfileApi, uploadLogoApi, removeLogoApi, type EmployerProfileData } from '@/services/api';
+import { getEmployerProfileApi, uploadLogoApi, removeLogoApi, updateEmployerProfileApi, type EmployerProfileData } from '@/services/api';
 import styles from '@/styles/employerProfile.module.css';
 
 // Base URL pointing directly to the main site's public_html folder where images are saved
 const LOGO_BASE_URL = 'https://networkbaba.co/company_logo';
 
 export default function EmployerProfile() {
-  const { user } = useAuth();
+  const { user, refreshUser } = useAuth();
   const [profile, setProfile] = useState<EmployerProfileData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [logoSrc, setLogoSrc] = useState('');
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Edit Modal State
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [editType, setEditType] = useState<'company' | 'address' | 'employer' | null>(null);
+  const [editFormData, setEditFormData] = useState<any>({});
+  const [isSaving, setIsSaving] = useState(false);
+
+  const openEditModal = (type: 'company' | 'address' | 'employer') => {
+    if (!profile) return;
+    setEditType(type);
+
+    // Initialize form data based on type
+    const data: any = {};
+    if (type === 'company') {
+      data.company_name = profile.company.company_name;
+      data.gst_no = profile.company.gst_no === '----' ? '' : profile.company.gst_no;
+      data.year_of_establish = profile.company.year_of_establish === '----' ? '' : profile.company.year_of_establish;
+      data.no_of_employee = profile.company.no_of_employee === '----' ? '' : profile.company.no_of_employee;
+      data.company_website = profile.company.company_website === '----' ? '' : profile.company.company_website;
+      data.linkedin = profile.company.linkedin === '----' ? '' : profile.company.linkedin;
+    } else if (type === 'address') {
+      data.flat_bulding = profile.company.flat_bulding;
+      data.city = profile.company.city;
+      data.state = profile.company.state;
+      data.country = profile.company.country;
+      data.pincode = profile.company.pincode;
+      data.lat = profile.company.lat;
+      data.lng = profile.company.lng;
+      data.full_add = profile.company.full_add;
+    } else if (type === 'employer') {
+      data.contact_person_name = profile.company.contact_person_name;
+      data.contact_person_number = profile.company.contact_person_number;
+      data.email_id = profile.company.email_id;
+    }
+
+    setEditFormData(data);
+    setIsEditModalOpen(true);
+  };
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+    const { name, value } = e.target;
+    setEditFormData((prev: any) => ({ ...prev, [name]: value }));
+  };
+
+  const handleSave = async () => {
+    if (!editType) return;
+    setIsSaving(true);
+    try {
+      const res = await updateEmployerProfileApi(editType, editFormData);
+      if (res.status) {
+        setIsEditModalOpen(false);
+        await fetchProfile(); // Refresh local profile page data
+        
+        // Force refresh global auth state (Header, etc.)
+        if (refreshUser) {
+          await refreshUser();
+        }
+      } else {
+        alert(res.message || 'Failed to update profile');
+      }
+    } catch (err) {
+      console.error('Update failed:', err);
+      alert('An error occurred while saving.');
+    } finally {
+      setIsSaving(false);
+    }
+  };
 
   const fetchProfile = async () => {
     setLoading(true);
@@ -227,7 +294,11 @@ export default function EmployerProfile() {
             <div className={styles.card}>
               <div className={styles.cardHeader}>
                 <h3 className={styles.cardTitle}>About Company</h3>
-                <button className={styles.editBtn} title="Edit Company Info">✎</button>
+                <button
+                  className={styles.editBtn}
+                  title="Edit Company Info"
+                  onClick={() => openEditModal('company')}
+                >✎</button>
               </div>
               <div className={styles.cardBody}>
                 <ul className={styles.infoList}>
@@ -287,7 +358,11 @@ export default function EmployerProfile() {
             <div className={styles.card}>
               <div className={styles.cardHeader}>
                 <h3 className={styles.cardTitle}>Office Address</h3>
-                <button className={styles.editBtn} title="Edit Address">✎</button>
+                <button
+                  className={styles.editBtn}
+                  title="Edit Address"
+                  onClick={() => openEditModal('address')}
+                >✎</button>
               </div>
               <div className={styles.cardBody}>
                 <p className={styles.addressText}>
@@ -300,7 +375,11 @@ export default function EmployerProfile() {
             <div className={styles.card}>
               <div className={styles.cardHeader}>
                 <h3 className={styles.cardTitle}>Employer Info</h3>
-                <button className={styles.editBtn} title="Edit Employer Info">✎</button>
+                <button
+                  className={styles.editBtn}
+                  title="Edit Employer Info"
+                  onClick={() => openEditModal('employer')}
+                >✎</button>
               </div>
               <div className={styles.cardBody}>
                 <div className={styles.contactGrid}>
@@ -326,6 +405,194 @@ export default function EmployerProfile() {
           </div>
         </div>
       </div>
+
+      {/* ── Edit Profile Modal ────────────────────────────── */}
+      {isEditModalOpen && (
+        <div className={styles.modalOverlay}>
+          <div className={styles.modalContent}>
+            <div className={styles.modalHeader}>
+              <h3>
+                {editType === 'company' && 'Edit Company Details'}
+                {editType === 'address' && 'Edit Office Address'}
+                {editType === 'employer' && 'Edit Employer Info'}
+              </h3>
+              <button className={styles.closeBtn} onClick={() => setIsEditModalOpen(false)}>×</button>
+            </div>
+
+            <div className={styles.modalBody}>
+              {editType === 'company' && (
+                <div className={styles.formGrid}>
+                  <div className={`${styles.formGroup} ${styles.formGroupFull}`}>
+                    <label className={styles.formLabel}>Company Name</label>
+                    <input
+                      className={styles.formInput}
+                      name="company_name"
+                      value={editFormData.company_name || ''}
+                      onChange={handleInputChange}
+                      placeholder="e.g. Acme Corporation"
+                    />
+                  </div>
+                  <div className={styles.formGroup}>
+                    <label className={styles.formLabel}>GST No</label>
+                    <input
+                      className={styles.formInput}
+                      name="gst_no"
+                      value={editFormData.gst_no || ''}
+                      onChange={handleInputChange}
+                      placeholder="Optional"
+                    />
+                  </div>
+                  <div className={styles.formGroup}>
+                    <label className={styles.formLabel}>Established Year</label>
+                    <select
+                      className={styles.formInput}
+                      name="year_of_establish"
+                      value={editFormData.year_of_establish || ''}
+                      onChange={handleInputChange}
+                    >
+                      <option value="">Select Year</option>
+                      {Array.from({ length: 50 }, (_, i) => new Date().getFullYear() - i).map(year => (
+                        <option key={year} value={year}>{year}</option>
+                      ))}
+                    </select>
+                  </div>
+                  <div className={styles.formGroup}>
+                    <label className={styles.formLabel}>Total Employees</label>
+                    <input
+                      type="number"
+                      className={styles.formInput}
+                      name="no_of_employee"
+                      value={editFormData.no_of_employee || ''}
+                      onChange={handleInputChange}
+                      placeholder="e.g. 50"
+                    />
+                  </div>
+                  <div className={styles.formGroup}>
+                    <label className={styles.formLabel}>Website</label>
+                    <input
+                      className={styles.formInput}
+                      name="company_website"
+                      value={editFormData.company_website || ''}
+                      onChange={handleInputChange}
+                      placeholder="https://..."
+                    />
+                  </div>
+                  <div className={`${styles.formGroup} ${styles.formGroupFull}`}>
+                    <label className={styles.formLabel}>LinkedIn Profile</label>
+                    <input
+                      className={styles.formInput}
+                      name="linkedin"
+                      value={editFormData.linkedin || ''}
+                      onChange={handleInputChange}
+                      placeholder="https://linkedin.com/..."
+                    />
+                  </div>
+                </div>
+              )}
+
+              {editType === 'address' && (
+                <div className={styles.formGrid}>
+                  <div className={`${styles.formGroup} ${styles.formGroupFull}`}>
+                    <label className={styles.formLabel}>Flat / Building / Street</label>
+                    <input
+                      className={styles.formInput}
+                      name="flat_bulding"
+                      value={editFormData.flat_bulding || ''}
+                      onChange={handleInputChange}
+                      placeholder="Address line 1"
+                    />
+                  </div>
+                  <div className={styles.formGroup}>
+                    <label className={styles.formLabel}>City</label>
+                    <input
+                      className={styles.formInput}
+                      name="city"
+                      value={editFormData.city || ''}
+                      onChange={handleInputChange}
+                    />
+                  </div>
+                  <div className={styles.formGroup}>
+                    <label className={styles.formLabel}>State</label>
+                    <input
+                      className={styles.formInput}
+                      name="state"
+                      value={editFormData.state || ''}
+                      onChange={handleInputChange}
+                    />
+                  </div>
+                  <div className={styles.formGroup}>
+                    <label className={styles.formLabel}>Country</label>
+                    <input
+                      className={styles.formInput}
+                      name="country"
+                      value={editFormData.country || 'India'}
+                      onChange={handleInputChange}
+                    />
+                  </div>
+                  <div className={styles.formGroup}>
+                    <label className={styles.formLabel}>Pincode</label>
+                    <input
+                      className={styles.formInput}
+                      name="pincode"
+                      value={editFormData.pincode || ''}
+                      onChange={handleInputChange}
+                    />
+                  </div>
+                </div>
+              )}
+
+              {editType === 'employer' && (
+                <div className={styles.formGrid}>
+                  <div className={`${styles.formGroup} ${styles.formGroupFull}`}>
+                    <label className={styles.formLabel}>Contact Person Name</label>
+                    <input
+                      className={styles.formInput}
+                      name="contact_person_name"
+                      value={editFormData.contact_person_name || ''}
+                      onChange={handleInputChange}
+                    />
+                  </div>
+                  <div className={styles.formGroup}>
+                    <label className={styles.formLabel}>Mobile Number</label>
+                    <input
+                      className={styles.formInput}
+                      name="contact_person_number"
+                      value={editFormData.contact_person_number || ''}
+                      onChange={handleInputChange}
+                    />
+                  </div>
+                  <div className={styles.formGroup}>
+                    <label className={styles.formLabel}>Email ID</label>
+                    <input
+                      className={styles.formInput}
+                      name="email_id"
+                      value={editFormData.email_id || ''}
+                      onChange={handleInputChange}
+                    />
+                  </div>
+                </div>
+              )}
+            </div>
+
+            <div className={styles.modalFooter}>
+              <button
+                className={styles.cancelBtn}
+                onClick={() => setIsEditModalOpen(false)}
+                disabled={isSaving}
+              >
+                Cancel
+              </button>
+              <button
+                className={styles.saveBtn}
+                onClick={handleSave}
+                disabled={isSaving}
+              >
+                {isSaving ? 'Saving...' : 'Save Changes'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 }

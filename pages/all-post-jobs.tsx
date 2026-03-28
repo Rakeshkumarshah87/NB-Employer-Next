@@ -12,18 +12,18 @@ const IMG = '/employer/images/icon';
 
 // --- CANDIDATE LIST VIEW COMPONENT ---
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-const CandidateListView = ({ postId, viewMode, statusFilter, isPlanActive, jobStatus, onLoadingChange }: { postId: number, viewMode: 'applied'|'recommended', statusFilter: string, isPlanActive: boolean, jobStatus?: number, onLoadingChange?: (loading: boolean) => void }) => {
+const CandidateListView = ({ postId, viewMode, statusFilter, isPlanActive, jobStatus, onLoadingChange }: { postId: number, viewMode: 'applied' | 'recommended', statusFilter: string, isPlanActive: boolean, jobStatus?: number, onLoadingChange?: (loading: boolean) => void }) => {
   const LIVE_BASE = 'https://networkbaba.co';
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [candidates, setCandidates] = useState<any[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [offset, setOffset] = useState<number>(0);
   const [hasMore, setHasMore] = useState<boolean>(false);
-  
+
   // States for displaying contact number and profile modal
   const [revealedNumbers, setRevealedNumbers] = useState<Record<number, boolean>>({});
   const [modalCandidate, setModalCandidate] = useState<any | null>(null);
-  
+
   // State for Status Update Form
   const [activeUpdateId, setActiveUpdateId] = useState<number | null>(null);
   const [updateStatus, setUpdateStatus] = useState<string>('');
@@ -35,12 +35,13 @@ const CandidateListView = ({ postId, viewMode, statusFilter, isPlanActive, jobSt
   const loadCandidates = useCallback(async (reset: boolean = false) => {
     try {
       const currentOffset = reset ? 0 : offset;
+      setLoading(true);
       if (reset) {
-        setLoading(true);
+        setOffset(0);
         setError('');
         setCandidates([]);
       }
-      
+
       let res;
       if (viewMode === 'applied') {
         res = await getCandidatesApplied(postId, currentOffset, 10, statusFilter);
@@ -55,7 +56,7 @@ const CandidateListView = ({ postId, viewMode, statusFilter, isPlanActive, jobSt
       } else {
         setError(res?.message || 'Failed to load candidates');
       }
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (e: unknown) {
       setError('Error loading candidates. Please try again.');
     } finally {
@@ -81,12 +82,12 @@ const CandidateListView = ({ postId, viewMode, statusFilter, isPlanActive, jobSt
       },
       { threshold: 0.1, rootMargin: '100px' }
     );
-    
+
     const currentTarget = observerTarget.current;
     if (currentTarget) {
       observer.observe(currentTarget);
     }
-    
+
     return () => {
       if (currentTarget) observer.unobserve(currentTarget);
     };
@@ -168,133 +169,133 @@ const CandidateListView = ({ postId, viewMode, statusFilter, isPlanActive, jobSt
     <div style={{ marginTop: 20 }}>
       {candidates.map((c, idx) => {
         const isCandidateUnlocked = isPlanActive || (viewMode === 'recommended' && idx < 10);
-        
-        return (
-        <div key={idx} className={styles.candidateCard}>
-          {viewMode === 'applied' && c.status_badge && <span className={styles.newCandidatePill}>{c.status_badge}</span>}
-          <div className={styles.candidateHeader}>
-            {c.profile_pic ? (
-             <img src={c.profile_pic} alt="" className={styles.candidateAvatar} />
-            ) : (
-             <div className={styles.candidateAvatarFallback}>
-               {c.name.charAt(0).toUpperCase()}
-             </div>
-            )}
-            <div style={{ flex: 1 }}>
-              <div className={styles.candidateNameRow}>
-                <h3 className={styles.candidateName}>{c.name}</h3>
-                {c.status_badge && <span className={styles.newCandidateBadge}>{c.status_badge}</span>}
-              </div>
-              <div className={styles.candidateLocation}>
-                📍 {c.location} {(viewMode === 'recommended' || c.recommended_status === 1) && <span className={styles.recommendedBadge}>Recommended</span>}
-              </div>
-              <div className={styles.candidateMeta}>
-                <div><strong>Experience:</strong><br/>{c.experience} Years</div>
-                <div><strong>Education:</strong><br/>{c.qualification} {c.degree_name ? <><br/><small style={{color:'#888'}}>({c.degree_name})</small></> : ''}</div>
-                {viewMode === 'applied' && <div><strong>Applied On:</strong><br/>{c.apply_date}</div>}
-              </div>
-            </div>
-          </div>
-          
-          {jobStatus === 2 ? (
-            <div className={styles.candidateReviewBanner}>
-              Your Job is Under Review
-            </div>
-          ) : (
-            <>
-              <div className={styles.candidateActions}>
-                {isCandidateUnlocked ? (
-                  <>
-                    {revealedNumbers[idx] ? (
-                      <button className={styles.btnShowNumber} style={{ cursor: 'text', background: '#f8f9fa', color: '#333', border: '1px solid #ced4da', boxShadow: 'none' }}>
-                        📞 {c.contact_number}
-                      </button>
-                    ) : (
-                      <button onClick={() => setRevealedNumbers({...revealedNumbers, [idx]: true})} className={styles.btnShowNumber}>
-                        📞 Show Number
-                      </button>
-                    )}
-                    <a href={`https://wa.me/91${(c.contact_number || '').slice(-10)}`} target="_blank" style={{ textDecoration: 'none' }}>
-                      <button className={styles.btnWhatsApp}>💬 WhatsApp</button>
-                    </a>
-                    <button onClick={() => setModalCandidate(c)} className={styles.btnViewProfile}>
-                      👤 View Profile
-                    </button>
-                  </>
-                ) : (
-                  <>
-                    <button onClick={() => router.push('/employer-upgrade-plan')} className={styles.btnShowNumber}>🔒 Show Number</button>
-                    <button onClick={() => router.push('/employer-upgrade-plan')} className={styles.btnWhatsApp}>🔒 WhatsApp</button>
-                    <button onClick={() => router.push('/employer-upgrade-plan')} className={styles.btnViewProfileLocked}>🔒 View Profile</button>
-                  </>
-                )}
-              </div>
-              {viewMode === 'applied' && (
-                <div style={{ marginTop: 15 }}>
-                  <select 
-                    className={styles.candidateSelect}
-                    value={activeUpdateId === c.user_id ? updateStatus : ''}
-                    onChange={(e) => handleStatusChange(c.user_id, e.target.value)}
-                  >
-                    <option value="">Update Status</option>
-                    <option value="Interview Fixed">Interview Fixed</option>
-                    <option value="Shortlisted">Shortlisted</option>
-                    <option value="Hired">Hired</option>
-                    <option value="Rejected">Rejected</option>
-                    <option value="Absent for Interview">Absent for Interview</option>
-                  </select>
 
-                  {/* Show Review Form logic  */}
-                  {activeUpdateId === c.user_id && updateStatus && (
-                    <div className={styles.statusUpdateBox}>
-                      <div className={styles.ratingRow}>
-                        <label><b>Rating:</b></label>
-                        <div className={styles.starRating}>
-                          {[5,4,3,2,1].map(num => (
-                            <span key={num} style={{ display: 'inline-flex', flexDirection: 'row-reverse' }}>
-                              <input 
-                                type="radio" 
-                                id={`star${num}-${c.user_id}`} 
-                                name={`rating-${c.user_id}`} 
-                                value={num}
-                                checked={updateRating === num}
-                                onChange={() => setUpdateRating(num)}
-                                style={{ display: 'none' }}
-                              />
-                              <label htmlFor={`star${num}-${c.user_id}`} className={styles.starLabel}>☆</label>
-                            </span>
-                          ))}
-                        </div>
-                      </div>
-                      <textarea 
-                        className={styles.remarkBox} 
-                        placeholder="Add a remark..."
-                        value={updateRemark}
-                        onChange={(e) => setUpdateRemark(e.target.value)}
-                      />
-                      <button 
-                        onClick={() => submitStatusUpdate(c.user_id, c.apply_id)} 
-                        className={styles.btnStatusUpdate}
-                        disabled={isUpdating}
-                      >
-                        {isUpdating ? 'Updating...' : 'Update Status'}
-                      </button>
-                    </div>
-                  )}
+        return (
+          <div key={idx} className={styles.candidateCard}>
+            {viewMode === 'applied' && c.status_badge && <span className={styles.newCandidatePill}>{c.status_badge}</span>}
+            <div className={styles.candidateHeader}>
+              {c.profile_pic ? (
+                <img src={c.profile_pic} alt="" className={styles.candidateAvatar} />
+              ) : (
+                <div className={styles.candidateAvatarFallback}>
+                  {c.name.charAt(0).toUpperCase()}
                 </div>
               )}
-            </>
-          )}
-
-          {viewMode === 'applied' && c.status && activeUpdateId !== c.user_id && (
-            <div className={styles.statusBoxDisplay}>
-              <b style={{ color: '#ff7600' }}>{c.review} ★</b> | <strong>{c.status}</strong> | <i>{c.remark}</i>
+              <div style={{ flex: 1 }}>
+                <div className={styles.candidateNameRow}>
+                  <h3 className={styles.candidateName}>{c.name}</h3>
+                  {c.status_badge && <span className={styles.newCandidateBadge}>{c.status_badge}</span>}
+                </div>
+                <div className={styles.candidateLocation}>
+                  📍 {c.location} {(viewMode === 'recommended' || c.recommended_status === 1) && <span className={styles.recommendedBadge}>Recommended</span>}
+                </div>
+                <div className={styles.candidateMeta}>
+                  <div><strong>Experience:</strong><br />{c.experience} Years</div>
+                  <div><strong>Education:</strong><br />{c.qualification} {c.degree_name ? <><br /><small style={{ color: '#888' }}>({c.degree_name})</small></> : ''}</div>
+                  {viewMode === 'applied' && <div><strong>Applied On:</strong><br />{c.apply_date}</div>}
+                </div>
+              </div>
             </div>
-          )}
-        </div>
-      );
-    })}
-      
+
+            {jobStatus === 2 ? (
+              <div className={styles.candidateReviewBanner}>
+                Your Job is Under Review
+              </div>
+            ) : (
+              <>
+                <div className={styles.candidateActions}>
+                  {isCandidateUnlocked ? (
+                    <>
+                      {revealedNumbers[idx] ? (
+                        <button className={styles.btnShowNumber} style={{ cursor: 'text', background: '#f8f9fa', color: '#333', border: '1px solid #ced4da', boxShadow: 'none' }}>
+                          📞 {c.contact_number}
+                        </button>
+                      ) : (
+                        <button onClick={() => setRevealedNumbers({ ...revealedNumbers, [idx]: true })} className={styles.btnShowNumber}>
+                          📞 Show Number
+                        </button>
+                      )}
+                      <a href={`https://wa.me/91${(c.contact_number || '').slice(-10)}`} target="_blank" style={{ textDecoration: 'none' }}>
+                        <button className={styles.btnWhatsApp}>💬 WhatsApp</button>
+                      </a>
+                      <button onClick={() => setModalCandidate(c)} className={styles.btnViewProfile}>
+                        👤 View Profile
+                      </button>
+                    </>
+                  ) : (
+                    <>
+                      <button onClick={() => router.push('/employer-upgrade-plan')} className={styles.btnShowNumber}>🔒 Show Number</button>
+                      <button onClick={() => router.push('/employer-upgrade-plan')} className={styles.btnWhatsApp}>🔒 WhatsApp</button>
+                      <button onClick={() => router.push('/employer-upgrade-plan')} className={styles.btnViewProfileLocked}>🔒 View Profile</button>
+                    </>
+                  )}
+                </div>
+                {viewMode === 'applied' && (
+                  <div style={{ marginTop: 15 }}>
+                    <select
+                      className={styles.candidateSelect}
+                      value={activeUpdateId === c.user_id ? updateStatus : ''}
+                      onChange={(e) => handleStatusChange(c.user_id, e.target.value)}
+                    >
+                      <option value="">Update Status</option>
+                      <option value="Interview Fixed">Interview Fixed</option>
+                      <option value="Shortlisted">Shortlisted</option>
+                      <option value="Hired">Hired</option>
+                      <option value="Rejected">Rejected</option>
+                      <option value="Absent for Interview">Absent for Interview</option>
+                    </select>
+
+                    {/* Show Review Form logic  */}
+                    {activeUpdateId === c.user_id && updateStatus && (
+                      <div className={styles.statusUpdateBox}>
+                        <div className={styles.ratingRow}>
+                          <label><b>Rating:</b></label>
+                          <div className={styles.starRating}>
+                            {[5, 4, 3, 2, 1].map(num => (
+                              <span key={num} style={{ display: 'inline-flex', flexDirection: 'row-reverse' }}>
+                                <input
+                                  type="radio"
+                                  id={`star${num}-${c.user_id}`}
+                                  name={`rating-${c.user_id}`}
+                                  value={num}
+                                  checked={updateRating === num}
+                                  onChange={() => setUpdateRating(num)}
+                                  style={{ display: 'none' }}
+                                />
+                                <label htmlFor={`star${num}-${c.user_id}`} className={styles.starLabel}>☆</label>
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+                        <textarea
+                          className={styles.remarkBox}
+                          placeholder="Add a remark..."
+                          value={updateRemark}
+                          onChange={(e) => setUpdateRemark(e.target.value)}
+                        />
+                        <button
+                          onClick={() => submitStatusUpdate(c.user_id, c.apply_id)}
+                          className={styles.btnStatusUpdate}
+                          disabled={isUpdating}
+                        >
+                          {isUpdating ? 'Updating...' : 'Update Status'}
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </>
+            )}
+
+            {viewMode === 'applied' && c.status && activeUpdateId !== c.user_id && (
+              <div className={styles.statusBoxDisplay}>
+                <b style={{ color: '#ff7600' }}>{c.review} ★</b> | <strong>{c.status}</strong> | <i>{c.remark}</i>
+              </div>
+            )}
+          </div>
+        );
+      })}
+
       {/* Infinite Scroll Target & Loader */}
       {(hasMore || loading) ? (
         <div ref={observerTarget} style={{ display: 'flex', justifyContent: 'center', margin: '20px 0', padding: '10px' }}>
@@ -314,7 +315,7 @@ const CandidateListView = ({ postId, viewMode, statusFilter, isPlanActive, jobSt
               <h3 className={styles.profileModalTitle}>Candidate Profile</h3>
               <button className={styles.profileModalNativeClose} onClick={() => setModalCandidate(null)}>✕</button>
             </div>
-            
+
             <div className={styles.profileModalBody}>
               <div className={styles.profileHeaderBox}>
                 {modalCandidate.profile_pic ? (
@@ -336,7 +337,7 @@ const CandidateListView = ({ postId, viewMode, statusFilter, isPlanActive, jobSt
               <div className={styles.profileModalSection}>
                 <h4>🧠 Skills</h4>
                 <div className={styles.skillsTagBox}>
-                  {(modalCandidate.skills ? modalCandidate.skills.split(',') : []).map((skill:string, idx:number) => {
+                  {(modalCandidate.skills ? modalCandidate.skills.split(',') : []).map((skill: string, idx: number) => {
                     const skillName = skill.trim();
                     if (!skillName) return null;
                     return <span key={idx} className={styles.skillTag}>{skillName}</span>;
@@ -381,14 +382,14 @@ const CandidateListView = ({ postId, viewMode, statusFilter, isPlanActive, jobSt
                 </div>
               </div>
             </div>
-            
+
             <div className={styles.profileModalFooter}>
-               <a href={`https://wa.me/91${(modalCandidate.contact_number || '').slice(-10)}`} target="_blank" style={{ textDecoration:'none' }}>
-                  <button className={styles.btnWhatsApp}>💬 WhatsApp</button>
-               </a>
-               <a href={`tel:${modalCandidate.contact_number}`} style={{ textDecoration:'none' }}>
-                  <button className={styles.btnShowNumber}>📞 Call Now</button>
-               </a>
+              <a href={`https://wa.me/91${(modalCandidate.contact_number || '').slice(-10)}`} target="_blank" style={{ textDecoration: 'none' }}>
+                <button className={styles.btnWhatsApp}>💬 WhatsApp</button>
+              </a>
+              <a href={`tel:${modalCandidate.contact_number}`} style={{ textDecoration: 'none' }}>
+                <button className={styles.btnShowNumber}>📞 Call Now</button>
+              </a>
             </div>
           </div>
         </div>
@@ -463,11 +464,11 @@ export default function AllPostJobsPage() {
   const [selectedJobId, setSelectedJobId] = useState<number | null>(null);
   const [expandedJobs, setExpandedJobs] = useState<Record<number, boolean>>({});
   const [statusFilter, setStatusFilter] = useState<string>('All');
-  
+
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [jobDetail, setJobDetail] = useState<any>(null);
   const [loadingDetail, setLoadingDetail] = useState<boolean>(false);
-  const [candidateView, setCandidateView] = useState<'applied'|'recommended'>('applied');
+  const [candidateView, setCandidateView] = useState<'applied' | 'recommended'>('applied');
   const [candidateListLoading, setCandidateListLoading] = useState<boolean>(true);
   const [isMobileDetailOpen, setIsMobileDetailOpen] = useState<boolean>(false);
   // State for Status Update Form
@@ -564,7 +565,7 @@ export default function AllPostJobsPage() {
         setJobs(prev => prev.map((j: any) => j.id === jobId ? { ...j, active_status: newStatus } : j));
         setActiveJobs(prev => prev.map(j => j.id === jobId ? { ...j, active_status: newStatus } : j));
         setExpiredJobs(prev => prev.map(j => j.id === jobId ? { ...j, active_status: newStatus } : j));
-        
+
         // Only adjust count correctly
         setActiveJobCount(prev => newStatus === 1 ? prev + 1 : prev - 1);
       } else {
@@ -595,8 +596,8 @@ export default function AllPostJobsPage() {
       <div style={{ textAlign: 'center', padding: '50px', color: '#dc3545', fontFamily: 'sans-serif' }}>
         <h2>Internal Server Error</h2>
         <p>{pageError}</p>
-        <button 
-          onClick={() => window.location.reload()} 
+        <button
+          onClick={() => window.location.reload()}
           style={{ padding: '8px 16px', background: '#007bff', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', marginTop: '20px' }}>
           Retry
         </button>
@@ -679,11 +680,11 @@ export default function AllPostJobsPage() {
         <div className={styles.jobDescPreview}>
           {expandedJobs[job.id] ? (
             <div className={styles.expandedBox}>
-              <div 
-                dangerouslySetInnerHTML={{ __html: job.job_info_full }} 
+              <div
+                dangerouslySetInnerHTML={{ __html: job.job_info_full }}
                 style={{ whiteSpace: 'pre-wrap' }}
               />
-              
+
               {job.skills && (
                 <div className={styles.skillsContainer}>
                   <span className={styles.skillLabel}>Skills:</span>
@@ -705,7 +706,7 @@ export default function AllPostJobsPage() {
             </div>
           ) : (
             <span>
-              {job.job_info_short}{ job.job_info_short ? ' ' : '' }
+              {job.job_info_short}{job.job_info_short ? ' ' : ''}
               <button
                 className={styles.moreLink}
                 onClick={(e) => { e.stopPropagation(); toggleMore(job.id); }}
@@ -735,11 +736,11 @@ export default function AllPostJobsPage() {
             </div>
           )}
           {showCandidateButton && (
-            <button className={styles.btnCandidateDetail} onClick={() => { 
-              loadJobDetail(job.id); 
-              setCandidateView('applied'); 
+            <button className={styles.btnCandidateDetail} onClick={() => {
+              loadJobDetail(job.id);
+              setCandidateView('applied');
               setStatusFilter('All');
-              setIsMobileDetailOpen(true); 
+              setIsMobileDetailOpen(true);
             }}>
               👥 Candidate Detail
             </button>
@@ -845,8 +846,8 @@ export default function AllPostJobsPage() {
         <div className={`${styles.detailPanel} ${!isMobileDetailOpen ? styles.mobileHidden : ''}`}>
           {jobDetail ? (
             <div className={styles.detailContainer}>
-              <button 
-                className={styles.btnBackMobile} 
+              <button
+                className={styles.btnBackMobile}
                 onClick={() => setIsMobileDetailOpen(false)}
               >
                 ← Back to Jobs
@@ -899,14 +900,14 @@ export default function AllPostJobsPage() {
 
               {/* Toggle: Applied / Recommended */}
               <div className={styles.toggleGroup}>
-                <div 
+                <div
                   className={`${styles.btnToggle} ${styles.btnApplied} ${candidateView === 'applied' ? styles.activeTab : ''}`}
                   onClick={() => { setCandidateView('applied'); setStatusFilter('All'); }}
                   style={{ opacity: candidateView === 'applied' ? 1 : 0.6 }}
                 >
                   Applied : {jobDetail.counts.applied}
                 </div>
-                <div 
+                <div
                   className={`${styles.btnToggle} ${styles.btnRecommended} ${jobDetail.counts.applied < 3 ? styles.btnAnim : ''} ${candidateView === 'recommended' ? styles.activeTab : ''}`}
                   onClick={() => { setCandidateView('recommended'); setStatusFilter('All'); }}
                   style={{ opacity: candidateView === 'recommended' ? 1 : 0.6 }}
@@ -953,15 +954,14 @@ export default function AllPostJobsPage() {
                   <span style={{ fontSize: '18px' }}>👥</span>
                   <span style={{ display: 'flex', alignItems: 'center' }}>
                     Showing <strong>&nbsp;{candidateView === 'applied' ? (statusFilter !== 'All' ? `${statusFilter} Applied` : 'Applied') : 'Recommended'}</strong>&nbsp;candidates...
-                    {candidateListLoading && <div className={styles.inlineSpinner} style={{ marginLeft: 10 }}></div>}
                   </span>
                 </div>
-                
-                <CandidateListView 
-                  postId={jobDetail.job.id} 
-                  viewMode={candidateView} 
+
+                <CandidateListView
+                  postId={jobDetail.job.id}
+                  viewMode={candidateView}
                   statusFilter={statusFilter}
-                  isPlanActive={planInfo ? (planInfo.has_active_plan && !planInfo.is_expired && planInfo.approval_status === 'Accept') : false} 
+                  isPlanActive={planInfo ? (planInfo.has_active_plan && !planInfo.is_expired && planInfo.approval_status === 'Accept') : false}
                   jobStatus={jobDetail.job.active_status}
                   onLoadingChange={setCandidateListLoading}
                 />
@@ -971,8 +971,8 @@ export default function AllPostJobsPage() {
           ) : (
             <div className={styles.emptyState}>
               <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                <rect x="2" y="7" width="20" height="14" rx="2" ry="2"/>
-                <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>
+                <rect x="2" y="7" width="20" height="14" rx="2" ry="2" />
+                <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16" />
               </svg>
               <p>Select a job to view candidate details</p>
             </div>
@@ -982,3 +982,18 @@ export default function AllPostJobsPage() {
     </>
   );
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

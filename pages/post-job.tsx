@@ -66,6 +66,10 @@ export default function PostJobPage() {
           const res = await getJobDetailApi(jobID);
           if (res.status && res.data && res.data.job) {
             const j = res.data.job;
+            
+            // Set this FIRST so useEffect for title search doesn't wipe category
+            setIsSelecting(true);
+            
             setJobTitle(j.job_role_name || '');
             setJobCategoryId(Number(j.job_category_id) || 0);
             setMonthlyFrom(j.monthly_from?.toString() || '');
@@ -97,7 +101,15 @@ export default function PostJobPage() {
 
             setMinExp(j.min_exp?.toString() || '');
             setMaxExp(j.max_exp?.toString() || '');
-            setJobDescription(j.job_info || '');
+            
+            // Clean HTML tags for textarea if needed
+            let cleanDesc = j.job_info || '';
+            cleanDesc = cleanDesc.replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, '&');
+            cleanDesc = cleanDesc.replace(/<\/?[^>]+(>|$)/g, ""); // Remove tags for plain textarea
+            setJobDescription(cleanDesc);
+            
+            // Critical: Set isSelecting to true during fetch to prevent the lookup useEffect from resetting category
+            setIsSelecting(true);
           } else {
             setError(res.message || 'Failed to load job details');
           }
@@ -139,6 +151,7 @@ export default function PostJobPage() {
         setShowRolesDropdown(false);
         return;
       }
+      
       try {
         const res = await searchJobRolesApi(jobTitle);
         if (res.status && res.data && res.data.length > 0) {
@@ -410,15 +423,18 @@ export default function PostJobPage() {
                   <label className={`${styles.formLabel} ${styles.required}`} htmlFor="working_days">
                     Working Days
                   </label>
-                  <input
-                    type="text"
+                  <select
                     id="working_days"
                     className={styles.formInput}
                     value={workingDays}
                     onChange={(e) => setWorkingDays(e.target.value)}
                     required
                     disabled={loading}
-                  />
+                  >
+                    <option value="Monday to Saturday">Monday to Saturday</option>
+                    <option value="Monday to Friday">Monday to Friday</option>
+                    <option value="Full Week">Full Week</option>
+                  </select>
                 </div>
 
                 {/* Working Time */}

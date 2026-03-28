@@ -2,7 +2,7 @@ import { useState, useEffect, useRef, FormEvent } from 'react';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
 import Script from 'next/script';
-import { getEmployerInfoApi, saveEmployerInfoApi } from '@/services/api';
+import { getEmployerInfoApi, saveEmployerInfoApi, getEmployerProfileApi } from '@/services/api';
 import { useAuth } from '@/context/AuthContext';
 import JobStepper from '@/components/JobStepper';
 import styles from '@/styles/companyInfo.module.css';
@@ -17,7 +17,7 @@ export default function EmployerCompanyInfoPage() {
   const router = useRouter();
   const { id } = router.query;
   const jobId = Number(id);
-  const { user } = useAuth();
+  const { user, refreshUser } = useAuth();
 
   const [loadingData, setLoadingData] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -66,32 +66,50 @@ export default function EmployerCompanyInfoPage() {
         const res = await getEmployerInfoApi(jobId);
         if (res.status && res.data) {
           const d = res.data;
-          setCompanyName(d.company_name);
-          setContactName(d.contact_person_name);
-          setPhoneNumber(d.phone_number);
-          setEmailId(d.email_id);
+          console.log("Job Info Data:", d); // DEBUG: Check what backend returns
+          
+          // Check if we need to fall back to profile data for empty fields
+          let profileData = null;
+          if (!d.inter_full_add || !d.company_name || !d.phone_number) {
+            const profileRes = await getEmployerProfileApi();
+            if (profileRes.status && profileRes.data) {
+              profileData = profileRes.data.company;
+              console.log("Profile Fallback Data:", profileData); // DEBUG
+            }
+          }
 
-          setInterAddress(d.inter_flat_bulding);
-          setInterFullAdd(d.inter_full_add);
-          setInterPincode(d.inter_pincode);
-          setInterCountry(d.inter_country);
-          setInterState(d.inter_state);
-          setInterCity(d.inter_city);
-          setInterLat(d.inter_lat);
-          setInterLng(d.inter_lng);
+          setCompanyName(d.company_name || profileData?.company_name || '');
+          setContactName(d.contact_person_name || profileData?.contact_person_name || '');
+          setPhoneNumber(d.phone_number || profileData?.contact_person_number || '');
+          setEmailId(d.email_id || profileData?.email_id || '');
+
+          setInterAddress(d.inter_flat_bulding || profileData?.flat_bulding || '');
+          
+          // Improved full address fallback
+          const profileFullAdd = profileData?.full_add || 
+                               (profileData?.city ? `${profileData.city}${profileData.state ? ', '+profileData.state : ''}${profileData.country ? ', '+profileData.country : ''}` : '');
+          
+          setInterFullAdd(d.inter_full_add || profileFullAdd || '');
+          setInterPincode(d.inter_pincode || profileData?.pincode || '');
+          setInterCountry(d.inter_country || profileData?.country || '');
+          setInterState(d.inter_state || profileData?.state || '');
+          setInterCity(d.inter_city || profileData?.city || '');
+          setInterLat(d.inter_lat || profileData?.lat || '');
+          setInterLng(d.inter_lng || profileData?.lng || '');
 
           setReceiveAppFrom(d.recive_application_from || 'Entire City');
+          setSameAddress(d.same_address !== undefined ? d.same_address === 1 : true);
 
-          setSameAddress(d.same_address === 1);
+          const finalInterFull = d.inter_full_add || profileFullAdd || '';
 
-          setJobAddress(d.job_flat_bulding);
-          setJobFullAdd(d.job_full_add);
-          setJobPincode(d.job_pincode);
-          setJobCountry(d.job_country);
-          setJobState(d.job_state);
-          setJobCity(d.job_city);
-          setJobLat(d.job_lat);
-          setJobLng(d.job_lng);
+          setJobAddress(d.job_flat_bulding || (d.same_address !== 0 ? (d.inter_flat_bulding || profileData?.flat_bulding) : '') || '');
+          setJobFullAdd(d.job_full_add || (d.same_address !== 0 ? finalInterFull : '') || '');
+          setJobPincode(d.job_pincode || (d.same_address !== 0 ? (d.inter_pincode || profileData?.pincode) : '') || '');
+          setJobCountry(d.job_country || (d.same_address !== 0 ? (d.inter_country || profileData?.country) : '') || '');
+          setJobState(d.job_state || (d.same_address !== 0 ? (d.inter_state || profileData?.state) : '') || '');
+          setJobCity(d.job_city || (d.same_address !== 0 ? (d.inter_city || profileData?.city) : '') || '');
+          setJobLat(d.job_lat || (d.same_address !== 0 ? (d.inter_lat || profileData?.lat) : '') || '');
+          setJobLng(d.job_lng || (d.same_address !== 0 ? (d.inter_lng || profileData?.lng) : '') || '');
 
           setGoogleKey(d.google_geo_key || '');
         } else {
@@ -220,6 +238,9 @@ export default function EmployerCompanyInfoPage() {
 
       const res = await saveEmployerInfoApi(payload);
       if (res.status) {
+        // Refresh global user state to update header immediately
+        await refreshUser();
+        
         if (targetStep === 1) router.push(`/post-job?edit=${jobId}`);
         else if (targetStep === 2) router.push(`/candidate-requirements/${jobId}`);
         else if (targetStep === 3) router.push(`/employer-company-info/${jobId}`);
@@ -279,7 +300,7 @@ export default function EmployerCompanyInfoPage() {
               <div className={styles.formGrid}>
                 <div className={styles.formGroup}>
                   <label className={styles.formLabel + ' ' + styles.required}>Company Name</label>
-                  <input type="text" className={styles.formInput} value={companyName} onChange={e => setCompanyName(e.target.value)} required style={{ textTransform: 'uppercase' }} readOnly={!!companyName} />
+                  <input type="text" className={styles.formInput} value={companyName} onChange={e => setCompanyName(e.target.value)} required style={{ textTransform: 'uppercase' }} />
                 </div>
                 <div className={styles.formGroup}>
                   <label className={styles.formLabel + ' ' + styles.required}>Contact Person Name</label>

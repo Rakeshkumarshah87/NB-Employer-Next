@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useEffect, useCallback, type ReactNode } from 'react';
-import { getAuthToken, getAuthUser, clearAuth, getMeApi, type AuthUser } from '@/services/api';
+import { getAuthToken, getAuthUser, clearAuth, getMeApi, saveAuth, type AuthUser } from '@/services/api';
 import { useRouter } from 'next/router';
 
 // ── Context Type ────────────────────────────────────────
@@ -8,6 +8,7 @@ interface AuthContextType {
   loading: boolean;
   setUser: (user: AuthUser | null) => void;
   logout: () => void;
+  refreshUser: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -65,6 +66,23 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     checkAuth();
   }, []);
 
+  // Refresh user data manually
+  const refreshUser = useCallback(async () => {
+    try {
+      const res = await getMeApi();
+      if (res.status && res.data) {
+        setUser(res.data);
+        // Update cookie too
+        const token = getAuthToken();
+        if (token) {
+          saveAuth(token, res.data);
+        }
+      }
+    } catch (err) {
+      console.error("Refresh user failed:", err);
+    }
+  }, []);
+
   // Logout function
   const logout = useCallback(() => {
     clearAuth();
@@ -73,7 +91,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [router]);
 
   return (
-    <AuthContext.Provider value={{ user, loading, setUser, logout }}>
+    <AuthContext.Provider value={{ user, loading, setUser, logout, refreshUser }}>
       {children}
     </AuthContext.Provider>
   );
