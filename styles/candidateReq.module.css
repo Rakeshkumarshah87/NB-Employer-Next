@@ -1,6 +1,6 @@
 .pageWrapper {
   min-height: 100vh;
-  background-color: #f8fafc;
+  background-color: #f0f4f8;
   font-family: 'Plus Jakarta Sans', sans-serif;
   color: #1e293b;
   display: flex;
@@ -19,15 +19,10 @@
 
 .card {
   background: #ffffff;
-  border-radius: 18px;
-  box-shadow: 0 4px 25px rgba(0, 0, 0, 0.03);
-  padding: 45px 50px;
-  border: 1px solid #eef2f6;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-
-.card:hover {
-  box-shadow: 0 8px 35px rgba(0, 0, 0, 0.05);
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+  padding: 40px;
+  border: 1px solid #e2e8f0;
 }
 
 .cardHeader {
@@ -62,7 +57,7 @@
 }
 
 .sectionTitle i {
-  color: #3b82f6; 
+  color: #2d6eb5; 
   font-size: 16px;
 }
 
@@ -92,11 +87,11 @@
 }
 
 .chipActive {
-  background: #eff6ff;
-  border-color: #3b82f6;
-  color: #2563eb;
+  background: #f0f7ff;
+  border-color: #2d6eb5;
+  color: #2d6eb5;
   font-weight: 600;
-  box-shadow: 0 2px 4px rgba(37, 99, 235, 0.05);
+  box-shadow: 0 2px 4px rgba(45, 110, 181, 0.08);
 }
 
 .sectionDivider {
@@ -149,7 +144,7 @@
 }
 
 .btnContinue {
-  background: #2563eb;
+  background: #2d6eb5;
   color: #ffffff;
   padding: 14px 35px;
   border-radius: 50px;
@@ -161,13 +156,13 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
+  box-shadow: 0 4px 12px rgba(45, 110, 181, 0.2);
 }
 
 .btnContinue:hover {
-  background: #1d4ed8;
+  background: #1e4d8c;
   transform: translateY(-1px);
-  box-shadow: 0 6px 15px rgba(37, 99, 235, 0.3);
+  box-shadow: 0 6px 15px rgba(30, 77, 140, 0.3);
 }
 
 .btnContinue:disabled {
@@ -198,8 +193,8 @@
 .loadingSpinner {
   width: 40px;
   height: 40px;
-  border: 3px solid #f1f5f9;
-  border-top: 3px solid #2563eb;
+  border: 3px solid #e2e8f0;
+  border-top: 3px solid #2d6eb5;
   border-radius: 50%;
   animation: spin 1s linear infinite;
 }

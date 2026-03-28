@@ -25,7 +25,7 @@ export default function EmployerCompanyInfoPage() {
 
   // ── State ───────────────────────────────────────
   const [googleKey, setGoogleKey] = useState('');
-  
+
   const [companyName, setCompanyName] = useState('');
   const [contactName, setContactName] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
@@ -120,7 +120,7 @@ export default function EmployerCompanyInfoPage() {
       const location = place.geometry?.location;
       const lat = location ? location.lat().toString() : '';
       const lng = location ? location.lng().toString() : '';
-      let pincode='', country='', state='', city='', area='';
+      let pincode = '', country = '', state = '', city = '', area = '';
 
       place.address_components?.forEach((c: any) => {
         const type = c.types[0];
@@ -135,7 +135,7 @@ export default function EmployerCompanyInfoPage() {
         setInterFullAdd(place.formatted_address || '');
         setInterLat(lat); setInterLng(lng);
         setInterPincode(pincode); setInterCountry(country); setInterState(state); setInterCity(city);
-        
+
         if (sameAddress) {
           setJobFullAdd(place.formatted_address || '');
           setJobLat(lat); setJobLng(lng);
@@ -231,7 +231,7 @@ export default function EmployerCompanyInfoPage() {
     }
   };
 
-  if(!user || loadingData) return null; // Removed 'Loading...' text fallback
+  if (!user || loadingData) return null; // Removed 'Loading...' text fallback
 
   return (
     <>
@@ -240,7 +240,7 @@ export default function EmployerCompanyInfoPage() {
       </Head>
 
       {googleKey && (
-        <Script 
+        <Script
           src={`https://maps.googleapis.com/maps/api/js?v=3.exp&libraries=places&key=${googleKey}`}
           strategy="afterInteractive"
           onLoad={initAutocomplete}
@@ -259,7 +259,7 @@ export default function EmployerCompanyInfoPage() {
               <div className={styles.formGrid}>
                 <div className={styles.formGroup}>
                   <label className={styles.formLabel + ' ' + styles.required}>Company Name</label>
-                  <input type="text" className={styles.formInput} value={companyName} onChange={e => setCompanyName(e.target.value)} required style={{textTransform: 'uppercase'}} readOnly={!!companyName} />
+                  <input type="text" className={styles.formInput} value={companyName} onChange={e => setCompanyName(e.target.value)} required style={{ textTransform: 'uppercase' }} readOnly={!!companyName} />
                 </div>
                 <div className={styles.formGroup}>
                   <label className={styles.formLabel + ' ' + styles.required}>Contact Person Name</label>
@@ -269,7 +269,7 @@ export default function EmployerCompanyInfoPage() {
                   <label className={styles.formLabel + ' ' + styles.required}>Contact Number</label>
                   <div>
                     <input type="number" className={styles.formInput} value={phoneNumber} onChange={e => setPhoneNumber(e.target.value)} placeholder="Contact Number" required />
-                    <span className={styles.hintText}>Note: Contact Number on which candidate will call and Whatapp. <img src="/nt/images/icon/whatsapp-button.png" style={{height: 18}} alt="WhatsApp" /></span>
+                    <span className={styles.hintText}>Note: Contact Number on which candidate will call and Whatapp. <img src="/nt/images/icon/whatsapp-button.png" style={{ height: 18 }} alt="WhatsApp" /></span>
                   </div>
                 </div>
                 <div className={styles.formGroup}>
@@ -337,7 +337,7 @@ export default function EmployerCompanyInfoPage() {
 
             <div className={styles.submitArea}>
               {error && <span className={styles.errorMsg}>{error}</span>}
-              {success && <span style={{color: '#10b981', fontWeight: 600}}>{success}</span>}
+              {success && <span style={{ color: '#10b981', fontWeight: 600 }}>{success}</span>}
               <button type="submit" className={styles.btnSubmit} disabled={saving}>
                 Save & Continue ➔
               </button>

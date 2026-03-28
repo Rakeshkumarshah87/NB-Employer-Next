@@ -10,7 +10,7 @@ export default function EmployerJobReviewsPage() {
   const { id } = router.query;
   const jobId = Number(id);
   const { user, loading: authLoading } = useAuth();
-  
+
   const [agreed, setAgreed] = useState(true);
   const [errorMsg, setErrorMsg] = useState('');
   const [submitting, setSubmitting] = useState(false);
@@ -27,7 +27,7 @@ export default function EmployerJobReviewsPage() {
       setErrorMsg('Please confirm the agreement by checking the box.');
       return;
     }
-    
+
     setErrorMsg('');
     setSubmitting(true);
     try {
@@ -49,7 +49,7 @@ export default function EmployerJobReviewsPage() {
     router.push(`/employer-company-info/${jobId}`);
   };
 
-  if(!user) return null;
+  if (!user) return null;
 
   return (
     <>
@@ -59,7 +59,7 @@ export default function EmployerJobReviewsPage() {
 
       <div className={styles.pageWrapper}>
         <div className={styles.mainContainer}>
-          
+
           <div className={styles.headerBadge}>
             <h1 className={styles.pageTitle}>Code of Conduct</h1>
             <div className={styles.headerBadgeBtn}>
@@ -72,10 +72,10 @@ export default function EmployerJobReviewsPage() {
               <div className={styles.cardHeader}>
                 <h3 className={styles.cardTitle}>Reviews & Guidelines</h3>
               </div>
-              
+
               <div className={styles.cardBody}>
                 <div className={styles.guidelineList}>
-                  
+
                   <div className={styles.guidelineItem}>
                     <div className={styles.iconBox}>
                       <img src="/nt/images/icon/call.png" alt="Call" />
@@ -83,7 +83,7 @@ export default function EmployerJobReviewsPage() {
                     <div className={styles.contentBox}>
                       <h4 className={styles.contentTitle}>Answer the phone</h4>
                       <p className={styles.contentDesc}>
-                        When Candidate will call you and respond in WhatsApp 
+                        When Candidate will call you and respond in WhatsApp
                         <img src="/nt/images/icon/whatsapp-button.png" alt="WhatsApp" className={styles.whatsappIcon} />
                       </p>
                     </div>

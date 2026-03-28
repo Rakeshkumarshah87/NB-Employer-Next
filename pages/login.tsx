@@ -1,4 +1,4 @@
-import { useState, useEffect, type FormEvent } from 'react';
+import { useState, useEffect, useRef, type FormEvent } from 'react';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
 import { useAuth } from '@/context/AuthContext';
@@ -28,10 +28,60 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false);
   const [shakeForm, setShakeForm] = useState(false);
 
+  // ── OTP Box Refs ───────────────────────────
+  const otpRefs = useRef<(HTMLInputElement | null)[]>([]);
+  const OTP_LENGTH = 4;
+
+  const handleOtpBoxChange = (index: number, value: string) => {
+    // Only allow single digit
+    const digit = value.replace(/\D/g, '').slice(-1);
+    const otpArr = otp.split('');
+    otpArr[index] = digit;
+    // Pad with empty strings if needed
+    while (otpArr.length < OTP_LENGTH) otpArr.push('');
+    setOtp(otpArr.join(''));
+
+    // Auto-focus next box
+    if (digit && index < OTP_LENGTH - 1) {
+      otpRefs.current[index + 1]?.focus();
+    }
+  };
+
+  const handleOtpKeyDown = (index: number, e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Backspace') {
+      if (!otp[index] && index > 0) {
+        // If current box is empty, go to previous
+        otpRefs.current[index - 1]?.focus();
+        const otpArr = otp.split('');
+        otpArr[index - 1] = '';
+        setOtp(otpArr.join(''));
+      } else {
+        const otpArr = otp.split('');
+        otpArr[index] = '';
+        setOtp(otpArr.join(''));
+      }
+    }
+  };
+
+  const handleOtpPaste = (e: React.ClipboardEvent<HTMLInputElement>) => {
+    e.preventDefault();
+    const pasted = e.clipboardData.getData('text').replace(/\D/g, '').slice(0, OTP_LENGTH);
+    if (pasted) {
+      setOtp(pasted.padEnd(OTP_LENGTH, ''));
+      // Focus last filled box or last box
+      const focusIdx = Math.min(pasted.length, OTP_LENGTH - 1);
+      setTimeout(() => otpRefs.current[focusIdx]?.focus(), 0);
+    }
+  };
+
   // ── Redirect if already logged in ──────────
   useEffect(() => {
     if (!authLoading && user) {
-      router.replace('/post-job');
+      if (user.has_jobs) {
+        router.replace('/all-post-jobs');
+      } else {
+        router.replace('/post-job');
+      }
     }
   }, [authLoading, user, router]);
 
@@ -86,7 +136,7 @@ export default function LoginPage() {
   // ── Handle Verify OTP & Login ──────────────
   const handleVerifyOtp = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    
+
     // If OTP hasn't been sent yet, the form submission acts as "Send OTP"
     if (!otpSent) {
       return handleSendOtp(e);
@@ -120,6 +170,9 @@ export default function LoginPage() {
           contact_person: response.data.contact_person || '',
           company_logo: response.data.company_logo || '',
           city: response.data.city || '',
+          email: '',
+          company_number: '',
+          has_jobs: response.data.has_jobs,
         };
 
         // Save auth token and user data in cookies (SameSite=Lax handles persistence)
@@ -128,10 +181,8 @@ export default function LoginPage() {
 
         setSuccess('Verification successful! Redirecting...');
 
-        // Redirect to dashboard
-        setTimeout(() => {
-          router.push('/post-job');
-        }, 800);
+        // No need for a separate setTimeout here; 
+        // the useEffect above will catch the 'user' state change and redirect.
       } else {
         setError(response.message || 'Invalid or expired OTP.');
         triggerShake();
@@ -157,6 +208,25 @@ export default function LoginPage() {
         <meta name="description" content="Login with OTP to your NetworkBaba employer account." />
       </Head>
 
+      {/* ── Login Page Header ─────────────────── */}
+      <header className={styles.loginHeader} id="login-header">
+        <div className={styles.loginHeaderInner}>
+          <a href="https://networkbaba.co" className={styles.loginHeaderBrand}>
+            <img
+              src="/nt/images/network_stat_logo.jpeg"
+              alt="NetworkBaba"
+              className={styles.loginHeaderLogo}
+            />
+          </a>
+          <a
+            href="https://networkbaba.co/candidate-login"
+            className={styles.loginHeaderBtn}
+          >
+            Candidate Login
+          </a>
+        </div>
+      </header>
+
       <main className={styles.pageWrapper}>
         <div className={`${styles.orb} ${styles.orb1}`} aria-hidden="true" />
         <div className={`${styles.orb} ${styles.orb2}`} aria-hidden="true" />
@@ -164,9 +234,11 @@ export default function LoginPage() {
 
         <div className={`${styles.loginCard} ${shakeForm ? styles.shake : ''}`}>
           <div className={styles.brandSection}>
-            <div className={styles.brandLogo}>
-              <span className={styles.brandIcon} role="img" aria-label="NetworkBaba">🏢</span>
-            </div>
+            <img
+              src="/nt/images/vertical_baba.png"
+              alt="NetworkBaba Logo"
+              className={styles.brandLogoImg}
+            />
             <h1 className={styles.brandTitle}>Employer Login</h1>
             <p className={styles.brandSubtitle}>
               {otpSent ? 'Enter the OTP sent to your mobile' : 'Sign in using your mobile number'}
@@ -193,8 +265,8 @@ export default function LoginPage() {
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <label htmlFor="mobileno" className={styles.label}>Mobile Number</label>
                 {otpSent && (
-                  <button 
-                    type="button" 
+                  <button
+                    type="button"
                     onClick={() => { setOtpSent(false); setOtp(''); }}
                     style={{ background: 'none', border: 'none', color: '#0070f3', cursor: 'pointer', fontSize: '12px' }}
                   >
@@ -223,35 +295,39 @@ export default function LoginPage() {
             {otpSent && (
               <div className={styles.formGroup} style={{ animation: 'fadeIn 0.3s ease-in-out' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <label htmlFor="otp" className={styles.label}>One-Time Password</label>
+                  <label htmlFor="otp-0" className={styles.label}>One-Time Password</label>
                   {timer > 0 ? (
                     <span style={{ fontSize: '12px', color: '#666' }}>Resend in {timer}s</span>
                   ) : (
-                    <button 
-                      type="button" 
+                    <button
+                      type="button"
                       onClick={handleSendOtp}
                       disabled={loading}
-                      style={{ background: 'none', border: 'none', color: '#0070f3', cursor: 'pointer', fontSize: '12px', fontWeight: 'bold' }}
+                      style={{ background: 'none', border: 'none', color: '#2d6eb5', cursor: 'pointer', fontSize: '12px', fontWeight: 'bold' }}
                     >
                       Resend OTP
                     </button>
                   )}
                 </div>
-                <div className={styles.inputWrapper}>
-                  <span className={styles.inputIcon} aria-hidden="true">🔒</span>
-                  <input
-                    id="otp"
-                    name="otp"
-                    type="text"
-                    maxLength={6}
-                    className={styles.input}
-                    placeholder="Enter OTP"
-                    value={otp}
-                    onChange={(e) => setOtp(e.target.value.replace(/\D/g, ''))}
-                    disabled={loading}
-                    required
-                    style={{ letterSpacing: '4px', fontWeight: 'bold' }}
-                  />
+                <div className={styles.otpBoxesWrapper}>
+                  {Array.from({ length: OTP_LENGTH }, (_, i) => (
+                    <input
+                      key={i}
+                      ref={(el) => { otpRefs.current[i] = el; }}
+                      id={`otp-${i}`}
+                      type="text"
+                      inputMode="numeric"
+                      maxLength={1}
+                      className={styles.otpBox}
+                      value={otp[i] || ''}
+                      onChange={(e) => handleOtpBoxChange(i, e.target.value)}
+                      onKeyDown={(e) => handleOtpKeyDown(i, e)}
+                      onPaste={i === 0 ? handleOtpPaste : undefined}
+                      disabled={loading}
+                      autoFocus={i === 0}
+                      placeholder="·"
+                    />
+                  ))}
                 </div>
               </div>
             )}

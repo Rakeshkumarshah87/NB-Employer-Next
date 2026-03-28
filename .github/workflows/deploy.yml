@@ -1,0 +1,37 @@
+name: Deploy Next.js to cPanel via FTP
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  web-deploy:
+    name: Build & Deploy to FTP
+    runs-on: ubuntu-latest
+    steps:
+      - name: 📥 Checkout Code
+        uses: actions/checkout@v3
+
+      - name: ⚙️ Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 20
+
+      - name: 📦 Install Dependencies
+        run: npm ci
+
+      - name: 🏗️ Build Next.js (Export)
+        run: npm run build
+
+      - name: 🚀 Sync files via FTP
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: "networkbaba.co"
+          username: "networkbabain"
+          password: "yty869H]en)Zvghkhjk34$987979#$587686~7978uiuyiytf456^585685fjgfj78678*^97jkghfghjvgj^$%3%BGFYGJKGHDH'.,hjkgghjghk776897][65dhgfhjgfj9556"
+          protocol: ftp
+          local-dir: ./out/
+          server-dir: /public_html/nt/
+          # Force fresh upload metadata tracking
+          state-name: .ftp-deploy-sync-state-fresh.json

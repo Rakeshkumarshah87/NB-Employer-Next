@@ -1,6 +1,6 @@
 .pageWrapper {
   min-height: 100vh;
-  background-color: #f8fafc;
+  background-color: #f0f4f8;
   font-family: 'Plus Jakarta Sans', sans-serif;
   color: #1e293b;
   display: flex;
@@ -41,7 +41,7 @@
 }
 
 .headerBadgeBtn span {
-  color: #0ea5e9;
+  color: #2d6eb5;
   font-weight: 700;
   margin-left: 4px;
 }
@@ -133,8 +133,8 @@
 }
 
 .approvalSection {
-  background: #f0f9ff;
-  border: 1px solid #bae6fd;
+  background: #f0f7ff;
+  border: 1px solid #93c5fd;
   border-radius: 12px;
   padding: 20px;
   margin-top: 30px;
@@ -147,7 +147,7 @@
   width: 22px;
   height: 22px;
   cursor: pointer;
-  accent-color: #0ea5e9;
+  accent-color: #2d6eb5;
   transform: scale(1.1);
   flex-shrink: 0;
 }
@@ -205,14 +205,15 @@
 }
 
 .btnNext {
-  background-color: #0ea5e9;
+  background-color: #2d6eb5;
   color: white;
-  box-shadow: 0 4px 12px rgba(14, 165, 233, 0.3);
+  box-shadow: 0 4px 12px rgba(45, 110, 181, 0.25);
 }
 
 .btnNext:hover:not(:disabled) {
-  background-color: #0284c7;
+  background-color: #1e4d8c;
   transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(30, 77, 140, 0.3);
 }
 
 .btnNext:disabled, .btnBack:disabled {

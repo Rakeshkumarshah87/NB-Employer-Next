@@ -1,6 +1,6 @@
 .pageWrapper {
   min-height: 100vh;
-  background-color: #f8fafc;
+  background-color: #f0f4f8;
   font-family: 'Plus Jakarta Sans', sans-serif;
   color: #1e293b;
   display: flex;
@@ -136,7 +136,7 @@
   width: 18px;
   height: 18px;
   cursor: pointer;
-  accent-color: #2563eb;
+  accent-color: #2d6eb5;
 }
 
 .checkboxLabel {
@@ -249,9 +249,9 @@
 }
 
 .chipActive {
-  background: #eff6ff;
-  border-color: #3b82f6;
-  color: #2563eb;
+  background: #f0f7ff;
+  border-color: #2d6eb5;
+  color: #2d6eb5;
   font-weight: 600;
-  box-shadow: 0 2px 4px rgba(37, 99, 235, 0.05);
+  box-shadow: 0 2px 4px rgba(45, 110, 181, 0.08);
 }

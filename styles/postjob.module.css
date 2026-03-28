@@ -1,13 +1,13 @@
 /* ============================================
-   Post Free Job Page — Premium Light Theme
+   Post Free Job Page — Blue Gradient Light Theme
    Matches networkbaba.co/post-free-jobs/add/
    ============================================ */
 
-/* ── CSS Variables (Light Theme Override) ──── */
+/* ── CSS Variables (Blue Theme) ──────────── */
 :root {
-  --pj-primary: #2563eb;
-  --pj-primary-dark: #1d4ed8;
-  --pj-bg: #f8fafc;
+  --pj-primary: #2d6eb5;
+  --pj-primary-dark: #1e4d8c;
+  --pj-bg: #f0f4f8;
   --pj-white: #ffffff;
   --pj-text: #0f172a;
   --pj-text-muted: #64748b;
@@ -150,7 +150,7 @@
 .formInput:focus {
   border-color: var(--pj-primary);
   outline: none;
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+  box-shadow: 0 0 0 3px rgba(45, 110, 181, 0.1);
 }
 
 .formTextarea {
@@ -171,7 +171,7 @@
 .formTextarea:focus {
   border-color: var(--pj-primary);
   outline: none;
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+  box-shadow: 0 0 0 3px rgba(45, 110, 181, 0.1);
 }
 
 /* ── Input Flex (Salary, Time side-by-side) ─ */

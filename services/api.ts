@@ -3,7 +3,7 @@
  * Handles all HTTP requests to the PHP backend
  */
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost/job-employers-api/api/public';
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://api.networkbaba.co/api/public';
 
 // ── Cookie Helpers ──────────────────────────────────────
 
@@ -89,6 +89,7 @@ export interface AuthUser {
   contact_person: string;
   company_logo: string;
   city: string;
+  has_jobs?: boolean;
 }
 
 export interface ApiResponse<T = unknown> {
@@ -104,6 +105,7 @@ export interface LoginResponse {
   contact_person: string;
   company_logo: string;
   city: string;
+  has_jobs: boolean;
   token: string;
 }
 

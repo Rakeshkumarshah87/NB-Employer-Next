@@ -55,19 +55,16 @@ export default function Header() {
 
           {/* Brand */}
           <Link href="/" className={styles.brand}>
-            <div className={styles.brandIconBox}>
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
-              </svg>
-            </div>
-            <span className={styles.brandText}>
-              Network<span className={styles.brandHighlight}>Baba</span>
-            </span>
+            <img
+              src="/nt/images/networkBabaLogoGif.gif"
+              alt="NetworkBaba"
+              className={styles.brandLogoImg}
+            />
           </Link>
 
           {/* Desktop Nav */}
           <nav className={styles.desktopNav}>
-            <Link href="/" className={`${styles.navLink} ${router.pathname === '/' ? styles.navLinkActive : ''}`}>
+            <Link href="/all-post-jobs" className={`${styles.navLink} ${router.pathname === '/all-post-jobs' ? styles.navLinkActive : ''}`}>
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <rect x="2" y="7" width="20" height="14" rx="2" ry="2"/>
                 <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>
@@ -183,8 +180,8 @@ export default function Header() {
 
           {/* Mobile Bottom Navigation Bar */}
           <nav className={styles.bottomNav}>
-            <Link href="/" className={`${styles.bottomNavItem} ${router.pathname === '/' ? styles.bottomNavItemActive : ''}`}>
-              <svg className={styles.bottomNavIcon} viewBox="0 0 24 24" fill={router.pathname === '/' ? "currentColor" : "none"} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <Link href="/all-post-jobs" className={`${styles.bottomNavItem} ${router.pathname === '/all-post-jobs' ? styles.bottomNavItemActive : ''}`}>
+              <svg className={styles.bottomNavIcon} viewBox="0 0 24 24" fill={router.pathname === '/all-post-jobs' ? "currentColor" : "none"} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <rect x="2" y="7" width="20" height="14" rx="2" ry="2"/>
                 <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>
               </svg>
