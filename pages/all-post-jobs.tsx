@@ -173,7 +173,6 @@ const CandidateListView = ({ postId, viewMode, statusFilter, isPlanActive, jobSt
 
         return (
           <div key={idx} className={styles.candidateCard}>
-            {viewMode === 'applied' && c.status_badge && <span className={styles.newCandidatePill}>{c.status_badge}</span>}
             <div className={styles.candidateHeader}>
               {c.profile_pic ? (
                 <img src={c.profile_pic} alt="" className={styles.candidateAvatar} />
@@ -182,20 +181,35 @@ const CandidateListView = ({ postId, viewMode, statusFilter, isPlanActive, jobSt
                   {c.name.charAt(0).toUpperCase()}
                 </div>
               )}
-              <div style={{ flex: 1 }}>
-                <div className={styles.candidateNameRow}>
-                  <h3 className={styles.candidateName}>{c.name}</h3>
-                  {c.status_badge && <span className={styles.newCandidateBadge}>{c.status_badge}</span>}
-                </div>
-                <div className={styles.candidateLocation}>
-                  📍 {c.location} {(viewMode === 'recommended' || c.recommended_status === 1) && <span className={styles.recommendedBadge}>Recommended</span>}
-                </div>
-                <div className={styles.candidateMeta}>
-                  <div><strong>Experience:</strong><br />{c.experience} Years</div>
-                  <div><strong>Education:</strong><br />{c.qualification} {c.degree_name ? <><br /><small style={{ color: '#888' }}>({c.degree_name})</small></> : ''}</div>
-                  {viewMode === 'applied' && <div><strong>Applied On:</strong><br />{c.apply_date}</div>}
-                </div>
+              <div className={styles.candidateNameBox}>
+                <h3 className={styles.candidateName}>{c.name}</h3>
+                {(viewMode === 'recommended' || c.recommended_status === 1) ? (
+                  <span className={styles.recommendedBadgeStandalone}>Recommended</span>
+                ) : (
+                  c.status_badge && <span className={styles.newCandidateBadge}><span className={styles.greenDot}></span> {c.status_badge}</span>
+                )}
               </div>
+            </div>
+
+            <div className={styles.candidateDetailsList}>
+              <div className={styles.detailItem}>
+                <span className={styles.detailIcon}>📍</span>
+                <span className={styles.detailValue}>{c.location}</span>
+              </div>
+              <div className={styles.detailItem}>
+                <span className={styles.detailIcon}>💼</span>
+                <span className={styles.detailValue}>{c.experience === 0 ? 'Fresher' : `${c.experience} Years Experience`}</span>
+              </div>
+              <div className={styles.detailItem}>
+                <span className={styles.detailIcon}>🎓</span>
+                <span className={styles.detailValue}>{c.qualification} {c.degree_name ? `(${c.degree_name})` : ''}</span>
+              </div>
+              {viewMode === 'applied' && (
+                <div className={styles.detailItem}>
+                  <span className={styles.detailIcon}>📅</span>
+                  <span className={styles.detailValue}>Applied: {c.apply_date}</span>
+                </div>
+              )}
             </div>
 
             {jobStatus === 2 ? (
@@ -204,30 +218,34 @@ const CandidateListView = ({ postId, viewMode, statusFilter, isPlanActive, jobSt
               </div>
             ) : (
               <>
-                <div className={styles.candidateActions}>
+                <div className={styles.candidateActionsRevised}>
                   {isCandidateUnlocked ? (
                     <>
                       {revealedNumbers[idx] ? (
-                        <button className={styles.btnShowNumber} style={{ cursor: 'text', background: '#f8f9fa', color: '#333', border: '1px solid #ced4da', boxShadow: 'none' }}>
+                        <button className={styles.btnShowContactActive}>
                           📞 {c.contact_number}
                         </button>
                       ) : (
-                        <button onClick={() => setRevealedNumbers({ ...revealedNumbers, [idx]: true })} className={styles.btnShowNumber}>
-                          📞 Show Number
+                        <button onClick={() => setRevealedNumbers({ ...revealedNumbers, [idx]: true })} className={styles.btnShowContactMaster}>
+                          Show Contact
                         </button>
                       )}
-                      <a href={`https://wa.me/91${(c.contact_number || '').slice(-10)}`} target="_blank" style={{ textDecoration: 'none' }}>
-                        <button className={styles.btnWhatsApp}>💬 WhatsApp</button>
-                      </a>
-                      <button onClick={() => setModalCandidate(c)} className={styles.btnViewProfile}>
-                        👤 View Profile
-                      </button>
+                      <div className={styles.halfButtonsRow}>
+                        <a href={`https://wa.me/91${(c.contact_number || '').slice(-10)}`} target="_blank" className={styles.whatsappLink}>
+                          <button className={styles.btnWhatsAppRevised}>💬 WhatsApp</button>
+                        </a>
+                        <button onClick={() => setModalCandidate(c)} className={styles.btnViewProfileRevised}>
+                          👤 View Profile
+                        </button>
+                      </div>
                     </>
                   ) : (
                     <>
-                      <button onClick={() => router.push('/employer-upgrade-plan')} className={styles.btnShowNumber}>🔒 Show Number</button>
-                      <button onClick={() => router.push('/employer-upgrade-plan')} className={styles.btnWhatsApp}>🔒 WhatsApp</button>
-                      <button onClick={() => router.push('/employer-upgrade-plan')} className={styles.btnViewProfileLocked}>🔒 View Profile</button>
+                      <button onClick={() => router.push('/employer-upgrade-plan')} className={styles.btnShowContactMaster}>🔒 Show Contact</button>
+                      <div className={styles.halfButtonsRow}>
+                        <button onClick={() => router.push('/employer-upgrade-plan')} className={styles.btnWhatsAppRevised}>🔒 WhatsApp</button>
+                        <button onClick={() => router.push('/employer-upgrade-plan')} className={styles.btnViewProfileRevised}>🔒 View Profile</button>
+                      </div>
                     </>
                   )}
                 </div>
