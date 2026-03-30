@@ -12,7 +12,7 @@ const IMG = '/employer/images/icon';
 
 // --- CANDIDATE LIST VIEW COMPONENT ---
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-const CandidateListView = ({ postId, viewMode, statusFilter, isPlanActive, jobStatus, onLoadingChange }: { postId: number, viewMode: 'applied' | 'recommended', statusFilter: string, isPlanActive: boolean, jobStatus?: number, onLoadingChange?: (loading: boolean) => void }) => {
+const CandidateListView = ({ postId, viewMode, statusFilter, isPlanActive, jobStatus, onLoadingChange, onStatusUpdate }: { postId: number, viewMode: 'applied' | 'recommended', statusFilter: string, isPlanActive: boolean, jobStatus?: number, onLoadingChange?: (loading: boolean) => void, onStatusUpdate?: () => void }) => {
   const LIVE_BASE = 'https://networkbaba.co';
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [candidates, setCandidates] = useState<any[]>([]);
@@ -153,6 +153,7 @@ const CandidateListView = ({ postId, viewMode, statusFilter, isPlanActive, jobSt
         setUpdateStatus('');
         setUpdateRating(0);
         setUpdateRemark('');
+        if (onStatusUpdate) onStatusUpdate();
         alert('Status updated successfully!');
       } else {
         alert(res.message || 'Failed to update status.');
@@ -983,6 +984,13 @@ export default function AllPostJobsPage() {
                   isPlanActive={planInfo ? (planInfo.has_active_plan && !planInfo.is_expired && planInfo.approval_status === 'Accept') : false}
                   jobStatus={jobDetail.job.active_status}
                   onLoadingChange={setCandidateListLoading}
+                  onStatusUpdate={() => {
+                    if (jobDetail?.job?.id) {
+                      getJobDetailApi(jobDetail.job.id).then(res => {
+                        if (res.status && res.data) setJobDetail(res.data);
+                      });
+                    }
+                  }}
                 />
               </div>
 
