@@ -28,63 +28,13 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false);
   const [shakeForm, setShakeForm] = useState(false);
 
-  // ── OTP Box Refs ───────────────────────────
-  const otpRefs = useRef<(HTMLInputElement | null)[]>([]);
+  // ── OTP Box Ref ───────────────────────────
+  const mainOtpRef = useRef<HTMLInputElement>(null);
   const OTP_LENGTH = 4;
 
-  const handleOtpBoxChange = (index: number, value: string) => {
-    const digitsOnly = value.replace(/\D/g, '');
-    
-    // ── Handle Autofill (e.g. from SMS suggestion) ──
-    if (digitsOnly.length > 1 && index === 0) {
-      const fullOtp = digitsOnly.slice(0, OTP_LENGTH);
-      setOtp(fullOtp.padEnd(OTP_LENGTH, ''));
-      
-      // Focus the last filled box
-      const focusIdx = Math.min(fullOtp.length, OTP_LENGTH - 1);
-      setTimeout(() => otpRefs.current[focusIdx]?.focus(), 0);
-      return;
-    }
-
-    // ── Original single digit logic ──
-    const digit = digitsOnly.slice(-1);
-    const otpArr = otp.split('');
-    otpArr[index] = digit;
-    // Pad with empty strings if needed
-    while (otpArr.length < OTP_LENGTH) otpArr.push('');
-    setOtp(otpArr.join(''));
-
-    // Auto-focus next box
-    if (digit && index < OTP_LENGTH - 1) {
-      otpRefs.current[index + 1]?.focus();
-    }
-  };
-
-  const handleOtpKeyDown = (index: number, e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Backspace') {
-      if (!otp[index] && index > 0) {
-        // If current box is empty, go to previous
-        otpRefs.current[index - 1]?.focus();
-        const otpArr = otp.split('');
-        otpArr[index - 1] = '';
-        setOtp(otpArr.join(''));
-      } else {
-        const otpArr = otp.split('');
-        otpArr[index] = '';
-        setOtp(otpArr.join(''));
-      }
-    }
-  };
-
-  const handleOtpPaste = (e: React.ClipboardEvent<HTMLInputElement>) => {
-    e.preventDefault();
-    const pasted = e.clipboardData.getData('text').replace(/\D/g, '').slice(0, OTP_LENGTH);
-    if (pasted) {
-      setOtp(pasted.padEnd(OTP_LENGTH, ''));
-      // Focus last filled box or last box
-      const focusIdx = Math.min(pasted.length, OTP_LENGTH - 1);
-      setTimeout(() => otpRefs.current[focusIdx]?.focus(), 0);
-    }
+  const handleOtpChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = e.target.value.replace(/\D/g, '').slice(0, OTP_LENGTH);
+    setOtp(val);
   };
 
   // ── Redirect if already logged in ──────────
@@ -346,25 +296,32 @@ export default function LoginPage() {
                     </button>
                   )}
                 </div>
-                <div className={styles.otpBoxesWrapper}>
+                <div 
+                  className={styles.otpBoxesWrapper} 
+                  onClick={() => mainOtpRef.current?.focus()}
+                  style={{ position: 'relative', cursor: 'text' }}
+                >
+                  {/* Hidden underlying REAL input for Autofill reliability */}
+                  <input
+                    ref={mainOtpRef}
+                    type="tel"
+                    autoComplete="one-time-code"
+                    value={otp}
+                    onChange={handleOtpChange}
+                    className={styles.hiddenOtpInput}
+                    autoFocus
+                    disabled={loading}
+                  />
+                  
+                  {/* Visual UI Boxes */}
                   {Array.from({ length: OTP_LENGTH }, (_, i) => (
-                      <input
-                        key={i}
-                        ref={(el) => { otpRefs.current[i] = el; }}
-                        id={`otp-${i}`}
-                        type="text"
-                        inputMode="numeric"
-                        maxLength={i === 0 ? undefined : 1} // Allow more on first box for autofill
-                        className={styles.otpBox}
-                        value={otp[i] || ''}
-                        onChange={(e) => handleOtpBoxChange(i, e.target.value)}
-                        onKeyDown={(e) => handleOtpKeyDown(i, e)}
-                        onPaste={i === 0 ? handleOtpPaste : undefined}
-                        autoComplete={i === 0 ? "one-time-code" : "off"}
-                        disabled={loading}
-                        autoFocus={i === 0}
-                        placeholder="·"
-                      />
+                    <div 
+                      key={i} 
+                      className={`${styles.otpBox} ${otp.length === i ? styles.otpBoxActive : ''} ${otp[i] ? styles.otpBoxFilled : ''}`}
+                    >
+                      {otp[i] || ''}
+                      {otp.length === i && <span className={styles.otpCursor} />}
+                    </div>
                   ))}
                 </div>
               </div>

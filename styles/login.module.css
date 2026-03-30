@@ -600,12 +600,48 @@
   box-shadow: 0 0 0 3px rgba(45, 110, 181, 0.12);
 }
 
-.otpBox:not(:placeholder-shown) {
+.otpBoxActive {
+  background: #ffffff;
+  border-color: #2d6eb5;
+  box-shadow: 0 0 0 3px rgba(45, 110, 181, 0.12);
+}
+
+.otpBoxFilled {
   border-color: #2d6eb5;
   background: #ffffff;
 }
 
+.hiddenOtpInput {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  z-index: 10;
+  cursor: text;
+  caret-color: transparent;
+}
+
+.otpCursor {
+  width: 2px;
+  height: 24px;
+  background-color: #2d6eb5;
+  display: inline-block;
+  animation: blink 1s step-end infinite;
+}
+
+@keyframes blink {
+  from, to { background-color: transparent; }
+  50% { background-color: #2d6eb5; }
+}
+
 /* ── Responsive ───────────────────────────── */
+.otpBox {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
 @media (max-width: 480px) {
   .loginHeader {
     box-shadow: 0 1px 8px rgba(30, 58, 95, 0.2);
