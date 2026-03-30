@@ -281,7 +281,7 @@ export default function LoginPage() {
             {otpSent && (
               <div className={styles.formGroup} style={{ animation: 'fadeIn 0.3s ease-in-out' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <label htmlFor="otp-0" className={styles.label}>One-Time Password</label>
+                  <label htmlFor="otp" className={styles.label}>One-Time Password</label>
                   {timer > 0 ? (
                     <span style={{ fontSize: '12px', color: '#666' }}>Resend in {timer}s</span>
                   ) : (
@@ -300,9 +300,10 @@ export default function LoginPage() {
                   <input
                     id="otp"
                     name="otp"
-                    type="tel"
+                    type="text"
                     inputMode="numeric"
                     autoComplete="one-time-code"
+                    pattern="\d*"
                     maxLength={OTP_LENGTH}
                     className={styles.input}
                     placeholder="Enter 4-digit OTP"
