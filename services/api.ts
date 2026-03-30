@@ -246,6 +246,16 @@ export async function searchJobRolesApi(query: string) {
   });
 }
 
+/**
+ * GET /categories
+ * Fetch job categories for fallback selection
+ */
+export async function getJobCategoriesApi(): Promise<ApiResponse<Array<{ id: number; name: string }>>> {
+  return apiRequest<Array<{ id: number; name: string }>>('/categories', {
+    method: 'GET',
+  });
+}
+
 export async function getEmployerInfoApi(jobId: number): Promise<ApiResponse<any>> {
   return apiRequest<any>(`/employer-info?job_id=${jobId}`, {
     method: 'GET',

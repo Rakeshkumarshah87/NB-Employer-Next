@@ -1,7 +1,7 @@
 import { useState, useEffect, type FormEvent, useRef } from 'react';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
-import { postJobApi, searchJobRolesApi, getJobDetailApi, updateJobApi } from '@/services/api';
+import { postJobApi, searchJobRolesApi, getJobDetailApi, updateJobApi, getJobCategoriesApi } from '@/services/api';
 import { useAuth } from '@/context/AuthContext';
 import JobStepper from '@/components/JobStepper';
 import styles from '@/styles/postjob.module.css';
@@ -20,6 +20,7 @@ export default function PostJobPage() {
   // ── Form State: Basic Job Details ─────────────
   const [jobTitle, setJobTitle] = useState('');
   const [jobCategoryId, setJobCategoryId] = useState<number>(0);
+  const [categories, setCategories] = useState<Array<{id: number, name: string}>>([]);
   const [roles, setRoles] = useState<Array<{id: number, job_category_id: number, name: string}>>([]);
   const [showRolesDropdown, setShowRolesDropdown] = useState(false);
   const wrapperRef = useRef<HTMLDivElement>(null);
@@ -57,6 +58,20 @@ export default function PostJobPage() {
   const isDuplicate = !!duplicateId;
 
   // ── Fetch existing job for edit/duplicate ──────
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const res = await getJobCategoriesApi();
+        if (res.status && res.data) {
+          setCategories(res.data);
+        }
+      } catch (e) {
+        console.error("Failed to fetch categories", e);
+      }
+    };
+    fetchCategories();
+  }, []);
+
   useEffect(() => {
     const jobID = editId || duplicateId;
     if (jobID && !loading && user) {
@@ -158,6 +173,7 @@ export default function PostJobPage() {
           setRoles(res.data);
           setShowRolesDropdown(true);
         } else {
+          setRoles([]);
           setShowRolesDropdown(false);
         }
       } catch (e) {
@@ -178,7 +194,7 @@ export default function PostJobPage() {
   // ── Validation ────────────────────────────────
   const validate = (): string | null => {
     if (!jobTitle.trim()) return 'Please enter the Job Title';
-    if (!jobCategoryId) return 'Please select a Job Title from the dropdown suggestions to ensure correct skills are loaded';
+    if (!jobCategoryId) return 'Please select a Job Title from the suggestions or choose a Job Category directly';
     if (!monthlyFrom.trim()) return 'Please enter minimum salary';
     if (!monthlyTo.trim()) return 'Please enter maximum salary';
     if (!noOfOpenings.trim()) return 'Please enter No. of Openings';
@@ -367,6 +383,30 @@ export default function PostJobPage() {
                     </div>
                   )}
                 </div>
+
+                {/* Job Category Dropdown (Fallback) */}
+                {jobTitle.trim().length > 0 && !showRolesDropdown && (!jobCategoryId || jobCategoryId === 0 || roles.length === 0) && (
+                  <div className={`${styles.formGroup} ${styles.span2}`}>
+                    <label className={`${styles.formLabel} ${styles.required}`} htmlFor="job_category">
+                      Job Category
+                    </label>
+                    <select
+                      id="job_category"
+                      className={styles.formInput}
+                      value={jobCategoryId}
+                      onChange={(e) => setJobCategoryId(Number(e.target.value))}
+                      required
+                      disabled={loading}
+                    >
+                      <option value={0}>---- Select Category ----</option>
+                      {categories.map((cat) => (
+                        <option key={cat.id} value={cat.id}>
+                          {cat.name}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                )}
 
                 {/* Monthly Salary */}
                 <div className={styles.formGroup}>
