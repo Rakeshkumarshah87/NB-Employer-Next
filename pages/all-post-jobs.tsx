@@ -230,64 +230,62 @@ const CandidateListView = ({ postId, viewMode, statusFilter, isPlanActive, jobSt
                     </>
                   )}
                 </div>
-                {viewMode === 'applied' && (
-                  <div style={{ marginTop: 15 }}>
-                    <select
-                      className={styles.candidateSelect}
-                      value={activeUpdateId === c.user_id ? updateStatus : ''}
-                      onChange={(e) => handleStatusChange(c.user_id, e.target.value)}
-                    >
-                      <option value="">Update Status</option>
-                      <option value="Interview Fixed">Interview Fixed</option>
-                      <option value="Shortlisted">Shortlisted</option>
-                      <option value="Hired">Hired</option>
-                      <option value="Rejected">Rejected</option>
-                      <option value="Absent for Interview">Absent for Interview</option>
-                    </select>
+                <div style={{ marginTop: 15 }}>
+                  <select
+                    className={styles.candidateSelect}
+                    value={activeUpdateId === c.user_id ? updateStatus : ''}
+                    onChange={(e) => handleStatusChange(c.user_id, e.target.value)}
+                  >
+                    <option value="">Update Status</option>
+                    <option value="Interview Fixed">Interview Fixed</option>
+                    <option value="Shortlisted">Shortlisted</option>
+                    <option value="Hired">Hired</option>
+                    <option value="Rejected">Rejected</option>
+                    <option value="Absent for Interview">Absent for Interview</option>
+                  </select>
 
-                    {/* Show Review Form logic  */}
-                    {activeUpdateId === c.user_id && updateStatus && (
-                      <div className={styles.statusUpdateBox}>
-                        <div className={styles.ratingRow}>
-                          <label><b>Rating:</b></label>
-                          <div className={styles.starRating}>
-                            {[5, 4, 3, 2, 1].map(num => (
-                              <span key={num} style={{ display: 'inline-flex', flexDirection: 'row-reverse' }}>
-                                <input
-                                  type="radio"
-                                  id={`star${num}-${c.user_id}`}
-                                  name={`rating-${c.user_id}`}
-                                  value={num}
-                                  checked={updateRating === num}
-                                  onChange={() => setUpdateRating(num)}
-                                  style={{ display: 'none' }}
-                                />
-                                <label htmlFor={`star${num}-${c.user_id}`} className={styles.starLabel}>☆</label>
-                              </span>
-                            ))}
-                          </div>
+                  {/* Show Review Form logic  */}
+                  {activeUpdateId === c.user_id && updateStatus && (
+                    <div className={styles.statusUpdateBox}>
+                      <div className={styles.ratingRow}>
+                        <label><b>Rating:</b></label>
+                        <div className={styles.starRating}>
+                          {[5, 4, 3, 2, 1].map(num => (
+                            <span key={num} style={{ display: 'inline-flex', flexDirection: 'row-reverse' }}>
+                              <input
+                                type="radio"
+                                id={`star${num}-${c.user_id}`}
+                                name={`rating-${c.user_id}`}
+                                value={num}
+                                checked={updateRating === num}
+                                onChange={() => setUpdateRating(num)}
+                                style={{ display: 'none' }}
+                              />
+                              <label htmlFor={`star${num}-${c.user_id}`} className={styles.starLabel}>☆</label>
+                            </span>
+                          ))}
                         </div>
-                        <textarea
-                          className={styles.remarkBox}
-                          placeholder="Add a remark..."
-                          value={updateRemark}
-                          onChange={(e) => setUpdateRemark(e.target.value)}
-                        />
-                        <button
-                          onClick={() => submitStatusUpdate(c.user_id, c.apply_id)}
-                          className={styles.btnStatusUpdate}
-                          disabled={isUpdating}
-                        >
-                          {isUpdating ? 'Updating...' : 'Update Status'}
-                        </button>
                       </div>
-                    )}
-                  </div>
-                )}
+                      <textarea
+                        className={styles.remarkBox}
+                        placeholder="Add a remark..."
+                        value={updateRemark}
+                        onChange={(e) => setUpdateRemark(e.target.value)}
+                      />
+                      <button
+                        onClick={() => submitStatusUpdate(c.user_id, c.apply_id)}
+                        className={styles.btnStatusUpdate}
+                        disabled={isUpdating}
+                      >
+                        {isUpdating ? 'Updating...' : 'Update Status'}
+                      </button>
+                    </div>
+                  )}
+                </div>
               </>
             )}
 
-            {viewMode === 'applied' && c.status && activeUpdateId !== c.user_id && (
+            {c.status && activeUpdateId !== c.user_id && (
               <div className={styles.statusBoxDisplay}>
                 <b style={{ color: '#ff7600' }}>{c.review} ★</b> | <strong>{c.status}</strong> | <i>{c.remark}</i>
               </div>
