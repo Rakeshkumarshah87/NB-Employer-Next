@@ -514,7 +514,7 @@ export default function AllPostJobsPage() {
         // Check for limit_error from query parameters
         if (router.query.limit_error === 'true') {
           setPostJobMsg('Maximum You can Post 4 Active Jobs. Please purchase a plan.');
-          router.replace('/employer/all-post-jobs', undefined, { shallow: true });
+          router.replace('/all-post-jobs', undefined, { shallow: true });
         }
       } catch (e: any) {
         console.error('Failed to load data', e);
@@ -582,7 +582,9 @@ export default function AllPostJobsPage() {
   };
 
   const goToPostJob = () => {
-    if (!planInfo?.has_active_plan && activeJobCount > 3) {
+    const hasActiveSubscription = planInfo?.has_active_plan && !planInfo?.is_expired && planInfo?.approval_status === 'Accept';
+    
+    if (!hasActiveSubscription && activeJobCount > 3) {
       setPostJobMsg('Maximum You can Post 4 Active Jobs. Please purchase a plan.');
       return;
     }
@@ -612,9 +614,8 @@ export default function AllPostJobsPage() {
 
   // ── Check if candidate button should show (mirrors PHP: show for all non-expired jobs) ──
   const checkJobStatus = (jobStatus: number): boolean => {
-    // PHP code comments out checkJobStatus for Candidate Detail in active section
-    // Only hide for expired (0) jobs
-    return jobStatus !== 0;
+    // Only hide for expired (0) and rejected (4) jobs
+    return jobStatus !== 0 && jobStatus !== 4;
   };
 
   // ── Render a single job card ──
@@ -623,6 +624,7 @@ export default function AllPostJobsPage() {
     const isActive = job.active_status === 1;
     const isUnderReview = job.active_status === 2;
     const isExpired = job.active_status === 0;
+    const isRejected = job.active_status === 4;
     const showCandidateButton = checkJobStatus(job.active_status);
 
     return (
@@ -630,12 +632,12 @@ export default function AllPostJobsPage() {
         key={job.id}
         className={`${styles.jobCard} ${isSelected ? styles.jobCardSelected : ''}`}
         onClick={() => {
-          // Load job detail for all non-expired jobs (active, under review, etc.)
-          if (!isExpired) {
+          // Load job detail for all non-expired/non-rejected jobs (active, under review, etc.)
+          if (!isExpired && !isRejected) {
             loadJobDetail(job.id);
           }
         }}
-        style={{ cursor: !isExpired ? 'pointer' : 'default' }}
+        style={{ cursor: (!isExpired && !isRejected) ? 'pointer' : 'default' }}
       >
         <div className={styles.jobCardHeader}>
           <div className={styles.jobTitleWrapper}>
@@ -807,7 +809,7 @@ export default function AllPostJobsPage() {
                 <div className={styles.planRow}>
                   <span className={styles.planLabel}>Active Jobs Limit</span>
                   <span className={styles.planName} style={{ color: planInfo.used_jobs >= planInfo.total_jobs ? '#dc3545' : '#28a745' }}>
-                    {planInfo.used_jobs} / {planInfo.total_jobs} Used
+                    {planInfo.total_jobs >= 999 ? 'Unlimited' : `${planInfo.used_jobs} / ${planInfo.total_jobs} Used`}
                   </span>
                 </div>
                 <div style={{ marginTop: 12, paddingTop: 10, borderTop: '1px dashed #e1e4e8', textAlign: 'center' }}>

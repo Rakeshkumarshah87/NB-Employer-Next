@@ -1,7 +1,7 @@
 import { useState, useEffect, type FormEvent, useRef } from 'react';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
-import { postJobApi, searchJobRolesApi, getJobDetailApi, updateJobApi, getJobCategoriesApi } from '@/services/api';
+import { postJobApi, searchJobRolesApi, getJobDetailApi, updateJobApi, getJobCategoriesApi, getAllJobsApi, getPlanInfoApi } from '@/services/api';
 import { useAuth } from '@/context/AuthContext';
 import JobStepper from '@/components/JobStepper';
 import styles from '@/styles/postjob.module.css';
@@ -56,6 +56,33 @@ export default function PostJobPage() {
   const duplicateId = router.query.duplicate ? Number(router.query.duplicate) : null;
   const isEdit = !!editId;
   const isDuplicate = !!duplicateId;
+
+  // ── Global Limit Enforcer for New Jobs ──────────
+  useEffect(() => {
+    if (!user || isEdit || isDuplicate) return;
+
+    const enforceLimit = async () => {
+      try {
+        const [jobsRes, planRes] = await Promise.all([
+          getAllJobsApi(),
+          getPlanInfoApi()
+        ]);
+        const activeJobCount = jobsRes?.data?.active_job_count || 0;
+        const hasPlan = planRes?.data?.has_active_plan;
+        const isExpired = planRes?.data?.is_expired;
+        const approval = planRes?.data?.approval_status;
+        
+        const hasActiveSubscription = hasPlan && !isExpired && approval === 'Accept';
+        
+        if (!hasActiveSubscription && activeJobCount > 3) {
+           router.replace('/all-post-jobs?limit_error=true');
+        }
+      } catch (err) {
+        // Ignored
+      }
+    };
+    enforceLimit();
+  }, [user, isEdit, isDuplicate, router]);
 
   // ── Fetch existing job for edit/duplicate ──────
   useEffect(() => {

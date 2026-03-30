@@ -71,8 +71,12 @@ export default function Header() {
       ]);
       const activeJobCount = jobsRes?.data?.active_job_count || 0;
       const hasPlan = planRes?.data?.has_active_plan;
+      const isExpired = planRes?.data?.is_expired;
+      const approval = planRes?.data?.approval_status;
       
-      if (!hasPlan && activeJobCount > 3) {
+      const hasActiveSubscription = hasPlan && !isExpired && approval === 'Accept';
+      
+      if (!hasActiveSubscription && activeJobCount > 3) {
          // The user wants exactly the same error the "Post New Job" button has, 
          // which lives in the sidebar of all-post-jobs.tsx.
          router.push('/all-post-jobs?limit_error=true');
