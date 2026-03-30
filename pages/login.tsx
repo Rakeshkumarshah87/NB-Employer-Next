@@ -96,6 +96,38 @@ export default function LoginPage() {
     }
   };
 
+  // ── Web OTP API (Zero-Click Autofill) ───────
+  useEffect(() => {
+    if (!otpSent || typeof window === 'undefined' || !('OTPCredential' in window)) {
+      return;
+    }
+
+    const ac = new AbortController();
+
+    const listenForOtp = async () => {
+      try {
+        const otpCredential = await (navigator.credentials as any).get({
+          otp: { transport: ['sms'] },
+          signal: ac.signal
+        });
+
+        if (otpCredential && otpCredential.code) {
+          setOtp(otpCredential.code.slice(0, OTP_LENGTH));
+        }
+      } catch (err: any) {
+        if (err.name !== 'AbortError') {
+          console.log('WebOTP Error:', err);
+        }
+      }
+    };
+
+    listenForOtp();
+
+    return () => {
+      ac.abort();
+    };
+  }, [otpSent]);
+
   // ── Handle Verify OTP & Login ──────────────
   const handleVerifyOtp = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -309,6 +341,21 @@ export default function LoginPage() {
                     value={otp}
                     onChange={handleOtpChange}
                     className={styles.hiddenOtpInput}
+                    style={{
+                      position: 'absolute',
+                      top: 0,
+                      left: 0,
+                      width: '100%',
+                      height: '100%',
+                      opacity: 0.01,
+                      zIndex: 10,
+                      cursor: 'text',
+                      caretColor: 'transparent',
+                      border: 'none',
+                      background: 'transparent',
+                      outline: 'none',
+                      color: 'transparent'
+                    }}
                     autoFocus
                     disabled={loading}
                   />
