@@ -618,6 +618,19 @@ export default function AllPostJobsPage() {
     return jobStatus !== 0 && jobStatus !== 4;
   };
 
+  // ── Time formatting helper ──
+  const formatTime12h = (timeStr: string): string => {
+    if (!timeStr || typeof timeStr !== 'string') return '';
+    const parts = timeStr.split(':');
+    if (parts.length < 2) return timeStr;
+    let hours = parseInt(parts[0]);
+    const minutes = parts[1];
+    const ampm = hours >= 12 ? 'PM' : 'AM';
+    hours = hours % 12;
+    hours = hours ? hours : 12; // '0' should be '12'
+    return `${hours}:${minutes} ${ampm}`;
+  };
+
   // ── Render a single job card ──
   const renderJobCard = (job: Job, isExpiredSection: boolean = false) => {
     const isSelected = selectedJobId === job.id;
@@ -677,10 +690,11 @@ export default function AllPostJobsPage() {
           </span>
           <span className={styles.highlightInfo}>
             <img src={`${IMG}/eperiances.png`} alt="" />
-            {job.candi_experience === 'Experienced' ? `${job.min_exp}-${job.max_exp} yrs` : ''} {job.candi_experience}
+            {job.candi_experience === 'Experienced' ? `${job.min_exp}-${job.max_exp} yrs ` : ''} 
+            {job.candi_experience}
           </span>
           <span className={styles.highlightInfo}>
-            <img src={`${IMG}/timing.png`} alt="" /> {job.open_time} - {job.close_time}
+            <img src={`${IMG}/timing.png`} alt="" /> {formatTime12h(job.open_time)} - {formatTime12h(job.close_time)}
           </span>
         </div>
 
@@ -896,12 +910,12 @@ export default function AllPostJobsPage() {
                   <span>
                     {jobDetail.job.candi_experience === 'Experienced'
                       ? `${jobDetail.job.min_exp}-${jobDetail.job.max_exp} Yrs`
-                      : `Fresher ${jobDetail.job.candi_experience}`}
+                      : jobDetail.job.candi_experience}
                   </span>
                 </div>
                 <div className={styles.metaItem}>
                   <img src={`${IMG}/timing.png`} alt="" />
-                  <span>{jobDetail.job.open_time} - {jobDetail.job.close_time}</span>
+                  <span>{formatTime12h(jobDetail.job.open_time)} - {formatTime12h(jobDetail.job.close_time)}</span>
                 </div>
               </div>
 
