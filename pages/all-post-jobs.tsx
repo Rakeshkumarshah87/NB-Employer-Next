@@ -510,6 +510,12 @@ export default function AllPostJobsPage() {
         if (planRes.status && planRes.data) {
           setPlanInfo(planRes.data);
         }
+
+        // Check for limit_error from query parameters
+        if (router.query.limit_error === 'true') {
+          setPostJobMsg('Maximum You can Post 4 Active Jobs. Please purchase a plan.');
+          router.replace('/employer/all-post-jobs', undefined, { shallow: true });
+        }
       } catch (e: any) {
         console.error('Failed to load data', e);
         setPageError(e.message || 'An error occurred loading the page.');
@@ -518,7 +524,7 @@ export default function AllPostJobsPage() {
       }
     };
     fetchData();
-  }, [user]);
+  }, [user, router.query]);
 
   const loadJobDetail = useCallback(async (postId: number) => {
     setSelectedJobId(postId);
@@ -546,10 +552,9 @@ export default function AllPostJobsPage() {
 
   // ── Update job status ──
   const handleUpdateStatus = async (jobId: number, newStatus: number) => {
-    // If activating (reactivating), check active job count limit using plan's total_jobs
-    const maxJobs = planInfo?.total_jobs || 3; // fallback to 3 for free tier
-    if (newStatus === 1 && activeJobCount >= maxJobs) {
-      setLimitError(`To active ${maxJobs + 1}th job you need to purchase the plan`);
+    // If activating (reactivating), check active job count limit. If no active plan, max 4 jobs allowed.
+    if (newStatus === 1 && !planInfo?.has_active_plan && activeJobCount >= 4) {
+      setLimitError(`Maximum You can Post 4 Active Jobs. Please purchase a plan to post more.`);
       // Scroll sidebar to top so user sees the message
       if (sidebarRef.current) {
         sidebarRef.current.scrollTo({ top: 0, behavior: 'smooth' });
@@ -577,8 +582,8 @@ export default function AllPostJobsPage() {
   };
 
   const goToPostJob = () => {
-    if (activeJobCount > 3) {
-      setPostJobMsg('Maximum You can Post 4 Active Jobs');
+    if (!planInfo?.has_active_plan && activeJobCount > 3) {
+      setPostJobMsg('Maximum You can Post 4 Active Jobs. Please purchase a plan.');
       return;
     }
     router.push('/post-job');

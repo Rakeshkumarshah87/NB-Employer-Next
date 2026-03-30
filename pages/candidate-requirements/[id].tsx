@@ -56,10 +56,10 @@ export default function CandidateRequirementsPage() {
   // ── Fetch Data ─────────────────────────────────
   useEffect(() => {
     if (!router.isReady || authLoading || !user) return;
-    
+
     const idParam = router.query.id;
     const jId = idParam ? Number(idParam) : 0;
-    
+
     if (!jId || isNaN(jId)) return;
 
     const fetchData = async () => {
@@ -90,16 +90,16 @@ export default function CandidateRequirementsPage() {
     const el = document.getElementById('job_info_editor');
     if (window.CKEDITOR && el) {
       if (window.CKEDITOR.instances.job_info_editor) {
-          window.CKEDITOR.instances.job_info_editor.destroy(true);
+        window.CKEDITOR.instances.job_info_editor.destroy(true);
       }
       const editor = window.CKEDITOR.replace('job_info_editor', {
         height: 250,
         versionCheck: false,
         removePlugins: 'elementspath,resize',
         toolbar: [
-          { name: 'basicstyles', items: [ 'Bold', 'Italic', 'Underline', 'Strike', 'Subscript', 'Superscript', '-', 'RemoveFormat' ] },
-          { name: 'paragraph', items: [ 'NumberedList', 'BulletedList' ] },
-          { name: 'tools', items: [ 'Maximize' ] }
+          { name: 'basicstyles', items: ['Bold', 'Italic', 'Underline', 'Strike', 'Subscript', 'Superscript', '-', 'RemoveFormat'] },
+          { name: 'paragraph', items: ['NumberedList', 'BulletedList'] },
+          { name: 'tools', items: ['Maximize'] }
         ]
       });
 
@@ -107,7 +107,7 @@ export default function CandidateRequirementsPage() {
         const data = editor.getData();
         setJobInfo(data);
       });
-      
+
       if (pageData?.job_info) {
         editor.setData(pageData.job_info);
       }
@@ -147,8 +147,11 @@ export default function CandidateRequirementsPage() {
     setSubmitError('');
 
     let finalJobInfo = jobInfo;
+    const txtArea = document.getElementById('job_info_editor') as HTMLTextAreaElement;
     if (window.CKEDITOR && window.CKEDITOR.instances.job_info_editor) {
       finalJobInfo = window.CKEDITOR.instances.job_info_editor.getData();
+    } else if (txtArea && txtArea.value) {
+      finalJobInfo = txtArea.value;
     }
 
     const requirements: RequirementItem[] = pageData.requirements
@@ -208,28 +211,28 @@ export default function CandidateRequirementsPage() {
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
       </Head>
 
-      <Script 
-        src="https://cdn.ckeditor.com/4.22.1/standard/ckeditor.js" 
+      <Script
+        src="https://cdn.ckeditor.com/4.22.1/standard/ckeditor.js"
         onLoad={() => setScriptLoaded(true)}
       />
 
       <div className={styles.pageWrapper}>
         <div className={styles.contentWrapper}>
-            <div className={styles.mainContainer}>
-              <JobStepper currentStep={2} onStepClick={handleStepClick} />
+          <div className={styles.mainContainer}>
+            <JobStepper currentStep={2} onStepClick={handleStepClick} />
 
-              {loadingData && (
-                <div className={styles.loadingWrapper}>
-                  <div className={styles.loadingSpinner} />
-                  Loading job requirements…
-                </div>
-              )}
+            {loadingData && (
+              <div className={styles.loadingWrapper}>
+                <div className={styles.loadingSpinner} />
+                Loading job requirements…
+              </div>
+            )}
 
-              {!loadingData && loadError && (
-                <div className={styles.errorMsg}>{loadError}</div>
-              )}
+            {!loadingData && loadError && (
+              <div className={styles.errorMsg}>{loadError}</div>
+            )}
 
-              {!loadingData && !loadError && pageData && (
+            {!loadingData && !loadError && pageData && (
               <form onSubmit={handleSubmit} noValidate>
                 <div className={styles.card}>
                   <div className={styles.cardHeader}>
@@ -301,7 +304,7 @@ export default function CandidateRequirementsPage() {
                     <button
                       type="button"
                       className={styles.btnBack}
-                      onClick={() => router.back()}
+                      onClick={() => router.push(`/post-job?edit=${jobId}`)}
                       disabled={submitting}
                     >
                       ← Go Back

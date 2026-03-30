@@ -5,7 +5,7 @@ import { useAuth } from '@/context/AuthContext';
 import { getNotificationsCountApi } from '@/services/api';
 import styles from '@/styles/dashboard.module.css';
 
-const LOGO_BASE_URL = 'https://networkbaba.co/images/icon/';
+const LOGO_BASE_URL = 'https://networkbaba.co/company_logo/';
 
 export default function Header() {
   const { user, logout } = useAuth();
@@ -59,6 +59,31 @@ export default function Header() {
     logout();
   }, [logout]);
 
+  const handlePostJobClick = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    if (router.pathname === '/post-job') return;
+    
+    // Check limit before routing
+    try {
+      const [jobsRes, planRes] = await Promise.all([
+        import('@/services/api').then(mod => mod.getAllJobsApi()),
+        import('@/services/api').then(mod => mod.getPlanInfoApi()),
+      ]);
+      const activeJobCount = jobsRes?.data?.active_job_count || 0;
+      const hasPlan = planRes?.data?.has_active_plan;
+      
+      if (!hasPlan && activeJobCount > 3) {
+         // The user wants exactly the same error the "Post New Job" button has, 
+         // which lives in the sidebar of all-post-jobs.tsx.
+         router.push('/all-post-jobs?limit_error=true');
+         return;
+      }
+      router.push('/post-job');
+    } catch(err) {
+      router.push('/post-job');
+    }
+  };
+
   if (!user) return null;
 
   return (
@@ -81,26 +106,26 @@ export default function Header() {
           <nav className={styles.desktopNav}>
             <Link href="/all-post-jobs" className={`${styles.navLink} ${router.pathname === '/all-post-jobs' ? styles.navLinkActive : ''}`}>
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <rect x="2" y="7" width="20" height="14" rx="2" ry="2"/>
-                <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>
+                <rect x="2" y="7" width="20" height="14" rx="2" ry="2" />
+                <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16" />
               </svg>
               Jobs
             </Link>
-            <Link href="/post-job" className={styles.postJobBtn}>
+            <a href="/post-job" onClick={handlePostJobClick} className={styles.postJobBtn}>
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                <line x1="12" y1="5" x2="12" y2="19"/>
-                <line x1="5" y1="12" x2="19" y2="12"/>
+                <line x1="12" y1="5" x2="12" y2="19" />
+                <line x1="5" y1="12" x2="19" y2="12" />
               </svg>
               Post Job
-            </Link>
+            </a>
           </nav>
 
           {/* Desktop User Section */}
           <div className={styles.userSection} ref={dropdownRef}>
             <Link href="/employer-notification" className={styles.desktopNotification} aria-label="Notifications">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
-                <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+                <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
+                <path d="M13.73 21a2 2 0 0 1-3.46 0" />
               </svg>
               {notificationCount > 0 && (
                 <span className={styles.desktopNotificationBadge}>{notificationCount}</span>
@@ -133,7 +158,7 @@ export default function Header() {
                 fill="none" stroke="currentColor" strokeWidth="2.5"
                 strokeLinecap="round" strokeLinejoin="round"
               >
-                <polyline points="6 9 12 15 18 9"/>
+                <polyline points="6 9 12 15 18 9" />
               </svg>
             </button>
 
@@ -164,15 +189,15 @@ export default function Header() {
                 {/* Menu Items */}
                 <Link href="/employer-profile" className={styles.ddItem} role="menuitem" onClick={() => setDropdownOpen(false)}>
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-                    <circle cx="12" cy="7" r="4"/>
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                    <circle cx="12" cy="7" r="4" />
                   </svg>
                   Profile
                 </Link>
                 <Link href="/feedback-complaint" className={styles.ddItem} role="menuitem" onClick={() => setDropdownOpen(false)}>
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
-                    <polyline points="22,6 12,13 2,6"/>
+                    <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
+                    <polyline points="22,6 12,13 2,6" />
                   </svg>
                   Feedback / Complaint
                 </Link>
@@ -181,9 +206,9 @@ export default function Header() {
 
                 <button className={styles.ddLogout} role="menuitem" onClick={handleLogout}>
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
-                    <polyline points="16 17 21 12 16 7"/>
-                    <line x1="21" y1="12" x2="9" y2="12"/>
+                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+                    <polyline points="16 17 21 12 16 7" />
+                    <line x1="21" y1="12" x2="9" y2="12" />
                   </svg>
                   Sign Out
                 </button>
@@ -195,26 +220,26 @@ export default function Header() {
           <nav className={styles.bottomNav}>
             <Link href="/all-post-jobs" className={`${styles.bottomNavItem} ${router.pathname === '/all-post-jobs' ? styles.bottomNavItemActive : ''}`}>
               <svg className={styles.bottomNavIcon} viewBox="0 0 24 24" fill={router.pathname === '/all-post-jobs' ? "currentColor" : "none"} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <rect x="2" y="7" width="20" height="14" rx="2" ry="2"/>
-                <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>
+                <rect x="2" y="7" width="20" height="14" rx="2" ry="2" />
+                <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16" />
               </svg>
               <span className={styles.bottomNavText}>Job List</span>
             </Link>
-            
-            <Link href="/post-job" className={`${styles.bottomNavItem} ${router.pathname === '/post-job' ? styles.bottomNavItemActive : ''}`}>
-               <svg className={styles.bottomNavIcon} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                 <rect x="3" y="3" width="18" height="18" rx="2" ry="2" fill={router.pathname === '/post-job' ? "currentColor" : "none"} stroke={router.pathname === '/post-job' ? "none" : "currentColor"}/>
-                 <line x1="12" y1="8" x2="12" y2="16" stroke={router.pathname === '/post-job' ? "#ffffff" : "currentColor"} />
-                 <line x1="8" y1="12" x2="16" y2="12" stroke={router.pathname === '/post-job' ? "#ffffff" : "currentColor"} />
-               </svg>
-               <span className={styles.bottomNavText}>New Job</span>
-            </Link>
+
+            <a href="/post-job" onClick={handlePostJobClick} className={`${styles.bottomNavItem} ${router.pathname === '/post-job' ? styles.bottomNavItemActive : ''}`}>
+              <svg className={styles.bottomNavIcon} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <rect x="3" y="3" width="18" height="18" rx="2" ry="2" fill={router.pathname === '/post-job' ? "currentColor" : "none"} stroke={router.pathname === '/post-job' ? "none" : "currentColor"} />
+                <line x1="12" y1="8" x2="12" y2="16" stroke={router.pathname === '/post-job' ? "#ffffff" : "currentColor"} />
+                <line x1="8" y1="12" x2="16" y2="12" stroke={router.pathname === '/post-job' ? "#ffffff" : "currentColor"} />
+              </svg>
+              <span className={styles.bottomNavText}>New Job</span>
+            </a>
 
             <Link href="/employer-notification" className={`${styles.bottomNavItem} ${router.pathname === '/employer-notification' ? styles.bottomNavItemActive : ''}`}>
               <div className={styles.notificationWrapper}>
                 <svg className={styles.bottomNavIcon} viewBox="0 0 24 24" fill={router.pathname === '/employer-notification' ? "currentColor" : "none"} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
-                  <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+                  <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
+                  <path d="M13.73 21a2 2 0 0 1-3.46 0" />
                 </svg>
                 {notificationCount > 0 ? (
                   <span className={styles.notificationBadge}>{notificationCount}</span>
@@ -226,11 +251,11 @@ export default function Header() {
             </Link>
 
             <Link href="/employer-profile" className={`${styles.bottomNavItem} ${router.pathname === '/employer-profile' ? styles.bottomNavItemActive : ''}`}>
-               <svg className={styles.bottomNavIcon} viewBox="0 0 24 24" fill={router.pathname === '/employer-profile' ? "currentColor" : "none"} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                 <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-                 <circle cx="12" cy="7" r="4"/>
-               </svg>
-               <span className={styles.bottomNavText}>Profile</span>
+              <svg className={styles.bottomNavIcon} viewBox="0 0 24 24" fill={router.pathname === '/employer-profile' ? "currentColor" : "none"} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                <circle cx="12" cy="7" r="4" />
+              </svg>
+              <span className={styles.bottomNavText}>Profile</span>
             </Link>
           </nav>
         </div>

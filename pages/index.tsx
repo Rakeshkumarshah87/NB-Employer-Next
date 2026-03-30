@@ -46,18 +46,7 @@ export default function DashboardHome() {
             </div>
           </Link>
 
-          <Link href="/" className={styles.actionCard}>
-            <div className={`${styles.actionIcon} ${styles.actionIconGreen}`}>
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <rect x="2" y="7" width="20" height="14" rx="2" ry="2"/>
-                <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>
-              </svg>
-            </div>
-            <div className={styles.actionCardContent}>
-              <div className={styles.actionTitle}>View All Jobs</div>
-              <div className={styles.actionDesc}>Browse and manage all your active job postings</div>
-            </div>
-          </Link>
+
 
           <Link href="/employer-profile" className={styles.actionCard}>
             <div className={`${styles.actionIcon} ${styles.actionIconPurple}`}>

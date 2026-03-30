@@ -203,7 +203,7 @@ export default function PostJobPage() {
     if (!jobType) return 'Please select the Job Type';
     if (!qualification) return 'Please select the Minimum Qualification';
     if (!experience) return 'Please select the Experience Level';
-    if (experience === 'Experienced' && (!minExp || Number(minExp) === 0))
+    if (experience === 'Experienced' && (minExp === '' || minExp === null))
       return 'Please enter minimum experience years';
     if (!gender) return 'Please select the Gender Preference';
     if (!english) return 'Please select the English Requirement';

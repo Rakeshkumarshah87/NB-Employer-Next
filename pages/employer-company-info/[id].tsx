@@ -67,7 +67,7 @@ export default function EmployerCompanyInfoPage() {
         if (res.status && res.data) {
           const d = res.data;
           console.log("Job Info Data:", d); // DEBUG: Check what backend returns
-          
+
           // Check if we need to fall back to profile data for empty fields
           let profileData = null;
           if (!d.inter_full_add || !d.company_name || !d.phone_number) {
@@ -83,33 +83,26 @@ export default function EmployerCompanyInfoPage() {
           setPhoneNumber(d.phone_number || profileData?.contact_person_number || '');
           setEmailId(d.email_id || profileData?.email_id || '');
 
-          setInterAddress(d.inter_flat_bulding || profileData?.flat_bulding || '');
-          
-          // Improved full address fallback
-          const profileFullAdd = profileData?.full_add || 
-                               (profileData?.city ? `${profileData.city}${profileData.state ? ', '+profileData.state : ''}${profileData.country ? ', '+profileData.country : ''}` : '');
-          
-          setInterFullAdd(d.inter_full_add || profileFullAdd || '');
-          setInterPincode(d.inter_pincode || profileData?.pincode || '');
-          setInterCountry(d.inter_country || profileData?.country || '');
-          setInterState(d.inter_state || profileData?.state || '');
-          setInterCity(d.inter_city || profileData?.city || '');
-          setInterLat(d.inter_lat || profileData?.lat || '');
-          setInterLng(d.inter_lng || profileData?.lng || '');
+          setInterAddress(d.inter_flat_bulding || '');
+          setInterFullAdd(d.inter_full_add || '');
+          setInterPincode(d.inter_pincode || '');
+          setInterCountry(d.inter_country || '');
+          setInterState(d.inter_state || '');
+          setInterCity(d.inter_city || '');
+          setInterLat(d.inter_lat || '');
+          setInterLng(d.inter_lng || '');
 
           setReceiveAppFrom(d.recive_application_from || 'Entire City');
           setSameAddress(d.same_address !== undefined ? d.same_address === 1 : true);
 
-          const finalInterFull = d.inter_full_add || profileFullAdd || '';
-
-          setJobAddress(d.job_flat_bulding || (d.same_address !== 0 ? (d.inter_flat_bulding || profileData?.flat_bulding) : '') || '');
-          setJobFullAdd(d.job_full_add || (d.same_address !== 0 ? finalInterFull : '') || '');
-          setJobPincode(d.job_pincode || (d.same_address !== 0 ? (d.inter_pincode || profileData?.pincode) : '') || '');
-          setJobCountry(d.job_country || (d.same_address !== 0 ? (d.inter_country || profileData?.country) : '') || '');
-          setJobState(d.job_state || (d.same_address !== 0 ? (d.inter_state || profileData?.state) : '') || '');
-          setJobCity(d.job_city || (d.same_address !== 0 ? (d.inter_city || profileData?.city) : '') || '');
-          setJobLat(d.job_lat || (d.same_address !== 0 ? (d.inter_lat || profileData?.lat) : '') || '');
-          setJobLng(d.job_lng || (d.same_address !== 0 ? (d.inter_lng || profileData?.lng) : '') || '');
+          setJobAddress(d.job_flat_bulding || '');
+          setJobFullAdd(d.job_full_add || '');
+          setJobPincode(d.job_pincode || '');
+          setJobCountry(d.job_country || '');
+          setJobState(d.job_state || '');
+          setJobCity(d.job_city || '');
+          setJobLat(d.job_lat || '');
+          setJobLng(d.job_lng || '');
 
           setGoogleKey(d.google_geo_key || '');
         } else {
@@ -151,17 +144,17 @@ export default function EmployerCompanyInfoPage() {
       });
 
       if (prefix === 'inter') {
-        setInterFullAdd(place.formatted_address || '');
+        setInterFullAdd(place.formatted_address || place.name || interInputRef.current?.value || '');
         setInterLat(lat); setInterLng(lng);
         setInterPincode(pincode); setInterCountry(country); setInterState(state); setInterCity(city);
 
         if (sameAddress) {
-          setJobFullAdd(place.formatted_address || '');
+          setJobFullAdd(place.formatted_address || place.name || interInputRef.current?.value || '');
           setJobLat(lat); setJobLng(lng);
           setJobPincode(pincode); setJobCountry(country); setJobState(state); setJobCity(city);
         }
       } else {
-        setJobFullAdd(place.formatted_address || '');
+        setJobFullAdd(place.formatted_address || place.name || jobInputRef.current?.value || '');
         setJobLat(lat); setJobLng(lng);
         setJobPincode(pincode); setJobCountry(country); setJobState(state); setJobCity(city);
       }
@@ -198,12 +191,53 @@ export default function EmployerCompanyInfoPage() {
       setError('Invalid mobile number');
       return;
     }
-    if (!interCountry || !interCity) {
-      setError('Please select City, State, Country from the autocomplete dropdown for Interview Address.');
+
+    const guessAddress = (full: string) => {
+      const parts = full.split(',').map(s => s.trim()).filter(Boolean);
+      return {
+        country: parts[parts.length - 1] || '',
+        state: parts[parts.length - 2] || '',
+        city: parts[parts.length - 3] || parts[0] || ''
+      };
+    };
+
+    // Calculate final interview address components
+    let fInterCity = interCity;
+    let fInterState = interState;
+    let fInterCountry = interCountry;
+
+    // Aggressive guess: if we don't have structured data, or if the user changed the text
+    if (!fInterCity || !fInterCountry || !interFullAdd.includes(fInterCity)) {
+      const guessed = guessAddress(interFullAdd);
+      if (!fInterCity || !interFullAdd.includes(fInterCity)) fInterCity = guessed.city;
+      if (!fInterState || !interFullAdd.includes(fInterState)) fInterState = guessed.state;
+      if (!fInterCountry || !interFullAdd.includes(fInterCountry)) fInterCountry = guessed.country;
+    }
+
+    // Calculate final job address components
+    let fJobCity = jobCity;
+    let fJobState = jobState;
+    let fJobCountry = jobCountry;
+
+    const currentJobFull = sameAddress ? interFullAdd : jobFullAdd;
+
+    if (!sameAddress && (!fJobCity || !fJobCountry || !jobFullAdd.includes(fJobCity))) {
+      const guessed = guessAddress(jobFullAdd);
+      if (!fJobCity || !jobFullAdd.includes(fJobCity)) fJobCity = guessed.city;
+      if (!fJobState || !jobFullAdd.includes(fJobState)) fJobState = guessed.state;
+      if (!fJobCountry || !jobFullAdd.includes(fJobCountry)) fJobCountry = guessed.country;
+    } else if (sameAddress) {
+      fJobCity = fInterCity;
+      fJobState = fInterState;
+      fJobCountry = fInterCountry;
+    }
+
+    if (!interFullAdd) {
+      setError('Please enter a valid Interview Address.');
       return;
     }
-    if (!sameAddress && (!jobCountry || !jobCity)) {
-      setError('Please select City, State, Country from the autocomplete dropdown for Job Address.');
+    if (!sameAddress && !jobFullAdd) {
+      setError('Please enter a valid Job Address.');
       return;
     }
 
@@ -216,31 +250,34 @@ export default function EmployerCompanyInfoPage() {
         contact_person_name: contactName,
         phone_number: phoneNumber,
         email_id: emailId,
+
         inter_flat_bulding: interAddress,
-        inter_full_add: interFullAdd,
+        inter_city: fInterCity,
+        inter_state: fInterState,
+        inter_country: fInterCountry,
         inter_pincode: interPincode,
-        inter_country: interCountry,
-        inter_state: interState,
-        inter_city: interCity,
         inter_lat: interLat,
         inter_lng: interLng,
-        recive_application_from: receiveAppFrom,
+        inter_full_add: interFullAdd,
+
         same_address: sameAddress ? 1 : 0,
-        job_flat_bulding: jobAddress,
-        job_full_add: jobFullAdd,
-        job_pincode: jobPincode,
-        job_country: jobCountry,
-        job_state: jobState,
-        job_city: jobCity,
-        job_lat: jobLat,
-        job_lng: jobLng,
+        job_flat_bulding: sameAddress ? interAddress : jobAddress,
+        job_city: sameAddress ? fInterCity : fJobCity,
+        job_state: sameAddress ? fInterState : fJobState,
+        job_country: sameAddress ? fInterCountry : fJobCountry,
+        job_pincode: sameAddress ? interPincode : jobPincode,
+        job_lat: sameAddress ? interLat : jobLat,
+        job_lng: sameAddress ? interLng : jobLng,
+        job_full_add: sameAddress ? interFullAdd : jobFullAdd,
+
+        recive_application_from: receiveAppFrom
       };
 
       const res = await saveEmployerInfoApi(payload);
       if (res.status) {
         // Refresh global user state to update header immediately
         await refreshUser();
-        
+
         if (targetStep === 1) router.push(`/post-job?edit=${jobId}`);
         else if (targetStep === 2) router.push(`/candidate-requirements/${jobId}`);
         else if (targetStep === 3) router.push(`/employer-company-info/${jobId}`);
@@ -287,7 +324,7 @@ export default function EmployerCompanyInfoPage() {
 
         <div className={styles.mainContainer}>
           <JobStepper currentStep={3} onStepClick={handleStepClick} />
-          
+
           {loadingData ? (
             <div style={{ display: 'flex', justifyContent: 'center', padding: '50px 0', color: '#64748b' }}>
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mr-3"></div>
@@ -295,97 +332,97 @@ export default function EmployerCompanyInfoPage() {
             </div>
           ) : (
             <form onSubmit={handleSubmit}>
-            <div className={styles.card}>
-              <div className={styles.cardTitle + ' ' + styles.required}>Interview Information</div>
-              <div className={styles.formGrid}>
-                <div className={styles.formGroup}>
-                  <label className={styles.formLabel + ' ' + styles.required}>Company Name</label>
-                  <input type="text" className={styles.formInput} value={companyName} onChange={e => setCompanyName(e.target.value)} required style={{ textTransform: 'uppercase' }} />
-                </div>
-                <div className={styles.formGroup}>
-                  <label className={styles.formLabel + ' ' + styles.required}>Contact Person Name</label>
-                  <input type="text" className={styles.formInput} value={contactName} onChange={e => setContactName(e.target.value)} placeholder="Eg. Nilesh HR" required />
-                </div>
-                <div className={styles.formGroup}>
-                  <label className={styles.formLabel + ' ' + styles.required}>Contact Number</label>
-                  <div>
-                    <input type="number" className={styles.formInput} value={phoneNumber} onChange={e => setPhoneNumber(e.target.value)} placeholder="Contact Number" required />
-                    <span className={styles.hintText}>Note: Contact Number on which candidate will call and Whatapp. <img src="/employer/images/icon/whatsapp-button.png" style={{ height: 18 }} alt="WhatsApp" /></span>
+              <div className={styles.card}>
+                <div className={styles.cardTitle + ' ' + styles.required}>Interview Information</div>
+                <div className={styles.formGrid}>
+                  <div className={styles.formGroup}>
+                    <label className={styles.formLabel + ' ' + styles.required}>Company Name</label>
+                    <input type="text" className={styles.formInput} value={companyName} onChange={e => setCompanyName(e.target.value)} required style={{ textTransform: 'uppercase' }} />
                   </div>
-                </div>
-                <div className={styles.formGroup}>
-                  <label className={styles.formLabel}>Email Id</label>
-                  <input type="email" className={styles.formInput} value={emailId} onChange={e => setEmailId(e.target.value)} placeholder="Eg. etcsolutions@gmail.com" />
+                  <div className={styles.formGroup}>
+                    <label className={styles.formLabel + ' ' + styles.required}>Contact Person Name</label>
+                    <input type="text" className={styles.formInput} value={contactName} onChange={e => setContactName(e.target.value)} placeholder="Eg. Nilesh HR" required />
+                  </div>
+                  <div className={styles.formGroup}>
+                    <label className={styles.formLabel + ' ' + styles.required}>Contact Number</label>
+                    <div>
+                      <input type="number" className={styles.formInput} value={phoneNumber} onChange={e => setPhoneNumber(e.target.value)} placeholder="Contact Number" required />
+                      <span className={styles.hintText}>Note: Contact Number on which candidate will call and Whatapp. <img src="/employer/images/icon/whatsapp-button.png" style={{ height: 18 }} alt="WhatsApp" /></span>
+                    </div>
+                  </div>
+                  <div className={styles.formGroup}>
+                    <label className={styles.formLabel}>Email Id</label>
+                    <input type="email" className={styles.formInput} value={emailId} onChange={e => setEmailId(e.target.value)} placeholder="Eg. etcsolutions@gmail.com" />
+                  </div>
                 </div>
               </div>
-            </div>
 
-            <div className={styles.card}>
-              <div className={styles.cardTitle + ' ' + styles.required}>Address</div>
-              <div className={styles.formGrid}>
-                <div className={styles.formGroup + ' ' + styles.formGroupFull}>
-                  <label className={styles.formLabel + ' ' + styles.required}>Interview Address</label>
-                  <input type="text" className={styles.formInput} value={interAddress} onChange={e => setInterAddress(e.target.value)} placeholder="Flat No / Plot No /Building Name *" required />
-                </div>
-                <div className={styles.formGroup + ' ' + styles.formGroupFull}>
-                  <label className={styles.formLabel + ' ' + styles.required}>City, State, Country</label>
-                  <div className={styles.autocompleteContainer}>
-                    <input type="text" className={styles.formInput} ref={interInputRef} value={interFullAdd} onChange={e => setInterFullAdd(e.target.value)} required />
-                    {interFullAdd && <span className={styles.clearIcon} onClick={() => { setInterFullAdd(''); setInterCountry(''); setInterCity(''); }}>✕</span>}
+              <div className={styles.card}>
+                <div className={styles.cardTitle + ' ' + styles.required}>Address</div>
+                <div className={styles.formGrid}>
+                  <div className={styles.formGroup + ' ' + styles.formGroupFull}>
+                    <label className={styles.formLabel + ' ' + styles.required}>Interview Address</label>
+                    <input type="text" className={styles.formInput} value={interAddress} onChange={e => setInterAddress(e.target.value)} placeholder="Flat No / Plot No /Building Name *" required />
                   </div>
-                </div>
-
-                <div className={styles.formGroup + ' ' + styles.formGroupFull}>
-                  <label className={styles.checkboxContainer}>
-                    <input type="checkbox" className={styles.checkbox} checked={sameAddress} onChange={e => setSameAddress(e.target.checked)} />
-                    <span className={styles.checkboxLabel}>Use Same Address for job</span>
-                  </label>
-                </div>
-
-                <div className={styles.formGroup + ' ' + styles.formGroupFull}>
-                  <label className={styles.formLabel + ' ' + styles.required}>Receive Applications From</label>
-                  <div className={styles.chipContainer}>
-                    {['Within 10km', 'Within 25km', 'Entire City', 'Entire Country', 'Entire World'].map(opt => (
-                      <button
-                        key={opt}
-                        type="button"
-                        className={`${styles.chip} ${receiveAppFrom === opt ? styles.chipActive : ''}`}
-                        onClick={() => setReceiveAppFrom(opt)}
-                      >
-                        {opt}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                {!sameAddress && (
-                  <>
-                    <div className={styles.formGroup + ' ' + styles.formGroupFull}>
-                      <label className={styles.formLabel + ' ' + styles.required}>Job Address</label>
-                      <input type="text" className={styles.formInput} value={jobAddress} onChange={e => setJobAddress(e.target.value)} placeholder="Flat No / Plot No /Building Name *" required={!sameAddress} />
+                  <div className={styles.formGroup + ' ' + styles.formGroupFull}>
+                    <label className={styles.formLabel + ' ' + styles.required}>City, State, Country</label>
+                    <div className={styles.autocompleteContainer}>
+                      <input type="text" className={styles.formInput} ref={interInputRef} value={interFullAdd} onChange={e => setInterFullAdd(e.target.value)} required />
+                      {interFullAdd && <span className={styles.clearIcon} onClick={() => { setInterFullAdd(''); setInterCountry(''); setInterCity(''); }}>✕</span>}
                     </div>
-                    <div className={styles.formGroup + ' ' + styles.formGroupFull}>
-                      <label className={styles.formLabel + ' ' + styles.required}>City, State, Country</label>
-                      <div className={styles.autocompleteContainer}>
-                        <input type="text" className={styles.formInput} ref={jobInputRef} value={jobFullAdd} onChange={e => setJobFullAdd(e.target.value)} required={!sameAddress} />
-                        {jobFullAdd && <span className={styles.clearIcon} onClick={() => { setJobFullAdd(''); setJobCountry(''); setJobCity(''); }}>✕</span>}
+                  </div>
+
+                  <div className={styles.formGroup + ' ' + styles.formGroupFull}>
+                    <label className={styles.checkboxContainer}>
+                      <input type="checkbox" className={styles.checkbox} checked={sameAddress} onChange={e => setSameAddress(e.target.checked)} />
+                      <span className={styles.checkboxLabel}>Use Same Address for job</span>
+                    </label>
+                  </div>
+
+                  <div className={styles.formGroup + ' ' + styles.formGroupFull}>
+                    <label className={styles.formLabel + ' ' + styles.required}>Receive Applications From</label>
+                    <div className={styles.chipContainer}>
+                      {['Within 10km', 'Within 25km', 'Entire City', 'Entire Country', 'Entire World'].map(opt => (
+                        <button
+                          key={opt}
+                          type="button"
+                          className={`${styles.chip} ${receiveAppFrom === opt ? styles.chipActive : ''}`}
+                          onClick={() => setReceiveAppFrom(opt)}
+                        >
+                          {opt}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {!sameAddress && (
+                    <>
+                      <div className={styles.formGroup + ' ' + styles.formGroupFull}>
+                        <label className={styles.formLabel + ' ' + styles.required}>Job Address</label>
+                        <input type="text" className={styles.formInput} value={jobAddress} onChange={e => setJobAddress(e.target.value)} placeholder="Flat No / Plot No /Building Name *" required={!sameAddress} />
                       </div>
-                    </div>
-                  </>
-                )}
+                      <div className={styles.formGroup + ' ' + styles.formGroupFull}>
+                        <label className={styles.formLabel + ' ' + styles.required}>City, State, Country</label>
+                        <div className={styles.autocompleteContainer}>
+                          <input type="text" className={styles.formInput} ref={jobInputRef} value={jobFullAdd} onChange={e => setJobFullAdd(e.target.value)} required={!sameAddress} />
+                          {jobFullAdd && <span className={styles.clearIcon} onClick={() => { setJobFullAdd(''); setJobCountry(''); setJobCity(''); }}>✕</span>}
+                        </div>
+                      </div>
+                    </>
+                  )}
+                </div>
               </div>
-            </div>
 
-            <div className={styles.submitArea}>
-              {error && <span className={styles.errorMsg}>{error}</span>}
-              {success && <span style={{ color: '#10b981', fontWeight: 600 }}>{success}</span>}
-              <button type="submit" className={styles.btnSubmit} disabled={saving}>
-                Save & Continue ➔
-              </button>
-            </div>
-          </form>
-        )}
-      </div>
+              <div className={styles.submitArea}>
+                {error && <span className={styles.errorMsg}>{error}</span>}
+                {success && <span style={{ color: '#10b981', fontWeight: 600 }}>{success}</span>}
+                <button type="submit" className={styles.btnSubmit} disabled={saving}>
+                  Save & Continue ➔
+                </button>
+              </div>
+            </form>
+          )}
+        </div>
       </div>
     </>
   );
