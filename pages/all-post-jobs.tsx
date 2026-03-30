@@ -182,7 +182,12 @@ const CandidateListView = ({ postId, viewMode, statusFilter, isPlanActive, jobSt
                 </div>
               )}
               <div className={styles.candidateNameBox}>
-                <h3 className={styles.candidateName}>{c.name}</h3>
+                <h3 
+                  className={styles.candidateName} 
+                  style={{ fontSize: c.name.length > 20 ? '14px' : c.name.length > 15 ? '16px' : '18px', display: 'block', maxWidth: '100%' }}
+                >
+                  {c.name}
+                </h3>
                 {(viewMode === 'recommended' || c.recommended_status === 1) ? (
                   <span className={styles.recommendedBadgeStandalone}>Recommended</span>
                 ) : (

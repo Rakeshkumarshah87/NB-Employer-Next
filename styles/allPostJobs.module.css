@@ -246,9 +246,12 @@
 
 .candidateName {
   margin: 0;
-  font-size: 20px;
   color: #1e293b;
   font-weight: 700;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
 }
 
 .candidateNameBox {
@@ -342,86 +345,115 @@
 }
 
 .candidateActionsRevised {
-  margin-top: 25px;
+  margin-top: 20px;
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
+  align-items: center;
   gap: 12px;
+  flex-wrap: wrap;
 }
 
 .btnShowContactMaster {
-  width: 100%;
   background: #2563eb;
   color: #fff;
   border: none;
-  padding: 14px;
-  border-radius: 12px;
+  padding: 10px 18px;
+  border-radius: 10px;
   font-weight: 700;
-  font-size: 16px;
+  font-size: 14px;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 10px;
+  gap: 8px;
   cursor: pointer;
-  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
+  box-shadow: 0 4px 10px rgba(37, 99, 235, 0.15);
   transition: all 0.2s;
+  width: auto;
 }
 
 .btnShowContactActive {
-  width: 100%;
   background: #f8fafc;
   color: #1e293b;
-  border: 2px dashed #cbd5e1;
-  padding: 14px;
-  border-radius: 12px;
+  border: 1px dashed #cbd5e1;
+  padding: 10px 18px;
+  border-radius: 10px;
   font-weight: 700;
-  font-size: 18px;
+  font-size: 15px;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 10px;
+  gap: 8px;
+  width: auto;
 }
 
 .halfButtonsRow {
   display: flex;
   gap: 12px;
+  align-items: center;
 }
 
 .whatsappLink {
-  flex: 1;
   text-decoration: none;
+  display: flex;
 }
 
 .btnWhatsAppRevised {
-  width: 100%;
   background: #22c55e;
   color: #fff;
   border: none;
-  padding: 12px;
+  padding: 10px 18px;
   border-radius: 10px;
   font-weight: 600;
-  font-size: 14px;
+  font-size: 13px;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
+  gap: 6px;
   cursor: pointer;
-  box-shadow: 0 4px 10px rgba(34, 197, 94, 0.2);
+  box-shadow: 0 4px 10px rgba(34, 197, 94, 0.15);
+  width: auto;
 }
 
 .btnViewProfileRevised {
-  flex: 1;
   background: #fff;
   color: #475569;
   border: 1px solid #e2e8f0;
-  padding: 12px;
+  padding: 10px 18px;
   border-radius: 10px;
   font-weight: 600;
-  font-size: 14px;
+  font-size: 13px;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
+  gap: 6px;
   cursor: pointer;
+  width: auto;
+}
+
+@media (max-width: 1024px) {
+  .candidateActionsRevised {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .btnShowContactMaster, .btnShowContactActive {
+    width: 96%;
+    margin: 0 auto;
+    padding: 11px;
+    font-size: 15px;
+    border-radius: 10px;
+  }
+  .halfButtonsRow {
+    width: 100%;
+  }
+  .whatsappLink {
+    flex: 1;
+  }
+  .btnWhatsAppRevised, .btnViewProfileRevised {
+    width: 100%;
+    flex: 1;
+    padding: 11px;
+    font-size: 14px;
+  }
 }
 
 .candidateSelect {
