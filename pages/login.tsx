@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, type FormEvent } from 'react';
+import { useState, useEffect, type FormEvent } from 'react';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
 import { useAuth } from '@/context/AuthContext';
@@ -28,19 +28,12 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false);
   const [shakeForm, setShakeForm] = useState(false);
 
-  // ── OTP Box Ref ───────────────────────────
-  const mainOtpRef = useRef<HTMLInputElement>(null);
+  // ── OTP Config ────────────────────────────
   const OTP_LENGTH = 4;
 
   const handleOtpChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const rawValue = e.target.value;
-    // ── Smart Extraction (Handles whole SMS text if pasted by browser) ──
-    const digitsFound = rawValue.match(/\d{4}/);
-    if (digitsFound) {
-      setOtp(digitsFound[0]);
-    } else {
-      setOtp(rawValue.replace(/\D/g, '').slice(0, OTP_LENGTH));
-    }
+    setOtp(rawValue.replace(/\D/g, '').slice(0, OTP_LENGTH));
   };
 
   // ── Redirect if already logged in ──────────
@@ -101,38 +94,6 @@ export default function LoginPage() {
       setLoading(false);
     }
   };
-
-  // ── Web OTP API (Zero-Click Autofill) ───────
-  useEffect(() => {
-    if (!otpSent || typeof window === 'undefined' || !('OTPCredential' in window)) {
-      return;
-    }
-
-    const ac = new AbortController();
-
-    const listenForOtp = async () => {
-      try {
-        const otpCredential = await (navigator.credentials as any).get({
-          otp: { transport: ['sms'] },
-          signal: ac.signal
-        });
-
-        if (otpCredential && otpCredential.code) {
-          setOtp(otpCredential.code.slice(0, OTP_LENGTH));
-        }
-      } catch (err: any) {
-        if (err.name !== 'AbortError') {
-          console.log('WebOTP Error:', err);
-        }
-      }
-    };
-
-    listenForOtp();
-
-    return () => {
-      ac.abort();
-    };
-  }, [otpSent]);
 
   // ── Handle Verify OTP & Login ──────────────
   const handleVerifyOtp = async (e: FormEvent<HTMLFormElement>) => {
@@ -334,53 +295,23 @@ export default function LoginPage() {
                     </button>
                   )}
                 </div>
-                <div 
-                  className={styles.otpBoxesWrapper} 
-                  onClick={() => mainOtpRef.current?.focus()}
-                  style={{ position: 'relative', cursor: 'text' }}
-                >
-                  {/* Hidden underlying REAL input for Autofill reliability */}
+                <div className={styles.inputWrapper}>
+                  <span className={styles.inputIcon} aria-hidden="true">🔑</span>
                   <input
-                    ref={mainOtpRef}
                     id="otp"
                     name="otp"
-                    type="text"
+                    type="tel"
                     inputMode="numeric"
                     autoComplete="one-time-code"
-                    pattern="\d*"
+                    maxLength={OTP_LENGTH}
+                    className={styles.input}
+                    placeholder="Enter 4-digit OTP"
                     value={otp}
                     onChange={handleOtpChange}
-                    className={styles.hiddenOtpInput}
-                    style={{
-                      position: 'absolute',
-                      top: 0,
-                      left: 0,
-                      width: '100%',
-                      height: '100%',
-                      opacity: 0.1, // Increased visibility slightly for browser detection
-                      zIndex: 10,
-                      cursor: 'text',
-                      caretColor: 'transparent',
-                      border: 'none',
-                      background: 'transparent',
-                      outline: 'none',
-                      color: 'transparent',
-                      fontSize: '1px'
-                    }}
                     autoFocus
                     disabled={loading}
+                    required
                   />
-                  
-                  {/* Visual UI Boxes */}
-                  {Array.from({ length: OTP_LENGTH }, (_, i) => (
-                    <div 
-                      key={i} 
-                      className={`${styles.otpBox} ${otp.length === i ? styles.otpBoxActive : ''} ${otp[i] ? styles.otpBoxFilled : ''}`}
-                    >
-                      {otp[i] || ''}
-                      {otp.length === i && <span className={styles.otpCursor} />}
-                    </div>
-                  ))}
                 </div>
               </div>
             )}

@@ -561,87 +561,8 @@
   font-weight: 500;
 }
 
-/* ── OTP Boxes ────────────────────────────── */
-.otpBoxesWrapper {
-  display: flex;
-  justify-content: center;
-  gap: 12px;
-}
-
-.otpBox {
-  width: 52px;
-  height: 56px;
-  text-align: center;
-  font-size: 1.4rem;
-  font-weight: 700;
-  color: #1e293b;
-  background: #f8fafc;
-  border: 2px solid #e2e8f0;
-  border-radius: var(--radius-lg);
-  outline: none;
-  transition:
-    border-color var(--transition-fast),
-    box-shadow var(--transition-fast),
-    background var(--transition-fast);
-  caret-color: #2d6eb5;
-  -moz-appearance: textfield;
-  appearance: textfield;
-}
-
-.otpBox::-webkit-outer-spin-button,
-.otpBox::-webkit-inner-spin-button {
-  -webkit-appearance: none;
-  margin: 0;
-}
-
-.otpBox:focus {
-  background: #ffffff;
-  border-color: #2d6eb5;
-  box-shadow: 0 0 0 3px rgba(45, 110, 181, 0.12);
-}
-
-.otpBoxActive {
-  background: #ffffff;
-  border-color: #2d6eb5;
-  box-shadow: 0 0 0 3px rgba(45, 110, 181, 0.12);
-}
-
-.otpBoxFilled {
-  border-color: #2d6eb5;
-  background: #ffffff;
-}
-
-.hiddenOtpInput {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  opacity: 0;
-  z-index: 10;
-  cursor: text;
-  caret-color: transparent;
-}
-
-.otpCursor {
-  width: 2px;
-  height: 24px;
-  background-color: #2d6eb5;
-  display: inline-block;
-  animation: blink 1s step-end infinite;
-}
-
-@keyframes blink {
-  from, to { background-color: transparent; }
-  50% { background-color: #2d6eb5; }
-}
-
 /* ── Responsive ───────────────────────────── */
-.otpBox {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
+
 @media (max-width: 480px) {
   .loginHeader {
     box-shadow: 0 1px 8px rgba(30, 58, 95, 0.2);
@@ -691,16 +612,6 @@
     font-size: 0.8rem;
   }
 
-  .otpBoxesWrapper {
-    gap: 8px;
-  }
-
-  .otpBox {
-    width: 44px;
-    height: 48px;
-    font-size: 1.2rem;
-  }
-
   .submitBtn {
     font-size: 0.9rem;
     padding: 10px 20px;
@@ -712,13 +623,4 @@
     padding: 24px 18px;
   }
 
-  .otpBox {
-    width: 40px;
-    height: 44px;
-    font-size: 1.1rem;
-  }
-
-  .otpBoxesWrapper {
-    gap: 6px;
-  }
 }
