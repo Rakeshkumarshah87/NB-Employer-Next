@@ -33,8 +33,21 @@ export default function LoginPage() {
   const OTP_LENGTH = 4;
 
   const handleOtpBoxChange = (index: number, value: string) => {
-    // Only allow single digit
-    const digit = value.replace(/\D/g, '').slice(-1);
+    const digitsOnly = value.replace(/\D/g, '');
+    
+    // ── Handle Autofill (e.g. from SMS suggestion) ──
+    if (digitsOnly.length > 1 && index === 0) {
+      const fullOtp = digitsOnly.slice(0, OTP_LENGTH);
+      setOtp(fullOtp.padEnd(OTP_LENGTH, ''));
+      
+      // Focus the last filled box
+      const focusIdx = Math.min(fullOtp.length, OTP_LENGTH - 1);
+      setTimeout(() => otpRefs.current[focusIdx]?.focus(), 0);
+      return;
+    }
+
+    // ── Original single digit logic ──
+    const digit = digitsOnly.slice(-1);
     const otpArr = otp.split('');
     otpArr[index] = digit;
     // Pad with empty strings if needed
@@ -335,22 +348,23 @@ export default function LoginPage() {
                 </div>
                 <div className={styles.otpBoxesWrapper}>
                   {Array.from({ length: OTP_LENGTH }, (_, i) => (
-                    <input
-                      key={i}
-                      ref={(el) => { otpRefs.current[i] = el; }}
-                      id={`otp-${i}`}
-                      type="text"
-                      inputMode="numeric"
-                      maxLength={1}
-                      className={styles.otpBox}
-                      value={otp[i] || ''}
-                      onChange={(e) => handleOtpBoxChange(i, e.target.value)}
-                      onKeyDown={(e) => handleOtpKeyDown(i, e)}
-                      onPaste={i === 0 ? handleOtpPaste : undefined}
-                      disabled={loading}
-                      autoFocus={i === 0}
-                      placeholder="·"
-                    />
+                      <input
+                        key={i}
+                        ref={(el) => { otpRefs.current[i] = el; }}
+                        id={`otp-${i}`}
+                        type="text"
+                        inputMode="numeric"
+                        maxLength={i === 0 ? undefined : 1} // Allow more on first box for autofill
+                        className={styles.otpBox}
+                        value={otp[i] || ''}
+                        onChange={(e) => handleOtpBoxChange(i, e.target.value)}
+                        onKeyDown={(e) => handleOtpKeyDown(i, e)}
+                        onPaste={i === 0 ? handleOtpPaste : undefined}
+                        autoComplete={i === 0 ? "one-time-code" : "off"}
+                        disabled={loading}
+                        autoFocus={i === 0}
+                        placeholder="·"
+                      />
                   ))}
                 </div>
               </div>
