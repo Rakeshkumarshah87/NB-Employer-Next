@@ -33,8 +33,14 @@ export default function LoginPage() {
   const OTP_LENGTH = 4;
 
   const handleOtpChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const val = e.target.value.replace(/\D/g, '').slice(0, OTP_LENGTH);
-    setOtp(val);
+    const rawValue = e.target.value;
+    // ── Smart Extraction (Handles whole SMS text if pasted by browser) ──
+    const digitsFound = rawValue.match(/\d{4}/);
+    if (digitsFound) {
+      setOtp(digitsFound[0]);
+    } else {
+      setOtp(rawValue.replace(/\D/g, '').slice(0, OTP_LENGTH));
+    }
   };
 
   // ── Redirect if already logged in ──────────
@@ -336,8 +342,12 @@ export default function LoginPage() {
                   {/* Hidden underlying REAL input for Autofill reliability */}
                   <input
                     ref={mainOtpRef}
-                    type="tel"
+                    id="otp"
+                    name="otp"
+                    type="text"
+                    inputMode="numeric"
                     autoComplete="one-time-code"
+                    pattern="\d*"
                     value={otp}
                     onChange={handleOtpChange}
                     className={styles.hiddenOtpInput}
@@ -347,14 +357,15 @@ export default function LoginPage() {
                       left: 0,
                       width: '100%',
                       height: '100%',
-                      opacity: 0.01,
+                      opacity: 0.1, // Increased visibility slightly for browser detection
                       zIndex: 10,
                       cursor: 'text',
                       caretColor: 'transparent',
                       border: 'none',
                       background: 'transparent',
                       outline: 'none',
-                      color: 'transparent'
+                      color: 'transparent',
+                      fontSize: '1px'
                     }}
                     autoFocus
                     disabled={loading}
