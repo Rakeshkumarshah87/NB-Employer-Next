@@ -210,7 +210,7 @@ const CandidateListView = ({ postId, viewMode, statusFilter, isPlanActive, jobSt
                   <div className={styles.desktopNameRow}>
                     <h3 
                       className={styles.candidateName} 
-                      style={{ fontSize: '22px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '100%' }}
+                      style={{ fontSize: '18px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '100%' }}
                     >
                       {(() => {
                         const parts = c.name.trim().split(/\s+/);
@@ -258,7 +258,7 @@ const CandidateListView = ({ postId, viewMode, statusFilter, isPlanActive, jobSt
                 <div className={styles.candidateNameBox}>
                   <h3 
                     className={styles.candidateName} 
-                    style={{ fontSize: '20px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', display: 'block', maxWidth: '100%' }}
+                    style={{ fontSize: '17px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', display: 'block', maxWidth: '100%' }}
                   >
                     {(() => {
                       const parts = c.name.trim().split(/\s+/);
@@ -903,7 +903,8 @@ export default function AllPostJobsPage() {
           <div className={styles.postJobContainer}>
             {planInfo?.approval_status !== 'Reject' && (
               <button className={styles.btnPostJob} onClick={goToPostJob}>
-                ➕ Post New Job
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                Post New Job
               </button>
             )}
             {planInfo?.approval_status === 'Reject' && (
@@ -1019,8 +1020,14 @@ export default function AllPostJobsPage() {
                   </h1>
                 </div>
                 <div className={styles.detailActions}>
-                  <button onClick={() => router.push(`/post-job?edit=${jobDetail.job.id}`)} className={styles.btnAction}>✏️ Edit</button>
-                  <button onClick={() => router.push(`/post-job?duplicate=${jobDetail.job.id}`)} className={`${styles.btnAction} ${styles.btnDuplicate}`}>📋 Duplicate</button>
+                  <button onClick={() => router.push(`/post-job?edit=${jobDetail.job.id}`)} className={styles.btnAction}>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                    Edit
+                  </button>
+                  <button onClick={() => router.push(`/post-job?duplicate=${jobDetail.job.id}`)} className={`${styles.btnAction} ${styles.btnDuplicate}`}>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                    Duplicate
+                  </button>
                 </div>
               </div>
 
@@ -1061,16 +1068,14 @@ export default function AllPostJobsPage() {
                 <div
                   className={`${styles.btnToggle} ${styles.btnApplied} ${candidateView === 'applied' ? styles.activeTab : ''}`}
                   onClick={() => { setCandidateView('applied'); setStatusFilter('All'); }}
-                  style={{ opacity: candidateView === 'applied' ? 1 : 0.6 }}
                 >
-                  Applied : {jobDetail.counts.applied}
+                  👥 Applied : {jobDetail.counts.applied}
                 </div>
                 <div
                   className={`${styles.btnToggle} ${styles.btnRecommended} ${jobDetail.counts.applied < 3 ? styles.btnAnim : ''} ${candidateView === 'recommended' ? styles.activeTab : ''}`}
                   onClick={() => { setCandidateView('recommended'); setStatusFilter('All'); }}
-                  style={{ opacity: candidateView === 'recommended' ? 1 : 0.6 }}
                 >
-                  Recommended : {jobDetail.counts.recommended}
+                  ⭐ Recommended : {jobDetail.counts.recommended}
                 </div>
               </div>
 
