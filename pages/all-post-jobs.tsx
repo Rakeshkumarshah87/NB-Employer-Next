@@ -31,8 +31,10 @@ const CandidateListView = ({ postId, viewMode, statusFilter, isPlanActive, jobSt
   const [updateRemark, setUpdateRemark] = useState<string>('');
   const [isUpdating, setIsUpdating] = useState<boolean>(false);
   const [error, setError] = useState<string>('');
+  const requestIdRef = useRef<number>(0);
 
   const loadCandidates = useCallback(async (reset: boolean = false) => {
+    const currentReqId = ++requestIdRef.current;
     try {
       const currentOffset = reset ? 0 : offset;
       setLoading(true);
@@ -48,6 +50,8 @@ const CandidateListView = ({ postId, viewMode, statusFilter, isPlanActive, jobSt
       } else {
         res = await getCandidatesRecommended(postId, currentOffset, 10);
       }
+
+      if (currentReqId !== requestIdRef.current) return;
 
       if (res?.status && res?.data) {
         setCandidates(prev => reset ? (res.data.candidates || []) : [...prev, ...(res.data.candidates || [])]);
@@ -168,53 +172,127 @@ const CandidateListView = ({ postId, viewMode, statusFilter, isPlanActive, jobSt
 
   return (
     <div style={{ marginTop: 20 }}>
+      {loading && candidates.length === 0 && (
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '60px 0' }}>
+          <div className={styles.spinner} style={{ width: '40px', height: '40px', borderWidth: '4px' }}></div>
+          <p style={{ marginTop: '15px', color: '#6c757d', fontWeight: 600 }}>Loading candidates...</p>
+        </div>
+      )}
+
+      {!loading && candidates.length === 0 && !error && (
+        <div style={{ textAlign: 'center', padding: '40px 0', color: '#666' }}>
+          <p>No candidates found for this category.</p>
+        </div>
+      )}
+
+      {error && candidates.length === 0 && (
+        <div style={{ textAlign: 'center', padding: '20px', color: 'red' }}>
+          <p>{error}</p>
+        </div>
+      )}
+
       {candidates.map((c, idx) => {
-        const isCandidateUnlocked = isPlanActive || (viewMode === 'recommended' && idx < 10);
+        const isCandidateUnlocked = isPlanActive || (viewMode === 'recommended' && idx < 20);
 
         return (
           <div key={idx} className={styles.candidateCard}>
-            <div className={styles.candidateHeader}>
-              {c.profile_pic ? (
-                <img src={c.profile_pic} alt="" className={styles.candidateAvatar} />
-              ) : (
-                <div className={styles.candidateAvatarFallback}>
-                  {c.name.charAt(0).toUpperCase()}
-                </div>
-              )}
-              <div className={styles.candidateNameBox}>
-                <h3 
-                  className={styles.candidateName} 
-                  style={{ fontSize: c.name.length > 20 ? '14px' : c.name.length > 15 ? '16px' : '18px', display: 'block', maxWidth: '100%' }}
-                >
-                  {c.name}
-                </h3>
-                {(viewMode === 'recommended' || c.recommended_status === 1) ? (
-                  <span className={styles.recommendedBadgeStandalone}>Recommended</span>
+            {/* Desktop View container, hidden on mobile */}
+            <div className={styles.desktopCandidateView}>
+              <div className={styles.desktopHeader}>
+                {c.profile_pic ? (
+                  <img src={c.profile_pic} alt="" className={styles.candidateAvatar} />
                 ) : (
-                  c.status_badge && <span className={styles.newCandidateBadge}><span className={styles.greenDot}></span> {c.status_badge}</span>
+                  <div className={styles.candidateAvatarFallback}>
+                    {c.name.charAt(0).toUpperCase()}
+                  </div>
                 )}
+                <div className={styles.desktopMainInfo}>
+                  <div className={styles.desktopNameRow}>
+                    <h3 
+                      className={styles.candidateName} 
+                      style={{ fontSize: '22px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '100%' }}
+                    >
+                      {(() => {
+                        const parts = c.name.trim().split(/\s+/);
+                        return parts.length > 2 ? `${parts[0]} ${parts[parts.length - 1]}` : c.name;
+                      })()}
+                    </h3>
+                    <div className={styles.desktopBadgesRight}>
+                      {(viewMode === 'recommended' || c.recommended_status === 1) ? (
+                        null
+                      ) : (
+                        c.status_badge && <span className={styles.newCandidateBadgeDesktop}>{c.status_badge}</span>
+                      )}
+                    </div>
+                  </div>
+                  <div className={styles.desktopSubRow}>
+                    <span className={styles.desktopDetail}><span className={styles.detailIcon} style={{marginLeft: '-3px'}}>📍</span> {c.location}</span>
+                    {(viewMode === 'recommended' || c.recommended_status === 1) && (
+                      <span className={styles.recommendedBadgeStandalone} style={{marginTop: 0}}>Recommended</span>
+                    )}
+                  </div>
+                  <div className={styles.desktopStatsRow}>
+                    <div className={styles.desktopStatCol}>
+                      <span className={styles.desktopStatLabel}>EXPERIENCE</span>
+                      <span className={styles.desktopStatValue}>{c.experience === 0 ? '0 Years' : `${c.experience} Years`}</span>
+                    </div>
+                    <div className={styles.desktopStatCol}>
+                      <span className={styles.desktopStatLabel}>EDUCATION</span>
+                      <span className={styles.desktopStatValue}>{c.qualification} {c.degree_name ? `(${c.degree_name})` : ''}</span>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
 
-            <div className={styles.candidateDetailsList}>
-              <div className={styles.detailItem}>
-                <span className={styles.detailIcon}>📍</span>
-                <span className={styles.detailValue}>{c.location}</span>
-              </div>
-              <div className={styles.detailItem}>
-                <span className={styles.detailIcon}>💼</span>
-                <span className={styles.detailValue}>{c.experience === 0 ? 'Fresher' : `${c.experience} Years Experience`}</span>
-              </div>
-              <div className={styles.detailItem}>
-                <span className={styles.detailIcon}>🎓</span>
-                <span className={styles.detailValue}>{c.qualification} {c.degree_name ? `(${c.degree_name})` : ''}</span>
-              </div>
-              {viewMode === 'applied' && (
-                <div className={styles.detailItem}>
-                  <span className={styles.detailIcon}>📅</span>
-                  <span className={styles.detailValue}>Applied: {c.apply_date}</span>
+            {/* Mobile View container, hidden on desktop */}
+            <div className={styles.mobileCandidateView}>
+              <div className={styles.candidateHeader}>
+                {c.profile_pic ? (
+                  <img src={c.profile_pic} alt="" className={styles.candidateAvatar} />
+                ) : (
+                  <div className={styles.candidateAvatarFallback}>
+                    {c.name.charAt(0).toUpperCase()}
+                  </div>
+                )}
+                <div className={styles.candidateNameBox}>
+                  <h3 
+                    className={styles.candidateName} 
+                    style={{ fontSize: '20px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', display: 'block', maxWidth: '100%' }}
+                  >
+                    {(() => {
+                      const parts = c.name.trim().split(/\s+/);
+                      return parts.length > 2 ? `${parts[0]} ${parts[parts.length - 1]}` : c.name;
+                    })()}
+                  </h3>
+                  {(viewMode === 'recommended' || c.recommended_status === 1) ? (
+                    <span className={styles.recommendedBadgeStandalone}>Recommended</span>
+                  ) : (
+                    c.status_badge && <span className={styles.newCandidateBadge}><span className={styles.greenDot}></span> {c.status_badge}</span>
+                  )}
                 </div>
-              )}
+              </div>
+
+              <div className={styles.candidateDetailsList}>
+                <div className={styles.detailItem}>
+                  <span className={styles.detailIcon}>📍</span>
+                  <span className={styles.detailValue}>{c.location}</span>
+                </div>
+                <div className={styles.detailItem}>
+                  <span className={styles.detailIcon}>💼</span>
+                  <span className={styles.detailValue}>{c.experience === 0 ? 'Fresher' : `${c.experience} Years Experience`}</span>
+                </div>
+                <div className={styles.detailItem}>
+                  <span className={styles.detailIcon}>🎓</span>
+                  <span className={styles.detailValue}>{c.qualification} {c.degree_name ? `(${c.degree_name})` : ''}</span>
+                </div>
+                {viewMode === 'applied' && (
+                  <div className={styles.detailItem}>
+                    <span className={styles.detailIcon}>📅</span>
+                    <span className={styles.detailValue}>Applied: {c.apply_date}</span>
+                  </div>
+                )}
+              </div>
             </div>
 
             {jobStatus === 2 ? (
@@ -223,6 +301,7 @@ const CandidateListView = ({ postId, viewMode, statusFilter, isPlanActive, jobSt
               </div>
             ) : (
               <>
+                <div className={styles.desktopOnlyDivider} style={{ marginBottom: 15, marginTop: 15 }}></div>
                 <div className={styles.candidateActionsRevised}>
                   {isCandidateUnlocked ? (
                     <>
@@ -254,6 +333,7 @@ const CandidateListView = ({ postId, viewMode, statusFilter, isPlanActive, jobSt
                     </>
                   )}
                 </div>
+                <div className={styles.desktopOnlyDivider} style={{ marginTop: 20 }}></div>
                 <div style={{ marginTop: 15 }}>
                   <select
                     className={styles.candidateSelect}
@@ -588,10 +668,10 @@ export default function AllPostJobsPage() {
     try {
       const res = await updateJobStatusApi(jobId, newStatus);
       if (res.status) {
-        // Update status in-place for all lists so immediate toggling works
-        setJobs(prev => prev.map((j: any) => j.id === jobId ? { ...j, active_status: newStatus } : j));
-        setActiveJobs(prev => prev.map(j => j.id === jobId ? { ...j, active_status: newStatus } : j));
-        setExpiredJobs(prev => prev.map(j => j.id === jobId ? { ...j, active_status: newStatus } : j));
+        // Update status in-place and tag it with timestamp so it jumps to the top
+        setJobs(prev => prev.map((j: any) => j.id === jobId ? { ...j, active_status: newStatus, local_updated_at: Date.now() } : j));
+        setActiveJobs(prev => prev.map(j => j.id === jobId ? { ...j, active_status: newStatus, local_updated_at: Date.now() } : j));
+        setExpiredJobs(prev => prev.map(j => j.id === jobId ? { ...j, active_status: newStatus, local_updated_at: Date.now() } : j));
 
         // Only adjust count correctly
         setActiveJobCount(prev => newStatus === 1 ? prev + 1 : prev - 1);
@@ -793,6 +873,23 @@ export default function AllPostJobsPage() {
     );
   };
 
+  const sortedJobs = [...jobs].sort((a, b) => {
+    const getWeight = (status: number) => {
+      if (status === 1) return 1;
+      if (status === 2 || status === 3) return 2;
+      if (status === 0) return 3;
+      if (status === 4) return 4;
+      return 5;
+    };
+    const wA = getWeight(a.active_status);
+    const wB = getWeight(b.active_status);
+    if (wA !== wB) return wA - wB;
+    // Always sort the most recently updated item at the top within the same category
+    const timeA = a.local_updated_at || a.id;
+    const timeB = b.local_updated_at || b.id;
+    return timeB - timeA;
+  });
+
   return (
     <>
       <Head>
@@ -855,14 +952,36 @@ export default function AllPostJobsPage() {
                 </div>
               </>
             ) : (
-              <>
-                <div className={styles.planRow} style={{ justifyContent: 'center' }}>
-                  <span className={styles.planLabel} style={{ color: '#999' }}>No Active Subscription</span>
+              <div style={{ textAlign: 'center', padding: '16px 20px', background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '12px', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03)' }}>
+                <div style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 44, height: 44, background: '#eff6ff', color: '#3b82f6', borderRadius: '50%', marginBottom: 14, fontSize: 24, fontWeight: 600 }}>
+                  ₹
                 </div>
-                <div style={{ textAlign: 'center', marginTop: 5 }}>
-                  <button onClick={() => router.push('/employer-upgrade-plan')} style={{ fontSize: 13, fontWeight: 600, color: '#007bff', textDecoration: 'underline', background: 'none', border: 'none', cursor: 'pointer' }}>Upgrade Now</button>
+                <h4 style={{ margin: '0 0 8px 0', fontSize: 17, color: '#0f172a', fontWeight: 700, letterSpacing: '-0.02em' }}>
+                  Upgrade to Premium
+                </h4>
+                <p style={{ margin: '0 0 16px 0', fontSize: 13, color: '#64748b', lineHeight: 1.5 }}>
+                  You currently do not have an active subscription. Unlock unlimited hiring and top candidate access.
+                </p>
+                
+                <div style={{ background: '#f8fafc', border: '1px solid #f1f5f9', borderRadius: '8px', padding: '12px', marginBottom: 20 }}>
+                  <div style={{ fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.05em', fontWeight: 600, color: '#94a3b8', marginBottom: 4 }}>
+                    Special Offer
+                  </div>
+                  <div style={{ fontSize: 16, fontWeight: 700, color: '#1e293b' }}>
+                    <span style={{ color: '#059669' }}>Save {(!planInfo?.package_offer || planInfo?.package_offer.includes('10%')) ? '20%' : planInfo?.package_offer.replace('Off', '').replace('off', '').trim()}</span> on all plans
+                  </div>
                 </div>
-              </>
+
+                <button 
+                  onClick={() => router.push('/employer-upgrade-plan')} 
+                  style={{ width: '100%', padding: '12px', background: 'rgb(24, 89, 169)', color: '#ffffff', border: 'none', borderRadius: '8px', fontWeight: 600, fontSize: 14, cursor: 'pointer', transition: 'background-color 0.2s ease', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
+                  onMouseOver={(e) => e.currentTarget.style.backgroundColor = 'rgb(18, 70, 130)'}
+                  onMouseOut={(e) => e.currentTarget.style.backgroundColor = 'rgb(24, 89, 169)'}
+                >
+                  View Plans & Pricing
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                </button>
+              </div>
             )}
             {limitError && (
               <div className={styles.limitErrorBox}>
@@ -870,14 +989,10 @@ export default function AllPostJobsPage() {
               </div>
             )}
           </div>
+          {/* Dynamic Job Cards */}
+          {sortedJobs.map(job => renderJobCard(job))}
 
-          {/* Job Cards - Active */}
-          {activeJobs.map(job => renderJobCard(job))}
-
-          {/* Job Cards - Expired */}
-          {expiredJobs.map(job => renderJobCard(job, true))}
-
-          {activeJobs.length === 0 && expiredJobs.length === 0 && (
+          {sortedJobs.length === 0 && (
             <div className={styles.emptyState}>
               <p>No jobs posted yet.</p>
               <p>Click "Post New Job" to get started!</p>
