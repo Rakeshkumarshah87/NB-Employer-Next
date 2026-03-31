@@ -7,84 +7,50 @@
   flex-direction: column;
 }
 
-/* ── Page Header ─────────────────────────── */
-.pageHeader {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 10px 20px 5px;
-  max-width: 1200px;
-  margin: 0 auto;
-  width: 100%;
-}
-
-.pageTitleMain {
+.mobileTopBtn {
+  display: none;
+  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+  color: white;
+  padding: 8px 16px;
+  border-radius: 50px;
   font-weight: 700;
-  font-size: 20px;
-  color: #0f172a;
-  margin: 0;
-  letter-spacing: -0.01em;
+  font-size: 13px;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 4px 6px rgba(37, 99, 235, 0.15);
 }
 
 .mainContainer {
   max-width: 900px;
   margin: 0 auto;
-  padding: 0 15px 50px 15px;
+  padding: 0 15px 40px 15px;
   width: 100%;
-}
-
-.headerBadge {
-  text-align: center;
-  padding-top: 30px;
-  margin-bottom: 25px;
-}
-
-.pageTitle {
-  font-size: 32px;
-  font-weight: 700;
-  color: #1e293b;
-  margin: 0 0 15px 0;
-  letter-spacing: -0.5px;
-}
-
-.headerBadgeBtn {
-  display: inline-block;
-  background: #ffffff;
-  color: #64748b;
-  font-size: 14px;
-  font-weight: 600;
-  padding: 8px 20px;
-  border-radius: 50px;
-  border: 1px solid #e2e8f0;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.03);
-}
-
-.headerBadgeBtn span {
-  color: #2d6eb5;
-  font-weight: 700;
-  margin-left: 4px;
 }
 
 .card {
   background: #ffffff;
-  border-radius: 12px;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
-  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+  border: 1px solid #eef2f6;
   overflow: hidden;
   margin-bottom: 30px;
 }
 
 .cardHeader {
   background: #fff;
-  padding: 10px 30px;
-  border-bottom: 1px solid #e2e8f0;
+  padding: 15px 30px;
+  border-bottom: 1px solid #f1f5f9;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .cardTitle {
   font-size: 20px;
-  font-weight: 700;
+  font-weight: 800;
   margin: 0;
-  color: #1e293b;
+  color: #0f172a;
+  letter-spacing: -0.02em;
 }
 
 .cardBody {
@@ -94,13 +60,13 @@
 .guidelineList {
   display: flex;
   flex-direction: column;
-  gap: 25px;
+  gap: 15px;
 }
 
 .guidelineItem {
   display: flex;
   align-items: flex-start;
-  padding-bottom: 25px;
+  padding-bottom: 15px;
   border-bottom: 1px solid #f1f5f9;
 }
 
@@ -111,8 +77,8 @@
 
 .iconBox {
   flex-shrink: 0;
-  width: 60px;
-  margin-right: 25px;
+  width: 50px;
+  margin-right: 20px;
   display: flex;
   justify-content: center;
 }
@@ -121,7 +87,7 @@
   width: 100%;
   height: auto;
   object-fit: contain;
-  max-height: 60px;
+  max-height: 50px;
 }
 
 .contentBox {
@@ -129,50 +95,49 @@
 }
 
 .contentTitle {
-  font-size: 18px;
+  font-size: 16px;
   font-weight: 700;
   color: #ef4444;
-  margin: 0 0 5px 0;
+  margin: 0 0 3px 0;
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
 }
 
 .contentDesc {
-  font-size: 15px;
+  font-size: 14px;
   color: #64748b;
   margin: 0;
   font-weight: 500;
+  line-height: 1.4;
 }
 
 .whatsappIcon {
-  height: 20px;
+  height: 18px;
   vertical-align: middle;
   margin-left: 5px;
 }
 
 .approvalSection {
   background: #f0f7ff;
-  border: 1px solid #93c5fd;
+  border: 1px solid #bfdbfe;
   border-radius: 12px;
-  padding: 20px;
-  margin-top: 30px;
+  padding: 15px;
+  margin-top: 20px;
   display: flex;
   align-items: center;
-  gap: 15px;
+  gap: 12px;
 }
 
 .customCheckbox {
-  width: 22px;
-  height: 22px;
+  width: 20px;
+  height: 20px;
   cursor: pointer;
   accent-color: #2d6eb5;
-  transform: scale(1.1);
-  flex-shrink: 0;
 }
 
 .approvalText {
-  font-size: 16px;
+  font-size: 14px;
   font-weight: 600;
   color: #b91c1c;
   cursor: pointer;
@@ -184,95 +149,133 @@
   background: #fffbeb;
   border: 1px solid #fcd34d;
   color: #92400e;
-  padding: 15px;
-  border-radius: 8px;
-  margin-top: 25px;
-  font-size: 14px;
+  padding: 12px;
+  border-radius: 10px;
+  margin-top: 20px;
+  font-size: 13px;
   line-height: 1.5;
 }
 
 .formFooter {
   display: flex;
   justify-content: center;
-  gap: 20px;
-  padding: 20px 0;
-  margin-top: 10px;
+  gap: 15px;
+  padding-top: 10px;
+  width: 100%;
+  max-width: 480px;
+  margin: 0 auto;
 }
 
 .btn {
-  padding: 12px 35px;
+  flex: 1;
+  padding: 12px 20px;
   border-radius: 50px;
-  font-size: 16px;
-  font-weight: 600;
+  font-size: 14px;
+  font-weight: 700;
   cursor: pointer;
   transition: all 0.3s ease;
   border: none;
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 8px;
+  white-space: nowrap;
 }
 
 .btnBack {
-  background-color: white;
+  background-color: #ffffff;
   color: #64748b;
-  border: 1px solid #e2e8f0;
+  border: 1.5px solid #e2e8f0;
 }
 
 .btnBack:hover:not(:disabled) {
-  background-color: #f1f5f9;
-  color: #1e293b;
+  background-color: #f8fafc;
+  border-color: #cbd5e1;
+  color: #0f172a;
 }
 
 .btnNext {
-  background-color: #2d6eb5;
+  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
   color: white;
-  box-shadow: 0 4px 12px rgba(45, 110, 181, 0.25);
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.15);
 }
 
 .btnNext:hover:not(:disabled) {
-  background-color: #1e4d8c;
-  transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(30, 77, 140, 0.3);
+  box-shadow: 0 8px 20px rgba(37, 99, 235, 0.2);
+  transform: translateY(-1px);
 }
 
 .btnNext:disabled, .btnBack:disabled {
   opacity: 0.7;
   cursor: not-allowed;
-  transform: none;
 }
 
 .errorMsg {
   text-align: center;
   font-weight: 600;
   color: #ef4444;
-  margin-bottom: 15px;
-  min-height: 24px;
+  margin-bottom: 10px;
+  font-size: 14px;
 }
 
 @media (max-width: 768px) {
-  .guidelineItem {
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-    gap: 15px;
+  .mobileTopBtn {
+    display: block;
   }
-  .iconBox {
-    margin-right: 0;
-    margin-bottom: 10px;
+
+  .mainContainer {
+    padding-top: 0;
   }
-  .contentTitle {
-    justify-content: center;
+
+  .card {
+    border-radius: 12px;
   }
-  .approvalSection {
-    flex-direction: row;
-    align-items: flex-start;
-  }
-  .formFooter {
-    flex-direction: row;
-    width: 100%;
-    justify-content: space-between;
-  }
-  .btn {
+
+  .cardHeader {
     padding: 12px 20px;
+  }
+
+  .cardBody {
+    padding: 15px 20px;
+  }
+
+  .guidelineList {
+    gap: 12px;
+  }
+
+  .guidelineItem {
+    flex-direction: row;
+    padding-bottom: 12px;
+    align-items: flex-start;
+    text-align: left;
+  }
+
+  .iconBox {
+    width: 40px;
+    margin-right: 15px;
+    margin-bottom: 0;
+  }
+
+  .iconBox img {
+    max-height: 40px;
+  }
+
+  .contentTitle {
+    font-size: 15px;
+    justify-content: flex-start;
+  }
+
+  .contentDesc {
+    font-size: 13px;
+  }
+
+  .formFooter {
+    gap: 10px;
+    padding: 0 5px;
+  }
+
+  .btn {
+    padding: 12px 10px;
+    font-size: 13px;
   }
 }

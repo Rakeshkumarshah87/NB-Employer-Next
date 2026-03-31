@@ -33,7 +33,6 @@
   letter-spacing: -0.01em;
 }
 
-
 .card {
   background-color: #ffffff;
   border-radius: 16px;
@@ -167,36 +166,79 @@
 
 .submitArea {
   display: flex;
-  justify-content: flex-end;
+  flex-direction: column;
+  align-items: center;
   gap: 15px;
-  margin-top: 20px;
+  margin-top: 35px;
+}
+
+.actionButtons {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 15px;
+  width: 100%;
+  max-width: 480px;
 }
 
 .errorMsg {
   color: #ef4444;
   font-size: 14px;
   font-weight: 500;
+  text-align: center;
+}
+
+.btnBack {
+  flex: 1;
+  background: #ffffff;
+  color: #64748b;
+  padding: 12px 20px;
+  border-radius: 50px;
+  font-weight: 600;
+  font-size: 14px;
+  border: 1.5px solid #e2e8f0;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.btnBack:hover:not(:disabled) {
+  background: #f8fafc;
+  color: #0f172a;
+  border-color: #cbd5e1;
+}
+
+.btnBack:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 .btnSubmit {
+  flex: 1.2;
   background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
   color: white;
-  padding: 16px 45px;
+  padding: 12px 25px;
   border-radius: 50px;
   font-weight: 700;
-  font-size: 16px;
+  font-size: 14px;
   border: none;
   cursor: pointer;
   display: flex;
   align-items: center;
-  gap: 12px;
+  justify-content: center;
+  gap: 8px;
   transition: all 0.3s ease;
-  box-shadow: 0 10px 15px -3px rgba(37, 99, 235, 0.2);
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.15);
+  white-space: nowrap;
 }
 
 .btnSubmit:hover:not(:disabled) {
-  transform: translateY(-2px);
-  box-shadow: 0 20px 25px -5px rgba(37, 99, 235, 0.25);
+  box-shadow: 0 8px 20px rgba(37, 99, 235, 0.2);
+  transform: translateY(-1px);
 }
 
 .btnSubmit:disabled {
@@ -274,4 +316,27 @@
   color: #2d6eb5;
   font-weight: 600;
   box-shadow: 0 2px 4px rgba(45, 110, 181, 0.08);
+}
+
+@media (max-width: 768px) {
+  .actionButtons {
+    flex-direction: row;
+    width: 100%;
+    gap: 10px;
+    padding: 0 5px;
+  }
+
+  .btnSubmit, .btnBack {
+    flex: 1;
+    font-size: 13px;
+    padding: 12px 5px;
+  }
+
+  .submitArea {
+    align-items: center;
+  }
+
+  .errorMsg {
+    text-align: center;
+  }
 }

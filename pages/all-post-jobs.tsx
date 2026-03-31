@@ -214,8 +214,8 @@ const CandidateListView = ({ postId, viewMode, statusFilter, isPlanActive, jobSt
                 )}
                 <div className={styles.desktopMainInfo}>
                   <div className={styles.desktopNameRow}>
-                    <h3 
-                      className={styles.candidateName} 
+                    <h3
+                      className={styles.candidateName}
                       style={{ fontSize: '18px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '100%' }}
                     >
                       {(() => {
@@ -232,9 +232,9 @@ const CandidateListView = ({ postId, viewMode, statusFilter, isPlanActive, jobSt
                     </div>
                   </div>
                   <div className={styles.desktopSubRow}>
-                    <span className={styles.desktopDetail}><span className={styles.detailIcon} style={{marginLeft: '-3px'}}>📍</span> {c.location}</span>
+                    <span className={styles.desktopDetail}><span className={styles.detailIcon} style={{ marginLeft: '-3px' }}>📍</span> {c.location}</span>
                     {(viewMode === 'recommended' || c.recommended_status === 1) && (
-                      <span className={styles.recommendedBadgeStandalone} style={{marginTop: 0}}>Recommended</span>
+                      <span className={styles.recommendedBadgeStandalone} style={{ marginTop: 0 }}>Recommended</span>
                     )}
                   </div>
                   <div className={styles.desktopStatsRow}>
@@ -262,8 +262,8 @@ const CandidateListView = ({ postId, viewMode, statusFilter, isPlanActive, jobSt
                   </div>
                 )}
                 <div className={styles.candidateNameBox}>
-                  <h3 
-                    className={styles.candidateName} 
+                  <h3
+                    className={styles.candidateName}
                     style={{ fontSize: '17px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', display: 'block', maxWidth: '100%' }}
                   >
                     {(() => {
@@ -697,7 +697,7 @@ export default function AllPostJobsPage() {
 
   const goToPostJob = () => {
     const hasActiveSubscription = planInfo?.has_active_plan && !planInfo?.is_expired && planInfo?.approval_status === 'Accept';
-    
+
     if (!hasActiveSubscription && activeJobCount > 3) {
       setPostJobMsg('Maximum You can Post 4 Active Jobs. Please purchase a plan.');
       return;
@@ -804,7 +804,7 @@ export default function AllPostJobsPage() {
           </span>
           <span className={styles.highlightInfo}>
             <img src={`${IMG}/eperiances.png`} alt="" />
-            {job.candi_experience === 'Experienced' ? `${job.min_exp}-${job.max_exp} yrs ` : ''} 
+            {job.candi_experience === 'Experienced' ? `${job.min_exp}-${job.max_exp} yrs ` : ''}
             {job.candi_experience}
           </span>
           <span className={styles.highlightInfo}>
@@ -877,14 +877,41 @@ export default function AllPostJobsPage() {
             </div>
           )}
           {showCandidateButton && (
-            <button className={styles.btnCandidateDetail} onClick={() => {
-              loadJobDetail(job.id);
-              setCandidateView('applied');
-              setStatusFilter('All');
-              setIsMobileDetailOpen(true);
-            }}>
-              👥 Candidate Detail
-            </button>
+            isUnderReview ? (
+              <div className={styles.underReviewActions}>
+                <button 
+                  className={styles.btnCandidateDetailUnderReview} 
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    loadJobDetail(job.id);
+                    setCandidateView('applied');
+                    setStatusFilter('All');
+                    setIsMobileDetailOpen(true);
+                  }}
+                >
+                  👥 Candidate Detail
+                </button>
+                <button 
+                  className={styles.btnEditUnderReview} 
+                  onClick={(e) => { 
+                    e.stopPropagation(); 
+                    router.push(`/post-job?edit=${job.id}`); 
+                  }}
+                >
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                  Edit
+                </button>
+              </div>
+            ) : (
+              <button className={styles.btnCandidateDetail} onClick={() => {
+                loadJobDetail(job.id);
+                setCandidateView('applied');
+                setStatusFilter('All');
+                setIsMobileDetailOpen(true);
+              }}>
+                👥 Candidate Detail
+              </button>
+            )
           )}
         </div>
       </div>
@@ -921,7 +948,7 @@ export default function AllPostJobsPage() {
           <div className={styles.postJobContainer}>
             {planInfo?.approval_status !== 'Reject' && (
               <button className={styles.btnPostJob} onClick={goToPostJob}>
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" /></svg>
                 Post New Job
               </button>
             )}
@@ -981,7 +1008,7 @@ export default function AllPostJobsPage() {
                 <p style={{ margin: '0 0 16px 0', fontSize: 13, color: '#64748b', lineHeight: 1.5 }}>
                   You currently do not have an active subscription. Unlock unlimited hiring and top candidate access.
                 </p>
-                
+
                 <div style={{ background: '#f8fafc', border: '1px solid #f1f5f9', borderRadius: '8px', padding: '12px', marginBottom: 20 }}>
                   <div style={{ fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.05em', fontWeight: 600, color: '#94a3b8', marginBottom: 4 }}>
                     Special Offer
@@ -991,14 +1018,14 @@ export default function AllPostJobsPage() {
                   </div>
                 </div>
 
-                <button 
-                  onClick={() => router.push('/employer-upgrade-plan')} 
+                <button
+                  onClick={() => router.push('/employer-upgrade-plan')}
                   style={{ width: '100%', padding: '12px', background: 'rgb(24, 89, 169)', color: '#ffffff', border: 'none', borderRadius: '8px', fontWeight: 600, fontSize: 14, cursor: 'pointer', transition: 'background-color 0.2s ease', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
                   onMouseOver={(e) => e.currentTarget.style.backgroundColor = 'rgb(18, 70, 130)'}
                   onMouseOut={(e) => e.currentTarget.style.backgroundColor = 'rgb(24, 89, 169)'}
                 >
                   View Plans & Pricing
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M12 5l7 7-7 7" /></svg>
                 </button>
               </div>
             )}
@@ -1081,22 +1108,6 @@ export default function AllPostJobsPage() {
                 </div>
               </div>
 
-              {/* Toggle: Applied / Recommended */}
-              <div className={styles.toggleGroup}>
-                <div
-                  className={`${styles.btnToggle} ${styles.btnApplied} ${candidateView === 'applied' ? styles.activeTab : ''}`}
-                  onClick={() => { setCandidateView('applied'); setStatusFilter('All'); }}
-                >
-                  👥 Applied : {jobDetail.counts.applied}
-                </div>
-                <div
-                  className={`${styles.btnToggle} ${styles.btnRecommended} ${jobDetail.counts.applied < 3 ? styles.btnAnim : ''} ${candidateView === 'recommended' ? styles.activeTab : ''}`}
-                  onClick={() => { setCandidateView('recommended'); setStatusFilter('All'); }}
-                >
-                  ⭐ Recommended : {jobDetail.counts.recommended}
-                </div>
-              </div>
-
               {/* Stats Dashboard */}
               <div className={styles.statsDashboard}>
                 <div className={styles.statCard} onClick={() => { setCandidateView('applied'); setStatusFilter('All'); }}>
@@ -1126,6 +1137,22 @@ export default function AllPostJobsPage() {
                 <div className={styles.statCard} onClick={() => { setCandidateView('applied'); setStatusFilter('Absent for Interview'); }}>
                   <div className={`${styles.statHeader} ${styles.bgAbsent}`}>Absent For Interview</div>
                   <div className={styles.statBody}>{jobDetail.counts.absent_for_interview}</div>
+                </div>
+              </div>
+
+              {/* Toggle: Applied / Recommended */}
+              <div className={styles.toggleGroup} style={{ marginTop: '25px', marginBottom: '20px' }}>
+                <div
+                  className={`${styles.btnToggle} ${styles.btnApplied} ${candidateView === 'applied' ? styles.activeTab : ''}`}
+                  onClick={() => { setCandidateView('applied'); setStatusFilter('All'); }}
+                >
+                  👥 Applied : {jobDetail.counts.applied}
+                </div>
+                <div
+                  className={`${styles.btnToggle} ${styles.btnRecommended} ${jobDetail.counts.applied < 3 ? styles.btnAnim : ''} ${candidateView === 'recommended' ? styles.activeTab : ''}`}
+                  onClick={() => { setCandidateView('recommended'); setStatusFilter('All'); }}
+                >
+                  ⭐ Recommended : {jobDetail.counts.recommended}
                 </div>
               </div>
 
@@ -1170,7 +1197,6 @@ export default function AllPostJobsPage() {
     </>
   );
 }
-
 
 
 

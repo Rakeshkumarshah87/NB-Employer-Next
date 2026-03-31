@@ -921,6 +921,60 @@
   box-shadow: 0 4px 6px rgba(50, 50, 93, 0.11);
 }
 
+/* ── Under Review Actions ── */
+.underReviewActions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.btnCandidateDetailUnderReview {
+  background: #4a5dc7;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 7px 14px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  box-shadow: 0 4px 12px rgba(74, 93, 199, 0.2);
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.btnCandidateDetailUnderReview:hover {
+  background: #3a4bb0;
+  transform: translateY(-1px);
+}
+
+.btnEditUnderReview {
+  background: #2563eb;
+  color: #ffffff;
+  border: none;
+  border-radius: 6px;
+  padding: 7px 14px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  transition: all 0.2s;
+  white-space: nowrap;
+  box-shadow: 0 4px 6px rgba(37, 99, 235, 0.15);
+}
+
+.btnEditUnderReview:hover {
+  background: #1d4ed8;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 12px rgba(37, 99, 235, 0.2);
+}
+
 .rejectedRemark {
   color: #dc3545;
   font-size: 13px;

@@ -7,6 +7,47 @@ import JobStepper from '@/components/JobStepper';
 import styles from '@/styles/postjob.module.css';
 
 /**
+ * Default descriptions for common job roles
+ */
+const DEFAULT_JOB_DESCRIPTIONS: Record<string, string> = {
+  "DEVELOPER": "Responsible for designing, developing, and maintaining high-quality software applications. Writing clean, efficient code and collaborating with the team to deliver scalable technical solutions.",
+  "SOFTWARE": "Designing and developing software systems. Focusing on performance, security, and user experience to meet business objectives.",
+  "BACK OFFICE": "Handling administrative tasks, data entry, managing office records, and providing clerical support to ensure smooth business operations.",
+  "SALES": "Driving growth by identifying new business opportunities, meeting targets, and maintaining strong relationships with clients.",
+  "DATA ENTRY": "Accurately entering and updating company data into databases. Ensuring high levels of speed and data integrity.",
+  "DELIVERY": "Efficiently delivering orders to customers on time while maintaining safety standards and providing helpful customer service.",
+  "DRIVER": "Safely transporting passengers or goods to various locations. Maintaining the vehicle and following all traffic regulations strictly.",
+  "ACCOUNTANT": "Managing financial records, preparing tax returns, and ensuring compliance with financial regulations and company policy.",
+  "RECEPTIONIST": "Greeting visitors, managing phone calls, and providing professional front-desk support to ensure a positive company image.",
+  "MARKETING": "Developing marketing strategies, analyzing market trends, and promoting company products to increase brand visibility.",
+  "TEACHER": "Planning and delivering high-quality education. Assessing progress and creating a positive learning environment.",
+  "MANAGER": "Leading team operations, setting goals, and ensuring all department objectives are met with high efficiency and quality.",
+  "SECURITY": "Maintaining a safe and secure environment for customers and employees by patrolling and monitoring premises.",
+  "COOK": "Preparing delicious meals according to menu specifications. Maintaining kitchen cleanliness and food safety standards.",
+  "HR": "Managing recruitment, employee relations, and administrative tasks related to human resources management.",
+  "NURSE": "Providing high-quality patient care and support. Working closely with the medical team to ensure patient health and recovery."
+};
+
+const AUTO_DESC_HEADER = "We are looking for a dedicated";
+
+/**
+ * Smart descriptive generator based on keywords or dynamic template
+ */
+const getAutoDescription = (title: string): string => {
+  const normalized = title.toUpperCase().trim();
+  if (!normalized || normalized.length < 3) return "";
+
+  // 1. Keyword matching (More specific matches first in later logic, or just simple check)
+  for (const key in DEFAULT_JOB_DESCRIPTIONS) {
+    if (normalized.includes(key)) return DEFAULT_JOB_DESCRIPTIONS[key];
+  }
+
+  // 2. Generic Professional Template for any of 10,000+ titles
+  const titleLower = title.trim();
+  return `${AUTO_DESC_HEADER} ${titleLower} to join our professional team. The ideal candidate will be responsible for the daily tasks and responsibilities associated with this role, ensuring high efficiency, quality service, and strict adherence to company standards. Candidate should be hardworking and reliable for the ${titleLower} position.`;
+};
+
+/**
  * Post Free Job Page
  * Replicates the live networkbaba.co/post-free-jobs/add/ form
  * Auth-gated: redirects to /login if not authenticated
@@ -20,8 +61,8 @@ export default function PostJobPage() {
   // ── Form State: Basic Job Details ─────────────
   const [jobTitle, setJobTitle] = useState('');
   const [jobCategoryId, setJobCategoryId] = useState<number>(0);
-  const [categories, setCategories] = useState<Array<{id: number, name: string}>>([]);
-  const [roles, setRoles] = useState<Array<{id: number, job_category_id: number, name: string}>>([]);
+  const [categories, setCategories] = useState<Array<{ id: number, name: string }>>([]);
+  const [roles, setRoles] = useState<Array<{ id: number, job_category_id: number, name: string }>>([]);
   const [showRolesDropdown, setShowRolesDropdown] = useState(false);
   const wrapperRef = useRef<HTMLDivElement>(null);
   const [monthlyFrom, setMonthlyFrom] = useState('');
@@ -71,11 +112,11 @@ export default function PostJobPage() {
         const hasPlan = planRes?.data?.has_active_plan;
         const isExpired = planRes?.data?.is_expired;
         const approval = planRes?.data?.approval_status;
-        
+
         const hasActiveSubscription = hasPlan && !isExpired && approval === 'Accept';
-        
+
         if (!hasActiveSubscription && activeJobCount > 3) {
-           router.replace('/all-post-jobs?limit_error=true');
+          router.replace('/all-post-jobs?limit_error=true');
         }
       } catch (err) {
         // Ignored
@@ -108,10 +149,10 @@ export default function PostJobPage() {
           const res = await getJobDetailApi(jobID);
           if (res.status && res.data && res.data.job) {
             const j = res.data.job;
-            
+
             // Set this FIRST so useEffect for title search doesn't wipe category
             setIsSelecting(true);
-            
+
             setJobTitle(j.job_role_name || '');
             setJobCategoryId(Number(j.job_category_id) || 0);
             setMonthlyFrom(j.monthly_from?.toString() || '');
@@ -125,7 +166,7 @@ export default function PostJobPage() {
             setCategoryType(j.category_type || 'Job');
             // Normalize Boolean Status
             setWorkFromHome(Number(j.work_from_home_status) === 1);
-            
+
             // Normalize Qualification (DB might have "10th Pass or Above")
             const normalizeChip = (val: string, options: string[]) => {
               if (!val) return '';
@@ -143,13 +184,13 @@ export default function PostJobPage() {
 
             setMinExp(j.min_exp?.toString() || '');
             setMaxExp(j.max_exp?.toString() || '');
-            
+
             // Clean HTML tags for textarea if needed
             let cleanDesc = j.job_info || '';
             cleanDesc = cleanDesc.replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, '&');
             cleanDesc = cleanDesc.replace(/<\/?[^>]+(>|$)/g, ""); // Remove tags for plain textarea
             setJobDescription(cleanDesc);
-            
+
             // Critical: Set isSelecting to true during fetch to prevent the lookup useEffect from resetting category
             setIsSelecting(true);
           } else {
@@ -186,14 +227,14 @@ export default function PostJobPage() {
       return;
     }
     setJobCategoryId(0); // Reset category if user types a new title freely
-    
+
     const fetchRoles = async () => {
       if (!jobTitle.trim() || jobTitle.length < 2) {
         setRoles([]);
         setShowRolesDropdown(false);
         return;
       }
-      
+
       try {
         const res = await searchJobRolesApi(jobTitle);
         if (res.status && res.data && res.data.length > 0) {
@@ -216,6 +257,26 @@ export default function PostJobPage() {
     setJobTitle(role.name);
     setJobCategoryId(role.job_category_id);
     setShowRolesDropdown(false);
+
+    // Auto-populate description if currently empty or just a previously auto-generated one
+    // We allow overwrite if the description is empty OR it's one of our auto-templates
+    const currentDesc = jobDescription.trim();
+    const isAutoGenerated = currentDesc.startsWith(AUTO_DESC_HEADER) || Object.values(DEFAULT_JOB_DESCRIPTIONS).includes(currentDesc);
+
+    if (!currentDesc || isAutoGenerated) {
+      setJobDescription(getAutoDescription(role.name));
+    }
+  };
+
+  const handleTitleBlur = () => {
+    const currentDesc = jobDescription.trim();
+    const isAutoGenerated = currentDesc.startsWith(AUTO_DESC_HEADER) || Object.values(DEFAULT_JOB_DESCRIPTIONS).includes(currentDesc);
+
+    if (!currentDesc || isAutoGenerated) {
+      setJobDescription(getAutoDescription(jobTitle));
+    }
+    // Give small delay for dropdown click if needed
+    setTimeout(() => setShowRolesDropdown(false), 200);
   };
 
   // ── Validation ────────────────────────────────
@@ -273,7 +334,7 @@ export default function PostJobPage() {
         job_info: jobDescription,
       };
 
-      const response = isEdit 
+      const response = isEdit
         ? await updateJobApi(editId!, payload)
         : await postJobApi(payload);
 
@@ -312,6 +373,30 @@ export default function PostJobPage() {
   // ── Chip helper ───────────────────────────────
   const chipClass = (isActive: boolean) =>
     `${styles.chipBtn} ${isActive ? styles.chipBtnActive : ''}`;
+
+  // ── Time Helpers (24h <-> 12h) ────────────────
+  const parseTimeStr = (time24: string) => {
+    if (!time24) return { h: '09', m: '00', p: 'AM' };
+    const [h24, m] = time24.split(':');
+    const h24Num = Number(h24);
+    const p = h24Num >= 12 ? 'PM' : 'AM';
+    let h12 = h24Num % 12;
+    if (h12 === 0) h12 = 12;
+    return { 
+      h: h12.toString().padStart(2, '0'), 
+      m: m || '00', 
+      p 
+    };
+  };
+
+  const formatTimeStr = (h12: string, m: string, p: string) => {
+    let h24 = Number(h12) % 12;
+    if (p === 'PM') h24 += 12;
+    return `${h24.toString().padStart(2, '0')}:${m}`;
+  };
+
+  const hours12 = Array.from({ length: 12 }, (_, i) => (i + 1).toString().padStart(2, '0'));
+  const minutesList = ['00', '15', '30', '45'];
 
   // ── Get user initials ─────────────────────────
   const getInitials = (name: string) => {
@@ -376,7 +461,8 @@ export default function PostJobPage() {
                     style={{ textTransform: 'uppercase' }}
                     value={jobTitle}
                     onChange={(e) => setJobTitle(e.target.value)}
-                    onFocus={() => { if(roles.length > 0) setShowRolesDropdown(true); }}
+                    onFocus={() => { if (roles.length > 0) setShowRolesDropdown(true); }}
+                    onBlur={handleTitleBlur}
                     required
                     disabled={loading}
                     autoComplete="off"
@@ -504,30 +590,39 @@ export default function PostJobPage() {
                   </select>
                 </div>
 
-                {/* Working Time */}
+                {/* Working Time (24h state internally, 12h displayed) */}
                 <div className={styles.formGroup}>
                   <label className={`${styles.formLabel} ${styles.required}`}>
                     Working Time
                   </label>
                   <div className={styles.inputFlex}>
                     <input
-                      type="time"
-                      id="open_time"
+                      type="text"
                       className={styles.formInput}
-                      value={openTime}
-                      onChange={(e) => setOpenTime(e.target.value)}
-                      required
-                      disabled={loading}
+                      value={parseTimeStr(openTime).h + ':' + parseTimeStr(openTime).m + ' ' + parseTimeStr(openTime).p}
+                      readOnly
+                      onClick={() => {
+                        // Simple 12h picker logic (placeholder for actual picker or just prompt)
+                        const h = prompt("Enter Opening Hour (1-12):", parseTimeStr(openTime).h);
+                        const m = prompt("Enter Opening Minute (00, 15, 30, 45):", parseTimeStr(openTime).m);
+                        const p = prompt("Enter AM/PM:", parseTimeStr(openTime).p)?.toUpperCase();
+                        if (h && m && p) setOpenTime(formatTimeStr(h, m, p));
+                      }}
+                      style={{ cursor: 'pointer' }}
                     />
                     <span>-</span>
                     <input
-                      type="time"
-                      id="close_time"
+                      type="text"
                       className={styles.formInput}
-                      value={closeTime}
-                      onChange={(e) => setCloseTime(e.target.value)}
-                      required
-                      disabled={loading}
+                      value={parseTimeStr(closeTime).h + ':' + parseTimeStr(closeTime).m + ' ' + parseTimeStr(closeTime).p}
+                      readOnly
+                      onClick={() => {
+                        const h = prompt("Enter Closing Hour (1-12):", parseTimeStr(closeTime).h);
+                        const m = prompt("Enter Closing Minute (00, 15, 30, 45):", parseTimeStr(closeTime).m);
+                        const p = prompt("Enter AM/PM:", parseTimeStr(closeTime).p)?.toUpperCase();
+                        if (h && m && p) setCloseTime(formatTimeStr(h, m, p));
+                      }}
+                      style={{ cursor: 'pointer' }}
                     />
                   </div>
                 </div>

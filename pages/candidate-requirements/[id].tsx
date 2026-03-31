@@ -19,6 +19,16 @@ declare global {
 }
 
 /**
+ * Decodes HTML entities (e.g. &lt;p&gt; -> <p>)
+ */
+const decodeHtml = (html: string) => {
+  if (typeof document === 'undefined') return html;
+  const txt = document.createElement('textarea');
+  txt.innerHTML = html;
+  return txt.value;
+};
+
+/**
  * Candidate Requirements Page
  * Route: /candidate-requirements/[id]
  * Mirrors: networkbaba.co/candidate-job-requirements/add/{job_id}
@@ -71,7 +81,8 @@ export default function CandidateRequirementsPage() {
           setPageData(res.data);
           setSelectedReqs(new Set(res.data.selected_requirements));
           setSelectedSkills(new Set(res.data.selected_skills));
-          setJobInfo(res.data.job_info || '');
+          const decodedInfo = decodeHtml(res.data.job_info || '');
+          setJobInfo(decodedInfo);
         } else {
           setLoadError(res.message || 'Failed to load job requirements.');
         }
@@ -103,22 +114,25 @@ export default function CandidateRequirementsPage() {
         ]
       });
 
+      editor.on('instanceReady', () => {
+        if (jobInfo) {
+          editor.setData(jobInfo);
+        }
+      });
+
       editor.on('change', () => {
         const data = editor.getData();
         setJobInfo(data);
       });
-
-      if (pageData?.job_info) {
-        editor.setData(pageData.job_info);
-      }
     }
   };
 
   useEffect(() => {
     if (scriptLoaded && !loadingData && pageData) {
-      initEditor();
+      const timer = setTimeout(initEditor, 100);
+      return () => clearTimeout(timer);
     }
-  }, [scriptLoaded, loadingData, pageData]);
+  }, [scriptLoaded, loadingData, !!pageData]);
 
   // ── Toggle Handlers ────────────────────────────
   const toggleReq = (reqId: number) => {
@@ -296,7 +310,7 @@ export default function CandidateRequirementsPage() {
                       id="job_info_editor"
                       name="job_info_editor"
                       className={styles.jobInfoTextarea}
-                      defaultValue={jobInfo}
+                      defaultValue={jobInfo?.replace(/<\/?[^>]+(>|$)/g, "")}
                     />
                   </div>
 

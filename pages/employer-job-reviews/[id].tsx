@@ -73,14 +73,20 @@ export default function EmployerJobReviewsPage() {
       </Head>
 
       <div className={styles.pageWrapper}>
-
-
         <div className={styles.mainContainer}>
           <JobStepper currentStep={4} onStepClick={handleStepClick} />
           <form onSubmit={handleSubmit}>
             <div className={styles.card}>
               <div className={styles.cardHeader}>
                 <h3 className={styles.cardTitle}>Reviews & Guidelines</h3>
+                <button 
+                  type="button" 
+                  className={styles.mobileTopBtn} 
+                  onClick={() => saveAndNavigate()} 
+                  disabled={submitting}
+                >
+                  {submitting ? '...' : 'Post Job'}
+                </button>
               </div>
 
               <div className={styles.cardBody}>

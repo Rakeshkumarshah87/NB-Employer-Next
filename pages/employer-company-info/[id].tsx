@@ -416,9 +416,19 @@ export default function EmployerCompanyInfoPage() {
               <div className={styles.submitArea}>
                 {error && <span className={styles.errorMsg}>{error}</span>}
                 {success && <span style={{ color: '#10b981', fontWeight: 600 }}>{success}</span>}
-                <button type="submit" className={styles.btnSubmit} disabled={saving}>
-                  Save & Continue ➔
-                </button>
+                <div className={styles.actionButtons}>
+                  <button
+                    type="button"
+                    className={styles.btnBack}
+                    onClick={() => router.push(`/candidate-requirements/${jobId}`)}
+                    disabled={saving}
+                  >
+                    ← Back
+                  </button>
+                  <button type="submit" className={styles.btnSubmit} disabled={saving}>
+                    Save & Continue ➔
+                  </button>
+                </div>
               </div>
             </form>
           )}
