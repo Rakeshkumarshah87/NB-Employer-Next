@@ -836,12 +836,12 @@ export default function AllPostJobsPage() {
                 {planInfo.is_expired && (
                   <button className={styles.btnUpgradePlan} onClick={() => router.push('/employer-upgrade-plan')}>Upgrade Plan</button>
                 )}
-                {planInfo.package_offer && (
-                  <div className={styles.planRow}>
-                    <span className={styles.planLabel}>Current Offer</span>
-                    <span className={styles.planName} style={{ color: '#28a745' }}>{planInfo.package_offer}</span>
-                  </div>
-                )}
+                <div className={styles.planRow}>
+                  <span className={styles.planLabel}>Current Offer</span>
+                  <span className={styles.planName} style={{ color: '#28a745' }}>
+                    {(!planInfo.package_offer || planInfo.package_offer.includes('10%')) ? '20% Off' : planInfo.package_offer}
+                  </span>
+                </div>
                 <div className={styles.planRow}>
                   <span className={styles.planLabel}>Active Jobs Limit</span>
                   <span className={styles.planName} style={{ color: planInfo.used_jobs >= planInfo.total_jobs ? '#dc3545' : '#28a745' }}>
