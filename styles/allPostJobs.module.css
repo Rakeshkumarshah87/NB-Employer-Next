@@ -1013,6 +1013,28 @@
   transform: translateY(-1px);
 }
 
+.btnShare {
+  background: #3b82f6;
+  color: #fff;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 6px -1px rgba(59, 130, 246, 0.1);
+}
+
+.btnShare:hover {
+  background: #2563eb;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 12px -1px rgba(59, 130, 246, 0.2);
+}
+
 .btnViewProfileLocked {
   background: #fff;
   color: #007bff;
@@ -1781,30 +1803,110 @@
 
 @media (max-width: 768px) {
   .profileModalOverlay {
-    padding: 0;
+    padding: 20px 15px;
+    top: 0;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(8px);
+    background: rgba(0, 0, 0, 0.5);
   }
 
   .profileModalContentNative {
     height: auto;
-    max-height: calc(100vh - 68px);
-    border-radius: 0;
+    max-height: 90vh;
+    border-radius: 20px;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+    overflow: hidden;
+  }
+
+  .profileModalHeader {
+    padding: 12px 15px;
+    background: #fff;
+    border-bottom: 1px solid #f1f5f9;
+  }
+
+  .profileModalTitle {
+    font-size: 16px;
+  }
+
+  .btnShare {
+    padding: 6px 10px;
+    font-size: 11px;
+    font-weight: 700;
+  }
+
+  .profileModalNativeClose {
+    width: 28px;
+    height: 28px;
+    font-size: 14px;
+  }
+
+  .profileModalBody {
+    padding: 20px 15px;
+    flex: 1;
   }
 
   .profileHeaderBox {
     flex-direction: column;
     text-align: center;
+    gap: 15px;
+    margin-bottom: 25px;
+  }
+
+  .profileModalAvatar,
+  .profileModalAvatarFallback {
+    width: 80px;
+    height: 80px;
+    margin: 0 auto;
+  }
+
+  .profileModalAvatarFallback {
+    font-size: 32px;
+  }
+
+  .profileModalInfo h2 {
+    font-size: 22px;
+    margin-bottom: 8px;
   }
 
   .profileModalTags {
-    justify-content: center;
+    flex-direction: column;
+    gap: 8px;
+    align-items: center;
+    font-size: 14px;
+  }
+
+  .profileModalSection {
+    margin-bottom: 25px;
+  }
+
+  .profileModalSection h4 {
+    font-size: 14px;
+    padding-bottom: 6px;
+    margin-bottom: 12px;
   }
 
   .personalInfoGrid {
     grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .infoCol {
+    padding: 10px 12px;
   }
 
   .profileModalFooter {
+    padding: 12px 15px;
+    background: #fff;
     justify-content: stretch;
+    gap: 10px;
+    position: sticky;
+    bottom: 0;
+    z-index: 10;
   }
 
   .profileModalFooter>a {
@@ -1814,6 +1916,9 @@
   .profileModalFooter button {
     width: 100%;
     justify-content: center;
+    padding: 12px;
+    font-size: 14px;
+    border-radius: 10px;
   }
 }
 

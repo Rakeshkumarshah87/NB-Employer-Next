@@ -170,6 +170,12 @@ const CandidateListView = ({ postId, viewMode, statusFilter, isPlanActive, jobSt
     }
   };
 
+  const handleShare = (candidate: any) => {
+    const text = `*Selected Candidate Profile*\n\n*Name:* ${candidate.name}\n*Contact:* ${candidate.contact_number}\n*Experience:* ${candidate.experience} Years\n*Education:* ${candidate.qualification} ${candidate.degree_name ? `(${candidate.degree_name})` : ''}\n\n- Sent from NetworkBaba`;
+    const url = `https://wa.me/?text=${encodeURIComponent(text)}`;
+    window.open(url, '_blank');
+  };
+
   return (
     <div style={{ marginTop: 20 }}>
       {loading && candidates.length === 0 && (
@@ -415,7 +421,13 @@ const CandidateListView = ({ postId, viewMode, statusFilter, isPlanActive, jobSt
           <div className={styles.profileModalContentNative} onClick={e => e.stopPropagation()}>
             <div className={styles.profileModalHeader}>
               <h3 className={styles.profileModalTitle}>Candidate Profile</h3>
-              <button className={styles.profileModalNativeClose} onClick={() => setModalCandidate(null)}>✕</button>
+              <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                <button className={styles.btnShare} onClick={() => handleShare(modalCandidate)}>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"></path><polyline points="16 6 12 2 8 6"></polyline><line x1="12" y1="2" x2="12" y2="15"></line></svg>
+                  SHARE
+                </button>
+                <button className={styles.profileModalNativeClose} onClick={() => setModalCandidate(null)}>✕</button>
+              </div>
             </div>
 
             <div className={styles.profileModalBody}>
