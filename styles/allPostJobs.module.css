@@ -872,6 +872,25 @@
   gap: 5px;
 }
 
+.btnEditJobCard {
+  background-color: #2563eb;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 7px 14px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  transition: background 0.2s;
+}
+
+.btnEditJobCard:hover {
+  background-color: #1d4ed8;
+}
+
 .btnExpire {
   background-color: #dc3545;
   color: #fff;
