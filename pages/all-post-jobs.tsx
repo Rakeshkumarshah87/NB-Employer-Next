@@ -192,7 +192,7 @@ const CandidateListView = ({ postId, viewMode, statusFilter, isPlanActive, jobSt
       )}
 
       {candidates.map((c, idx) => {
-        const isCandidateUnlocked = isPlanActive || (viewMode === 'recommended' && idx < 20);
+        const isCandidateUnlocked = isPlanActive || idx < 20;
 
         return (
           <div key={idx} className={styles.candidateCard}>
