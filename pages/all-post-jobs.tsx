@@ -333,8 +333,8 @@ const CandidateListView = ({ postId, viewMode, statusFilter, isPlanActive, jobSt
                     </>
                   )}
                 </div>
-                <div className={styles.desktopOnlyDivider} style={{ marginTop: 20 }}></div>
-                <div style={{ marginTop: 15 }}>
+                <div className={styles.desktopOnlyDivider} style={{ marginTop: 16 }}></div>
+                <div style={{ marginTop: 14 }}>
                   <select
                     className={styles.candidateSelect}
                     value={activeUpdateId === c.user_id ? updateStatus : ''}

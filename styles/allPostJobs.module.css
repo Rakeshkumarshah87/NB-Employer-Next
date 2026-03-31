@@ -562,7 +562,7 @@
 }
 
 .candidateSelect {
-  margin-top: 15px;
+  margin-top: 5px;
   width: 100%;
   padding: 8px 10px;
   border-radius: 4px;
@@ -1068,6 +1068,18 @@
   color: #1a202c;
   font-weight: 700;
   letter-spacing: -0.01em;
+  position: relative;
+  padding-bottom: 8px;
+}
+
+.detailJobTitle::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 1px;
+  background-color: #e2e8f0;
 }
 
 .detailActions {
@@ -1138,7 +1150,7 @@
 .toggleGroup {
   display: flex;
   gap: 14px;
-  margin-bottom: 24px;
+  margin-bottom: 32px;
 }
 
 .btnToggle {
@@ -1174,10 +1186,11 @@
 }
 
 .btnApplied.activeTab {
-  background: #059669 !important;
-  color: #fff !important;
-  border-color: transparent !important;
-  box-shadow: 0 2px 6px rgba(5, 150, 105, 0.25);
+  background: #f0fdf4 !important;
+  color: #065f46 !important;
+  border-color: #059669 !important;
+  box-shadow: 0 2px 8px rgba(5, 150, 105, 0.08);
+  font-weight: 700;
 }
 
 .btnRecommended {
@@ -1192,10 +1205,10 @@
 }
 
 .btnRecommended.activeTab {
-  background: #ede9fe !important;
+  background: #f5f3ff !important;
   color: #7c3aed !important;
-  border-color: #a78bfa !important;
-  box-shadow: none;
+  border-color: #7c3aed !important;
+  box-shadow: 0 2px 8px rgba(124, 58, 237, 0.08);
   font-weight: 700;
 }
 
