@@ -374,6 +374,25 @@ export default function PostJobPage() {
   const chipClass = (isActive: boolean) =>
     `${styles.chipBtn} ${isActive ? styles.chipBtnActive : ''}`;
 
+  // ── Time Helpers (24h <-> 12h for Dropdowns) ──
+  const generateTimeOptions = () => {
+    const opts = [];
+    for (let h = 0; h < 24; h++) {
+      for (let m = 0; m < 60; m += 15) {
+        const period = h >= 12 ? 'PM' : 'AM';
+        const h12 = h % 12 || 12;
+        const hStr = h12.toString().padStart(2, '0');
+        const mStr = m.toString().padStart(2, '0');
+        const display = `${hStr}:${mStr} ${period}`;
+        const value = `${h.toString().padStart(2, '0')}:${mStr}`;
+        opts.push({ display, value });
+      }
+    }
+    return opts;
+  };
+
+  const timeOptions = generateTimeOptions();
+
   // ── Get user initials ─────────────────────────
   const getInitials = (name: string) => {
     const parts = name.split(' ');
@@ -566,29 +585,35 @@ export default function PostJobPage() {
                   </select>
                 </div>
 
-                {/* Working Time (24h state internally, 12h displayed) */}
+                {/* Working Time (12h format dropdowns) */}
                 <div className={styles.formGroup}>
                   <label className={`${styles.formLabel} ${styles.required}`}>
                     Working Time
                   </label>
                   <div className={styles.inputFlex}>
-                    <input
-                      type="time"
+                    <select
                       className={styles.formInput}
                       value={openTime}
                       onChange={(e) => setOpenTime(e.target.value)}
                       required
                       disabled={loading}
-                    />
+                    >
+                      {timeOptions.map(opt => (
+                        <option key={opt.value} value={opt.value}>{opt.display}</option>
+                      ))}
+                    </select>
                     <span>-</span>
-                    <input
-                      type="time"
+                    <select
                       className={styles.formInput}
                       value={closeTime}
                       onChange={(e) => setCloseTime(e.target.value)}
                       required
                       disabled={loading}
-                    />
+                    >
+                      {timeOptions.map(opt => (
+                        <option key={opt.value} value={opt.value}>{opt.display}</option>
+                      ))}
+                    </select>
                   </div>
                 </div>
 
