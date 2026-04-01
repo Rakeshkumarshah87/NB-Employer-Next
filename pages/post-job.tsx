@@ -374,30 +374,6 @@ export default function PostJobPage() {
   const chipClass = (isActive: boolean) =>
     `${styles.chipBtn} ${isActive ? styles.chipBtnActive : ''}`;
 
-  // ── Time Helpers (24h <-> 12h) ────────────────
-  const parseTimeStr = (time24: string) => {
-    if (!time24) return { h: '09', m: '00', p: 'AM' };
-    const [h24, m] = time24.split(':');
-    const h24Num = Number(h24);
-    const p = h24Num >= 12 ? 'PM' : 'AM';
-    let h12 = h24Num % 12;
-    if (h12 === 0) h12 = 12;
-    return { 
-      h: h12.toString().padStart(2, '0'), 
-      m: m || '00', 
-      p 
-    };
-  };
-
-  const formatTimeStr = (h12: string, m: string, p: string) => {
-    let h24 = Number(h12) % 12;
-    if (p === 'PM') h24 += 12;
-    return `${h24.toString().padStart(2, '0')}:${m}`;
-  };
-
-  const hours12 = Array.from({ length: 12 }, (_, i) => (i + 1).toString().padStart(2, '0'));
-  const minutesList = ['00', '15', '30', '45'];
-
   // ── Get user initials ─────────────────────────
   const getInitials = (name: string) => {
     const parts = name.split(' ');
@@ -597,32 +573,21 @@ export default function PostJobPage() {
                   </label>
                   <div className={styles.inputFlex}>
                     <input
-                      type="text"
+                      type="time"
                       className={styles.formInput}
-                      value={parseTimeStr(openTime).h + ':' + parseTimeStr(openTime).m + ' ' + parseTimeStr(openTime).p}
-                      readOnly
-                      onClick={() => {
-                        // Simple 12h picker logic (placeholder for actual picker or just prompt)
-                        const h = prompt("Enter Opening Hour (1-12):", parseTimeStr(openTime).h);
-                        const m = prompt("Enter Opening Minute (00, 15, 30, 45):", parseTimeStr(openTime).m);
-                        const p = prompt("Enter AM/PM:", parseTimeStr(openTime).p)?.toUpperCase();
-                        if (h && m && p) setOpenTime(formatTimeStr(h, m, p));
-                      }}
-                      style={{ cursor: 'pointer' }}
+                      value={openTime}
+                      onChange={(e) => setOpenTime(e.target.value)}
+                      required
+                      disabled={loading}
                     />
                     <span>-</span>
                     <input
-                      type="text"
+                      type="time"
                       className={styles.formInput}
-                      value={parseTimeStr(closeTime).h + ':' + parseTimeStr(closeTime).m + ' ' + parseTimeStr(closeTime).p}
-                      readOnly
-                      onClick={() => {
-                        const h = prompt("Enter Closing Hour (1-12):", parseTimeStr(closeTime).h);
-                        const m = prompt("Enter Closing Minute (00, 15, 30, 45):", parseTimeStr(closeTime).m);
-                        const p = prompt("Enter AM/PM:", parseTimeStr(closeTime).p)?.toUpperCase();
-                        if (h && m && p) setCloseTime(formatTimeStr(h, m, p));
-                      }}
-                      style={{ cursor: 'pointer' }}
+                      value={closeTime}
+                      onChange={(e) => setCloseTime(e.target.value)}
+                      required
+                      disabled={loading}
                     />
                   </div>
                 </div>
