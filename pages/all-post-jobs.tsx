@@ -686,9 +686,9 @@ export default function AllPostJobsPage() {
         setExpiredJobs(prev => prev.map(j => j.id === jobId ? { ...j, active_status: newStatus, local_updated_at: Date.now() } : j));
 
         // Only adjust count correctly
-        setActiveJobCount(prev => newStatus === 1 ? prev + 1 : prev - 1);
+        setActiveJobCount(prev => (newStatus === 1 || newStatus === 2 || newStatus === 3) ? prev + 1 : prev - 1);
       } else {
-        console.log('Status update response:', res.message);
+        alert(res.message || 'Failed to update status.');
       }
     } catch (e) {
       console.error('Network error updating status', e);
@@ -982,7 +982,7 @@ export default function AllPostJobsPage() {
                 <div className={styles.planRow}>
                   <span className={styles.planLabel}>Current Offer</span>
                   <span className={styles.planName} style={{ color: '#28a745' }}>
-                    {(!planInfo.package_offer || planInfo.package_offer.includes('10%')) ? '20% Off' : planInfo.package_offer}
+                    {(!planInfo.package_offer || planInfo.package_offer.toLowerCase().includes('no offer')) ? '20% Off' : planInfo.package_offer}
                   </span>
                 </div>
                 <div className={styles.planRow}>
@@ -1014,7 +1014,13 @@ export default function AllPostJobsPage() {
                     Special Offer
                   </div>
                   <div style={{ fontSize: 16, fontWeight: 700, color: '#1e293b' }}>
-                    <span style={{ color: '#059669' }}>Save {(!planInfo?.package_offer || planInfo?.package_offer.includes('10%')) ? '20%' : planInfo?.package_offer.replace('Off', '').replace('off', '').trim()}</span> on all plans
+                    <span style={{ color: '#059669' }}>
+                      {(() => {
+                        const offer = planInfo?.package_offer || '';
+                        if (!offer || offer.toLowerCase().includes('no offer')) return 'Save 20%';
+                        return `Save ${offer.replace(/off/i, '').trim()}`;
+                      })()}
+                    </span> on all plans
                   </div>
                 </div>
 
